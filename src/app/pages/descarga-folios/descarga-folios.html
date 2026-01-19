@@ -2,14 +2,17 @@
   <h2>DESCARGA MASIVA DE FOLIOS</h2>
 
   <div class="card">
-    <div class="form-group">
-      <label>Seleccione una delegación</label>
-      <select [(ngModel)]="delegacionSeleccionada" name="delegacion">
-        <option value="">Seleccionar</option>
-        <option value="1">1 - Calakmul</option>
-        <option value="2">2 - Campeche</option>
-      </select>
-    </div>
+  <div class="form-group">
+    <label>Seleccione una delegación</label>
+    <select [(ngModel)]="delegacionSeleccionada" name="delegacion">
+      <option value="">Seleccionar</option>
+      
+      <option *ngFor="let item of listaDelegaciones" [value]="item.Id">
+        {{ item.Id }} - {{ item.Nombre }}
+      </option>
+      
+    </select>
+</div>
 
     <div class="form-group">
       <label>Filtros de descarga</label>
