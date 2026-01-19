@@ -31,4 +31,8 @@ export class SelectDescarga {
   setDelegacion(delegacion: number) {
     this.delegacionSubject.next(delegacion);
   }
+
+  getDelegacionActual(): number | null {
+    return this.delegacionSubject.value;
+  }
 }

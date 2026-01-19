@@ -25,22 +25,12 @@ export class App implements OnInit {
   ) {}
 
   ngOnInit() {
-    // this.selectDescarga.delegacion$.subscribe((delegacion) => {
-    //   if (delegacion !== null) {
-    //     console.log('Delegación recibida:', delegacion);
-    //     this.consumirApi(delegacion);
-    //   }
-    // });
-
-    this.sub = this.selectDescarga.delegacion$.subscribe((delegacion) => {
+    this.selectDescarga.delegacion$.subscribe((delegacion) => {
       if (delegacion !== null) {
-        this.wsService.conectar(delegacion);
+        console.log('Delegación recibida:', delegacion);
+        this.consumirApi(delegacion);
       }
     });
-
-    // this.wsService.onmessage((msg) => {
-    //   console.log('📩 Mensaje recibido:', msg);
-    // });
   }
 
   ngOnDestroy() {
@@ -52,10 +42,6 @@ export class App implements OnInit {
     this.apiService.getCfdis(id).subscribe({
       next: (respuesta: any) => {
         console.log('¡Facturas recibidas!', respuesta);
-
-        // OJO: Dependiendo de si la respuesta es una lista [] o un solo objeto {}
-        // tal vez tengamos que ajustar esto. Por ahora lo dejamos así.
-        // Si respuesta es un string, lo metemos en un array para que no falle el HTML
         this.datos = Array.isArray(respuesta) ? respuesta : [respuesta];
       },
       error: (error: any) => {

@@ -1,17 +1,19 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { WebSocketService } from './websocket';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class DescargaFoliosService {
+  constructor(private wsService: WebSocketService) {}
 
   // 🔹 Esto lo dejas tal cual
   buscarFolios(delegacion: string, filtro: string) {
     return {
       archivos: 1500,
       tamanio: '1 GB',
-      tiempo: '5 minutos'
+      tiempo: '5 minutos',
     };
   }
 
@@ -20,58 +22,59 @@ export class DescargaFoliosService {
     console.log('Descargando delegación:', delegacion);
   }
 
-  // 
-  iniciarDescarga(): Observable<any> {
+  //
+  // iniciarDescarga(): Observable<any> {
+  //   return new Observable((observer) => {
+  //     console.log('🟢 Observable iniciado');
 
-    return new Observable(observer => {
-      console.log('🟢 Observable iniciado');
+  //     const folios = ['FOL-001', 'FOL-002', 'FOL-003'];
+  //     const tiposArchivo = ['recibo.pdf', 'cfdi.pdf', 'cfdi.xml'];
 
-      const folios = ['FOL-001', 'FOL-002', 'FOL-003'];
-      const tiposArchivo = ['recibo.pdf', 'cfdi.pdf', 'cfdi.xml'];
+  //     const totalArchivos = folios.length * tiposArchivo.length;
+  //     let procesados = 0;
 
-      const totalArchivos = folios.length * tiposArchivo.length;
-      let procesados = 0;
+  //     let folioIndex = 0;
+  //     let archivoIndex = 0;
 
-      let folioIndex = 0;
-      let archivoIndex = 0;
+  //     const intervalId = setInterval(() => {
+  //       const folio = folios[folioIndex];
+  //       const archivo = tiposArchivo[archivoIndex];
 
-      const intervalId = setInterval(() => {
+  //       const error = Math.random() > 0.8;
 
-        const folio = folios[folioIndex];
-        const archivo = tiposArchivo[archivoIndex];
+  //       // 📌 Evento de archivo (para el log)
+  //       observer.next({
+  //         tipo: 'ARCHIVO',
+  //         folio: folio,
+  //         archivo: archivo,
+  //         estado: error ? 'ERROR' : 'OK',
+  //         mensaje: error ? 'No se pudo generar el archivo' : undefined,
+  //       });
 
-        const error = Math.random() > 0.8;
+  //       procesados++;
 
-        // 📌 Evento de archivo (para el log)
-        observer.next({
-          tipo: 'ARCHIVO',
-          folio: folio,
-          archivo: archivo,
-          estado: error ? 'ERROR' : 'OK',
-          mensaje: error ? 'No se pudo generar el archivo' : undefined
-        });
+  //       // 📊 Evento de progreso
+  //       observer.next({
+  //         tipo: 'PROGRESO',
+  //         progreso: Math.round((procesados / totalArchivos) * 100),
+  //       });
 
-        procesados++;
+  //       archivoIndex++;
 
-        // 📊 Evento de progreso
-        observer.next({
-          tipo: 'PROGRESO',
-          progreso: Math.round((procesados / totalArchivos) * 100)
-        });
+  //       if (archivoIndex === tiposArchivo.length) {
+  //         archivoIndex = 0;
+  //         folioIndex++;
+  //       }
 
-        archivoIndex++;
-
-        if (archivoIndex === tiposArchivo.length) {
-          archivoIndex = 0;
-          folioIndex++;
-        }
-
-        if (folioIndex === folios.length) {
-          clearInterval(intervalId);
-          observer.complete();
-        }
-
-      }, 700);
-    });
+  //       if (folioIndex === folios.length) {
+  //         clearInterval(intervalId);
+  //         observer.complete();
+  //       }
+  //     }, 700);
+  //   });
+  // }
+  iniciarDescarga(delegacion: number): Observable<any> {
+    this.wsService.conectar(delegacion);
+    return this.wsService.mensajes$;
   }
 }
