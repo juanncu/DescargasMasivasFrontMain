@@ -21,13 +21,12 @@ export class App implements OnInit {
   ngOnInit() {
     // ENVIAMOS UN ID DE PRUEBA (Por ejemplo: 1)
     // Si sabes un ID real que exista en tu base de datos, pon ese en lugar del 1
-    const delegacion = this.selectDescarga.getDelegacion()!;
-    console.log('index 2 delegacion:' + delegacion);
-
-    if (delegacion) {
-      console.log('index delegacion:' + delegacion);
-      this.consumirApi(delegacion);
-    }
+    this.selectDescarga.delegacion$.subscribe((delegacion) => {
+      if (delegacion !== null) {
+        console.log('Delegación recibida:', delegacion);
+        this.consumirApi(delegacion);
+      }
+    });
 
     //this.consumirApi(Number(delegacion));
   }

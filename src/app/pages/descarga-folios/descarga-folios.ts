@@ -34,7 +34,7 @@ export class DescargaFoliosComponent {
 
     // 👇 Convertimos a número si viene como string
     const delegacionId = Number(this.delegacionSeleccionada);
-    const buscar = true;
+    const buscar = false;
 
     this.resultados = this.descargaService.buscarFolios(
       this.delegacionSeleccionada,
@@ -43,7 +43,7 @@ export class DescargaFoliosComponent {
     console.log(this.delegacionSeleccionada);
     console.log(this.filtroSeleccionado);
 
-    this.selectDescarga.setDatos(delegacionId, this.filtroSeleccionado);
+    this.selectDescarga.setDelegacion(delegacionId);
   }
 
   confirmarDescarga() {
