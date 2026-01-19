@@ -1,0 +1,74 @@
+.progreso-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 40px;
+  width: 100%;
+}
+.contenedor {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.folio-box {
+  margin-bottom: 15px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+}
+.folio-box p {
+  margin: 0;
+  font-size: 14px;
+}
+.barra {
+  width: 420px;      
+  max-width: 90%;       
+  height: 22px;
+  background: #e0e0e0;
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 10px auto;   
+}
+.progreso {
+  height: 100%;
+  background: #4caf50;
+  transition: width 0.4s ease;
+}
+.log {
+  background: #111;
+  color: #eee;
+  padding: 10px;
+  max-height: 220px;
+  overflow-y: auto;
+  font-family: monospace;
+}
+
+.log-item {
+  margin-bottom: 4px;
+}
+
+.OK {
+  color: #4caf50;
+}
+
+.ERROR {
+  color: #f44336;
+}
+
+.tiempo {
+  font-size: 14px;
+  color: #555;
+  text-align: center;
+}
+.boton-descarga {
+  margin-top: 20px;
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #2196f3;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}

@@ -1,0 +1,18 @@
+<div class="progreso-wrapper contenedor">
+  <h3>Descargando archivos...</h3>
+
+<div class="barra">
+  <div class="progreso" [style.width.%]="progreso"></div>
+</div>
+
+<p class="tiempo">⏱ {{ tiempoEstimado }}</p>
+
+<hr>
+
+<h4>Registro de actividad</h4>
+
+<div class="log">
+  <div *ngFor="let r of registros" class="log-item" [ngClass]="r.estado">
+    [{{ r.estado }}] {{ r.mensaje }}
+  </div>
+</div>

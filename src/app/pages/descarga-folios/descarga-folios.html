@@ -1,0 +1,35 @@
+<div class="contenedor">
+  <h2>DESCARGA MASIVA DE FOLIOS</h2>
+
+  <div class="card">
+    <div class="form-group">
+      <label>Seleccione una delegación</label>
+      <select [(ngModel)]="delegacionSeleccionada" name="delegacion">
+        <option value="">Seleccionar</option>
+        <option value="1">1 - Calakmul</option>
+        <option value="2">2 - Campeche</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Filtros de descarga</label>
+      <select [(ngModel)]="filtroSeleccionado" name="filtro">
+        <option>- Enero</option>
+        <option>- Febrero</option>
+        <option>- Todo el año</option>
+      </select>
+    </div>
+
+    <button (click)="buscar()">BUSCAR</button>
+  </div>
+
+  <div class="resultados" *ngIf="resultados">
+    <p><strong>Archivos encontrados:</strong> {{ resultados.archivos }}</p>
+    <p><strong>Tamaño aprox:</strong> {{ resultados.tamanio }}</p>
+    <p><strong>Tiempo aproximado:</strong> {{ resultados.tiempo }}</p>
+  </div>
+
+  <button class="confirmar" *ngIf="resultados" (click)="confirmarDescarga()">
+    CONFIRMAR DESCARGA
+  </button>
+</div>
