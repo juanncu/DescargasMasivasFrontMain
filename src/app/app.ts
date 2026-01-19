@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 import { ApiService } from './services/api';
 import { SelectDescarga } from './services/select-descarga';
+import { Subscription } from 'rxjs';
+import { WebSocketService } from './services/websocket';
 
 @Component({
   selector: 'app-root',
@@ -12,23 +14,38 @@ import { SelectDescarga } from './services/select-descarga';
 })
 export class App implements OnInit {
   private apiService = inject(ApiService);
+  private sub!: Subscription;
 
   datos: any[] = [];
   errorMensaje: string = '';
 
-  constructor(private selectDescarga: SelectDescarga) {}
+  constructor(
+    private wsService: WebSocketService,
+    private selectDescarga: SelectDescarga,
+  ) {}
 
   ngOnInit() {
-    // ENVIAMOS UN ID DE PRUEBA (Por ejemplo: 1)
-    // Si sabes un ID real que exista en tu base de datos, pon ese en lugar del 1
-    this.selectDescarga.delegacion$.subscribe((delegacion) => {
+    // this.selectDescarga.delegacion$.subscribe((delegacion) => {
+    //   if (delegacion !== null) {
+    //     console.log('Delegación recibida:', delegacion);
+    //     this.consumirApi(delegacion);
+    //   }
+    // });
+
+    this.sub = this.selectDescarga.delegacion$.subscribe((delegacion) => {
       if (delegacion !== null) {
-        console.log('Delegación recibida:', delegacion);
-        this.consumirApi(delegacion);
+        this.wsService.conectar(delegacion);
       }
     });
 
-    //this.consumirApi(Number(delegacion));
+    // this.wsService.onmessage((msg) => {
+    //   console.log('📩 Mensaje recibido:', msg);
+    // });
+  }
+
+  ngOnDestroy() {
+    this.sub.unsubscribe();
+    this.wsService.cerrar();
   }
 
   consumirApi(id: number) {
