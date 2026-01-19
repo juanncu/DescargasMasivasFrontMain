@@ -1,4 +1,4 @@
-import { Injectable, OnDestroy } from '@angular/core';
+import { Injectable, OnDestroy, NgZone } from '@angular/core';
 import { Subject, Observable } from 'rxjs';
 
 @Injectable({
@@ -10,6 +10,8 @@ export class WebSocketService implements OnDestroy {
   private mensajesSubject = new Subject<any>();
   mensajes$: Observable<any> = this.mensajesSubject.asObservable();
 
+  constructor(private zone: NgZone) {}
+
   conectar(delegacionId: number) {
     this.ws = new WebSocket(`ws://172.20.23.44:8000/socket/${delegacionId}`);
 
@@ -19,8 +21,11 @@ export class WebSocketService implements OnDestroy {
 
     this.ws.onmessage = (e) => {
       console.log('📩 Mensaje:', e.data);
-      const data = JSON.parse(e.data); // 👈 IMPORTANTE
-      this.mensajesSubject.next(data); // 👈 EMITE A ANGULAR
+      //const data = JSON.parse(e.data);
+      // this.mensajesSubject.next(data);
+      this.zone.run(() => {
+        this.mensajesSubject.next(e.data);
+      });
     };
 
     this.ws.onclose = () => {

@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DescargaFoliosService } from '../../services/descarga-folios.service';
 import { RegistroDescarga } from '../../models/registro-descarga.model';
@@ -19,7 +19,8 @@ export class ProgresoDescargaComponent implements OnInit {
   constructor(
     private descargaService: DescargaFoliosService,
     private selectDescarga: SelectDescarga,
-    private cdr: ChangeDetectorRef, // 👈 CLAVE
+    private cdr: ChangeDetectorRef,
+    private zone: NgZone,
   ) {}
 
   ngOnInit(): void {
@@ -28,35 +29,6 @@ export class ProgresoDescargaComponent implements OnInit {
       estado: 'OK',
       mensaje: 'Descarga delegación Calkiní iniciada...',
     });
-
-    // this.descargaService.iniciarDescarga().subscribe({
-    //   next: (evento) => {
-
-    //     if (evento.tipo === 'ARCHIVO') {
-    //       this.registros.push({
-    //         estado: evento.estado,
-    //         mensaje: `Folio ${evento.folio} - ${this.nombreArchivo(evento.archivo)} ${evento.estado === 'OK' ? 'generado' : 'no generado'}`
-    //       });
-    //     }
-
-    //     if (evento.tipo === 'PROGRESO') {
-    //       this.progreso = evento.progreso;
-    //       this.tiempoEstimado = this.calcularTiempo(evento.progreso);
-
-    //       // 🔥 FUERZA ACTUALIZACIÓN DE LA UI
-    //       this.cdr.detectChanges();
-    //     }
-    //   },
-    //   complete: () => {
-    //     this.registros.push({
-    //       estado: 'OK',
-    //       mensaje: 'Descarga finalizada'
-    //     });
-    //     this.cdr.detectChanges();
-    //   }
-    // });
-
-    //const delegacionSeleccionada = 1;
 
     this.selectDescarga.delegacion$.subscribe((delegacion) => {
       if (delegacion !== null) {
@@ -70,38 +42,28 @@ export class ProgresoDescargaComponent implements OnInit {
             }
 
             if (evento.tipo === 'PROGRESO') {
-              this.progreso = evento.progreso;
-              this.tiempoEstimado = this.calcularTiempo(evento.progreso);
+              let valor = evento.progreso;
+
+              if (typeof valor === 'string') {
+                valor = valor.replace('%', '');
+              }
+
+              this.progreso = Math.min(100, Math.max(0, Number(valor)));
+
+              this.tiempoEstimado = this.calcularTiempo(this.progreso);
               this.cdr.detectChanges();
             }
           },
+          // complete: () => {
+          //   this.registros.push({
+          //     estado: 'OK',
+          //     mensaje: 'Descarga finalizada',
+          //   });
+          //   this.cdr.detectChanges();
+          // },
         });
       }
     });
-
-    // this.descargaService.iniciarDescarga(delegacionSeleccionada).subscribe({
-    //   next: (evento) => {
-    //     if (evento.tipo === 'ARCHIVO') {
-    //       this.registros.push({
-    //         estado: evento.estado,
-    //         mensaje: `Folio ${evento.folio} - ${this.nombreArchivo(evento.archivo)}`,
-    //       });
-    //     }
-
-    //     if (evento.tipo === 'PROGRESO') {
-    //       this.progreso = evento.progreso;
-    //       this.tiempoEstimado = this.calcularTiempo(evento.progreso);
-    //       this.cdr.detectChanges(); // ✔ correcto
-    //     }
-    //   },
-    //   complete: () => {
-    //     this.registros.push({
-    //       estado: 'OK',
-    //       mensaje: 'Descarga finalizada',
-    //     });
-    //     this.cdr.detectChanges();
-    //   },
-    // });
   }
 
   nombreArchivo(archivo: string): string {

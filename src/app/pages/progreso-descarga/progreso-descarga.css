@@ -23,13 +23,13 @@
   font-size: 14px;
 }
 .barra {
-  width: 420px;      
-  max-width: 90%;       
+  width: 420px;
+  max-width: 90%;
   height: 22px;
   background: #e0e0e0;
   border-radius: 10px;
   overflow: hidden;
-  margin: 10px auto;   
+  margin: 10px auto;
 }
 .progreso {
   height: 100%;

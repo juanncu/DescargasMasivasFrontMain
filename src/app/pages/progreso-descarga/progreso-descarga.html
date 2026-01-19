@@ -1,18 +1,21 @@
 <div class="progreso-wrapper contenedor">
   <h3>Descargando archivos...</h3>
 
-<div class="barra">
-  <div class="progreso" [style.width.%]="progreso"></div>
-</div>
+  <div class="barra">
+    <!-- <div class="progreso" [style.width.%]="progreso"></div> -->
+    <div class="progreso" [style.width]="progreso + '%'"></div>
+    <div class="progreso" style="width: 50%; background: red; height: 100%"></div>
+  </div>
 
-<p class="tiempo">⏱ {{ tiempoEstimado }}</p>
+  <p class="tiempo">⏱ {{ tiempoEstimado }}</p>
 
-<hr>
+  <hr />
 
-<h4>Registro de actividad</h4>
+  <h4>Registro de actividad</h4>
 
-<div class="log">
-  <div *ngFor="let r of registros" class="log-item" [ngClass]="r.estado">
-    [{{ r.estado }}] {{ r.mensaje }}
+  <div class="log">
+    <div *ngFor="let r of registros" class="log-item" [ngClass]="r.estado">
+      [{{ r.estado }}] {{ r.mensaje }}
+    </div>
   </div>
 </div>
