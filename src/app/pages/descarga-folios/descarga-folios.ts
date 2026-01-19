@@ -72,6 +72,7 @@ export class DescargaFoliosComponent implements OnInit {
   }
 
   confirmarDescarga() {
+    console.log('CLICK CONFIRMAR');
     this.router.navigate(['/progreso-descarga']);
   }
 }

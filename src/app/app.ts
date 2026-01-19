@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 import { ApiService } from './services/api';
 import { SelectDescarga } from './services/select-descarga';
+import { Header } from './layout/header/header';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet],
+  imports: [CommonModule, RouterOutlet, Header],
   templateUrl: './app.html',
 })
 export class App implements OnInit {

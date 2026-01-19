@@ -1,38 +1,74 @@
-<div class="contenedor">
-  <h2>DESCARGA MASIVA DE FOLIOS</h2>
+<main class="min-h-screen bg-gray-100 flex justify-center pt-12">
+  <div class="contenedor">
 
-  <div class="card">
-  <div class="form-group">
-    <label>Seleccione una delegación</label>
-    <select [(ngModel)]="delegacionSeleccionada" name="delegacion">
-      <option value="">Seleccionar</option>
-      
-      <option *ngFor="let item of listaDelegaciones" [value]="item.Id">
-        {{ item.Id }} - {{ item.Nombre }}
-      </option>
-      
-    </select>
-</div>
+    <h2 class="text-center text-lg font-semibold mb-6">DESCARGA MASIVA DE FOLIOS</h2>
 
-    <div class="form-group">
-      <label>Filtros de descarga</label>
-      <select [(ngModel)]="filtroSeleccionado" name="filtro">
-        <option>- Enero</option>
-        <option>- Febrero</option>
-        <option>- Todo el año</option>
+    <div class="bg-white w-full max-w-md rounded-lg shadow-md p-6">
+      <div class="form-group">
+        <label class="label block text-sm font-medium mb-1">
+        SELECCIONA UNA DELEGACION
+        </label>
+      <select [(ngModel)]="delegacionSeleccionada" name="delegacion">
+        <option value="">Seleccionar</option>
+        
+        <option *ngFor="let item of listaDelegaciones" [value]="item.Id">
+          {{ item.Id }} - {{ item.Nombre }}
+        </option>
+        
       </select>
     </div>
 
-    <button (click)="buscar()">BUSCAR</button>
+    <div class="form-group">
+      <label class="label block text-sm font-medium mb-1">
+        FILTROS DE DESCARGA </label>
+
+        <select  class="w-full border rounded px-3 py-2" 
+          [(ngModel)]="filtroSeleccionado" name="filtro">
+          <option value="">Seleccionar</option>
+          <option>Enero</option>
+          <option>Febrero</option>
+          <option>Anual</option>
+        </select>
+      </div>
+
+      <button  class="w-full max-w-md mt-4 rounded-xl bg-yellow-700 py-3 text-sm font-semibold text-white
+          hover:bg-yellow-800 active:scale-95 transition-all shadow-md"
+      (click)="buscar()">BUSCAR</button>
+
+    </div>
+
+  <div
+    *ngIf="resultados"
+    class="w-full max-w-md mt-6 rounded-xl border border-gray-200 bg-white p-6 shadow-lg space-y-3"
+  >
+    <h2 class="text-center text-lg font-semibold text-gray-800">
+      Resultados de la búsqueda
+    </h2>
+
+    <div class="flex justify-between text-sm text-gray-700">
+      <span class="font-medium">Archivos encontrados</span>
+      <span class="font-semibold">{{ resultados.archivos }}</span>
+    </div>
+
+    <div class="flex justify-between text-sm text-gray-700">
+      <span class="font-medium">Tamaño aprox</span>
+      <span class="font-semibold">{{ resultados.tamanio }}</span>
+    </div>
+
+    <div class="flex justify-between text-sm text-gray-700">
+      <span class="font-medium">Tiempo aproximado</span>
+      <span class="font-semibold">{{ resultados.tiempo }}</span>
+    </div>
   </div>
 
-  <div class="resultados" *ngIf="resultados">
-    <p><strong>Archivos encontrados:</strong> {{ resultados.archivos }}</p>
-    <p><strong>Tamaño aprox:</strong> {{ resultados.tamanio }}</p>
-    <p><strong>Tiempo aproximado:</strong> {{ resultados.tiempo }}</p>
-  </div>
-
-  <button class="confirmar" *ngIf="resultados" (click)="confirmarDescarga()">
+      
+  <button
+    *ngIf="resultados"
+    (click)="confirmarDescarga()"
+    class="w-full max-w-md mt-4 rounded-xl bg-yellow-700 py-3 text-sm font-semibold text-white
+      hover:bg-yellow-800 active:scale-95 transition-all shadow-md"
+  >
     CONFIRMAR DESCARGA
   </button>
-</div>
+  </div>
+</main>

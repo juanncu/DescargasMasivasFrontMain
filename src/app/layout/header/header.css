@@ -1,0 +1,17 @@
+.header {
+  background-color: #9F2241;
+  border-bottom: 1px solid #9F2241;
+  font-family: var(--font-app); 
+}
+
+nav a {
+  margin-left: 16px;
+  text-decoration: none;
+  color: #BCA986;
+  font-weight: 500;
+}
+
+h1{
+    color: #ffffff;
+    text-align: left;
+}

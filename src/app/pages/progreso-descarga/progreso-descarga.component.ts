@@ -16,9 +16,12 @@ export class ProgresoDescargaComponent implements OnInit {
   registros: RegistroDescarga[] = [];
   tiempoEstimado = 'Calculando...';
 
+  mostrarPopup=false;
+  urlDescarga='';
+
   constructor(
     private descargaService: DescargaFoliosService,
-    private cdr: ChangeDetectorRef   // 👈 CLAVE
+    private cdr: ChangeDetectorRef   // CLAVE
   ) {}
 
   ngOnInit(): void {
@@ -43,17 +46,25 @@ export class ProgresoDescargaComponent implements OnInit {
           this.progreso = evento.progreso;
           this.tiempoEstimado = this.calcularTiempo(evento.progreso);
 
-          // 🔥 FUERZA ACTUALIZACIÓN DE LA UI
+          // FUERZA ACTUALIZACIÓN DE LA UI
           this.cdr.detectChanges();
         }
       },
-      complete: () => {
-        this.registros.push({
-          estado: 'OK',
-          mensaje: 'Descarga finalizada'
-        });
-        this.cdr.detectChanges();
-      }
+
+
+complete: () => {
+  this.registros.push({
+    estado: 'OK',
+    mensaje: 'Descarga finalizada'
+  });
+
+  // URL del backend
+  this.urlDescarga = 'http://localhost:8080/descargas/resultado.zip';
+  this.mostrarPopup = true;
+
+  this.cdr.detectChanges();
+}
+
     });
   }
 
@@ -69,4 +80,16 @@ export class ProgresoDescargaComponent implements OnInit {
     const restante = 100 - progreso;
     return `${Math.round(restante * 0.7)} segundos restantes`;
   }
+
+
+cerrarPopup (){
+
+ this.mostrarPopup = false;
+
+}
+descargaArchivo() {
+  window.open(this.urlDescarga, '_blank');
+  this.mostrarPopup = false; 
+}
+
 }

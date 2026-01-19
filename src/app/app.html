@@ -1,32 +1,12 @@
-<div class="min-h-screen bg-gray-100 p-8">
-  
-  <header class="mb-8">
-    <h1 class="text-4xl font-bold text-red-900">
-      Descarga Masiva
-    </h1>
-    <p class="text-gray-600 mt-2">Cantidad de facturas</p>
-  </header>
+<app-header></app-header>
 
-  @if (errorMensaje) {
-    <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6">
-      <p class="font-bold">Error de conexión</p>
-      <p>{{ errorMensaje }}</p>
+<main class="main">
+  <div class="content">
+    <div class="left-side wx-full text-center pt-4">
+     <router-outlet></router-outlet>
+
     </div>
-  }
-
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-    
-    @for (item of datos; track $index) {
-      <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow duration-300">
-        <pre class="text-xs text-gray-700 overflow-auto">{{ item | json }}</pre>
-      </div>
-    } @empty {
-      <div class="col-span-3 text-center text-gray-500 py-10">
-        <p>Cargando datos o lista vacía...</p>
-      </div>
-    }
-
   </div>
-  
-  <router-outlet></router-outlet>
-</div>
+</main>
+
+
