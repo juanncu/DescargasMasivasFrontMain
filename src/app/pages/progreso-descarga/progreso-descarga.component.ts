@@ -16,24 +16,31 @@ export class ProgresoDescargaComponent implements OnInit {
   registros: RegistroDescarga[] = [];
   tiempoEstimado = 'Calculando...';
 
+  mostrarPopup = false;
+  urlDescarga = '';
+
   constructor(
     private descargaService: DescargaFoliosService,
     private selectDescarga: SelectDescarga,
-    private cdr: ChangeDetectorRef,
-    private zone: NgZone,
+    private cdr: ChangeDetectorRef, // CORREGIDO: Solo se declara una vez
+    private zone: NgZone
   ) {}
 
   ngOnInit(): void {
-    // Log inicial
-    this.registros.push({
-      estado: 'OK',
-      mensaje: 'Descarga delegación Calkiní iniciada...',
-    });
-
+    // Nos suscribimos para saber qué delegación se seleccionó
     this.selectDescarga.delegacion$.subscribe((delegacion) => {
       if (delegacion !== null) {
+        
+        // CORREGIDO: Usamos el nombre real de la variable, no texto fijo
+        this.registros.push({
+          estado: 'OK',
+          mensaje: `Descarga delegación ${delegacion} iniciada...`,
+        });
+
+        // Iniciamos la descarga
         this.descargaService.iniciarDescarga(delegacion).subscribe({
           next: (evento) => {
+            // Lógica de Archivos
             if (evento.tipo === 'ARCHIVO') {
               this.registros.push({
                 estado: evento.estado,
@@ -41,26 +48,39 @@ export class ProgresoDescargaComponent implements OnInit {
               });
             }
 
+            // Lógica de Progreso
             if (evento.tipo === 'PROGRESO') {
               let valor = evento.progreso;
-
               if (typeof valor === 'string') {
                 valor = valor.replace('%', '');
               }
-
+              
+              // Math.min/max es una excelente práctica aquí
               this.progreso = Math.min(100, Math.max(0, Number(valor)));
-
               this.tiempoEstimado = this.calcularTiempo(this.progreso);
-              //this.cdr.detectChanges();
             }
+            
+            // Actualizamos la vista manualmente por si acaso
+            this.cdr.detectChanges();
           },
-          // complete: () => {
-          //   this.registros.push({
-          //     estado: 'OK',
-          //     mensaje: 'Descarga finalizada',
-          //   });
-          //   this.cdr.detectChanges();
-          // },
+          error: (err) => {
+            console.error('Error en descarga', err);
+            this.registros.push({ estado: 'ERROR', mensaje: 'Ocurrió un error en la descarga' });
+            this.cdr.detectChanges();
+          },
+          complete: () => {
+            // CORREGIDO: Ahora este bloque está dentro del subscribe correctamente
+            this.registros.push({
+              estado: 'OK',
+              mensaje: 'Descarga finalizada',
+            });
+
+            // OJO: Esto sigue hardcodeado a localhost (te explico abajo)
+            this.urlDescarga = 'http://localhost:8080/descargas/resultado.zip';
+            this.mostrarPopup = true;
+
+            this.cdr.detectChanges();
+          },
         });
       }
     });
@@ -77,5 +97,14 @@ export class ProgresoDescargaComponent implements OnInit {
     if (progreso === 0) return 'Calculando...';
     const restante = 100 - progreso;
     return `${Math.round(restante * 0.7)} segundos restantes`;
+  }
+
+  cerrarPopup() {
+    this.mostrarPopup = false;
+  }
+
+  descargaArchivo() {
+    window.open(this.urlDescarga, '_blank');
+    this.mostrarPopup = false;
   }
 }

@@ -1,10 +1,79 @@
-<div class="progreso-wrapper contenedor">
-  <h3>Descargando archivos...</h3>
+<div class="min-h-screen flex items-center justify-center bg-gray-100">
+
+  <div class="w-full max-w-lg bg-white rounded-xl shadow-xl p-8 space-y-6">
+    
+    <h3 class="text-lg font-semibold text-gray-800 text-center">
+      Descargando archivos...
+    </h3>
+
+    <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+      <div
+        class="h-3 rounded-full transition-all duration-300"
+        [style.width.%]="progreso"
+        [style.background]="'var(--color-barra)'"
+        >
+      </div>
+    </div>
+
+    <p class="text-sm text-gray-500 text-center">
+      ⏱ {{ tiempoEstimado }}
+    </p>
+
+    <hr class="border-gray-200">
+
+    <h4 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">
+      Registro de actividad
+    </h4>
+
+    <div class="bg-black rounded-lg p-4 max-h-48 overflow-y-auto text-sm font-mono">
+      <div *ngFor="let r of registros"
+          [ngClass]="{
+            'text-green-400': r.estado === 'OK',
+            'text-red-400': r.estado === 'ERROR'
+          }">
+        [{{ r.estado }}] {{ r.mensaje }}
+      </div>
+    </div>
+
+  </div>
 
   <div class="barra">
     <!-- <div class="progreso" [style.width.%]="progreso"></div> -->
     <div class="progreso" [style.width]="progreso + '%'"></div>
     <div class="progreso" style="width: 50%; background: red; height: 100%"></div>
+</div>
+
+<div *ngIf="mostrarPopup"
+  class="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+
+  <div class="bg-white rounded-xl shadow-xl w-full max-w-md p-6 text-center space-y-4">
+
+    <h2 class="text-lg font-semibold text-gray-800">
+      ¡ Descarga terminada !
+    </h2>
+
+    <p class="text-sm text-gray-600">
+      Los archivos se descargaron correctamente.
+    </p>
+
+    <div class="flex justify-center gap-4 pt-4">
+      <button
+        class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
+        (click)="cerrarPopup()">
+        Cerrar
+      </button>
+
+      <button
+        class="px-4 py-2 bg-red-700 text-white rounded hover:bg-red-800"
+        (click)="descargaArchivo()">
+        Abrir
+      </button>
+    </div>
+
+    <p class="text-xs text-gray-500">
+      Para mostrar la ubicacion del archivo.
+    </p>
+
   </div>
 
   <p class="tiempo">⏱ {{ tiempoEstimado }}</p>

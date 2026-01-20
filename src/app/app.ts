@@ -5,11 +5,12 @@ import { ApiService } from './services/api';
 import { SelectDescarga } from './services/select-descarga';
 import { Subscription } from 'rxjs';
 import { WebSocketService } from './services/websocket';
+import { Header } from './layout/header/header';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet],
+  imports: [CommonModule, RouterOutlet, Header],
   templateUrl: './app.html',
 })
 export class App implements OnInit {
