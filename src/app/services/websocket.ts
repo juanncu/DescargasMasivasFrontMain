@@ -13,7 +13,7 @@ export class WebSocketService implements OnDestroy {
   constructor(private zone: NgZone) {}
 
   conectar(delegacionId: number) {
-    this.ws = new WebSocket(`ws://172.20.23.44:8000/socket/${delegacionId}`);
+    this.ws = new WebSocket(`ws://172.20.23.44:8000/socket/rar/${delegacionId}`);
 
     this.ws.onopen = () => {
       console.log('🟢 Conectado');
@@ -21,11 +21,14 @@ export class WebSocketService implements OnDestroy {
 
     this.ws.onmessage = (e) => {
       console.log('📩 Mensaje:', e.data);
-      //const data = JSON.parse(e.data);
-      // this.mensajesSubject.next(data);
-      this.zone.run(() => {
-        this.mensajesSubject.next(e.data);
-      });
+      try {
+        const data = JSON.parse(e.data); // 🔥 CLAVE
+        this.zone.run(() => {
+          this.mensajesSubject.next(data);
+        });
+      } catch (err) {
+        console.error('❌ Error parseando WS:', err);
+      }
     };
 
     this.ws.onclose = () => {

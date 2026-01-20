@@ -51,7 +51,7 @@ export class ProgresoDescargaComponent implements OnInit {
               this.progreso = Math.min(100, Math.max(0, Number(valor)));
 
               this.tiempoEstimado = this.calcularTiempo(this.progreso);
-              this.cdr.detectChanges();
+              //this.cdr.detectChanges();
             }
           },
           // complete: () => {
