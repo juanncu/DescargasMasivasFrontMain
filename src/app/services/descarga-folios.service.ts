@@ -8,7 +8,6 @@ import { WebSocketService } from './websocket';
 export class DescargaFoliosService {
   constructor(private wsService: WebSocketService) {}
 
-  // 🔹 Esto lo dejas tal cual
   buscarFolios(delegacion: string, filtro: string) {
     return {
       archivos: 1500,
@@ -17,7 +16,7 @@ export class DescargaFoliosService {
     };
   }
 
-  // (luego lo conectas al progreso)
+  // (conectado al progreso)
   descargar(delegacion: string) {
     console.log('Descargando delegación:', delegacion);
   }
@@ -25,7 +24,7 @@ export class DescargaFoliosService {
   //
   // iniciarDescarga(): Observable<any> {
   //   return new Observable((observer) => {
-  //     console.log('🟢 Observable iniciado');
+  //     console.log('Observable iniciado');
 
   //     const folios = ['FOL-001', 'FOL-002', 'FOL-003'];
   //     const tiposArchivo = ['recibo.pdf', 'cfdi.pdf', 'cfdi.xml'];
@@ -42,7 +41,7 @@ export class DescargaFoliosService {
 
   //       const error = Math.random() > 0.8;
 
-  //       // 📌 Evento de archivo (para el log)
+  //       // Evento de archivo (para el log)
   //       observer.next({
   //         tipo: 'ARCHIVO',
   //         folio: folio,
@@ -53,7 +52,7 @@ export class DescargaFoliosService {
 
   //       procesados++;
 
-  //       // 📊 Evento de progreso
+  //       // Evento de progreso
   //       observer.next({
   //         tipo: 'PROGRESO',
   //         progreso: Math.round((procesados / totalArchivos) * 100),

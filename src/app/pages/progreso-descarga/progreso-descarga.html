@@ -1,6 +1,7 @@
-<div class="min-h-screen flex items-center justify-center bg-gray-100">
 
-  <div class="w-full max-w-lg bg-white rounded-xl shadow-xl p-8 space-y-6">
+
+  <div class="min-h-screen flex items-center justify-center bg-gray-100">
+  <div class="w-full max-w-lg bg-white rounded-xl shadow-lg p-6 space-y-6 -mt-100">
     
     <h3 class="text-lg font-semibold text-gray-800 text-center">
       Descargando archivos...
@@ -35,8 +36,7 @@
       </div>
     </div>
 
-  </div>
-
+  
   <div class="barra">
     <!-- <div class="progreso" [style.width.%]="progreso"></div> -->
     <div class="progreso" [style.width]="progreso + '%'"></div>
@@ -87,4 +87,7 @@
       [{{ r.estado }}] {{ r.mensaje }}
     </div>
   </div>
+</div>
+</div>
+  
 </div>
