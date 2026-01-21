@@ -72,20 +72,30 @@ export class DescargaFoliosComponent implements OnInit {
     const delegacionId = Number(this.delegacionSeleccionada);
     const padronid = Number(this.padron);
     const estadoid = Number(this.estado);
-    const buscar = false;
 
-    this.selectDescarga.setFiltros({
+    const filtros = {
       padron: padronid || null,
       fechaInicio: this.fechaInicio || null,
       fechaFin: this.fechaFin || null,
       delegacion: delegacionId,
       estado: estadoid || null,
-    });
+    };
 
-    this.resultados = this.descargaService.buscarFolios(
-      this.delegacionSeleccionada,
-      this.filtroSeleccionado,
-    );
+    this.selectDescarga.setFiltros(filtros);
+
+    // Llamar con los filtros y suscribirse al Observable
+    this.descargaService
+      .buscarFolios(this.delegacionSeleccionada, this.filtroSeleccionado, filtros)
+      .subscribe({
+        next: (resultados) => {
+          this.resultados = resultados;
+          this.cd.detectChanges();
+        },
+        error: (error) => {
+          console.error('Error al buscar folios:', error);
+          alert('Error al buscar folios');
+        },
+      });
   }
 
   confirmarDescarga() {
