@@ -1,74 +1,115 @@
 <main class="bg-gray-100 flex justify-center">
   <div class="contenedor">
-
     <h2 class="text-center text-lg font-semibold mb-6">DESCARGA MASIVA DE FOLIOS</h2>
 
     <div class="bg-white w-full max-w-md rounded-lg shadow-md p-6">
+      <!-- padron -->
       <div class="form-group">
-        <label class="label block text-sm font-medium mb-1">
-        SELECCIONA UNA DELEGACION
-        </label>
-      <select [(ngModel)]="delegacionSeleccionada" name="delegacion">
-        <option value="">Seleccionar</option>
-        
-        <option *ngFor="let item of listaDelegaciones" [value]="item.Id">
-          {{ item.Id }} - {{ item.Nombre }}
-        </option>
-        
-      </select>
-    </div>
-
-    <div class="form-group">
-      <label class="label block text-sm font-medium mb-1">
-        FILTROS DE DESCARGA </label>
-
-        <select  class="w-full border rounded px-3 py-2" 
-          [(ngModel)]="filtroSeleccionado" name="filtro">
+        <label class="label block text-sm font-medium mb-1"> padron </label>
+        <select [(ngModel)]="padron" name="padron">
           <option value="">Seleccionar</option>
-          <option>Enero</option>
-          <option>Febrero</option>
-          <option>Anual</option>
+          <option [value]="1">Todas</option>
+          <option [value]="2">predial</option>
         </select>
       </div>
+      <!-- fecha inicio -->
+      <div class="form-group">
+        <label class="label block text-sm font-medium mb-1"> fecha de inicio </label>
+        <input [(ngModel)]="fechaInicio" [value]="2025 - 01 - 01" class="border" />
+        <!-- <select [(ngModel)]="fechaInicio" name="fechaInicio">
+          <option value="">Seleccionar</option>
+          <option [value]="1">Enero</option>
+          <option [value]="2">febrero</option>
+          <option [value]="3">marzo</option>
+          <option [value]="4">abril</option>
+          <option [value]="5">mayo</option>
+          <option [value]="6">junio</option>
+          <option [value]="7">julio</option>
+          <option [value]="8">agosto</option>
+          <option [value]="9">septiembre</option>
+          <option [value]="10">octubre</option>
+          <option [value]="11">noviembre</option>
+          <option [value]="12">diciembre</option>
+        </select> -->
+      </div>
 
-      <button  class="w-full max-w-md mt-4 rounded-xl bg-yellow-700 py-3 text-sm font-semibold text-white
-          hover:bg-yellow-800 active:scale-95 transition-all shadow-md"
-      (click)="buscar()">BUSCAR</button>
+      <!-- fecha fin  -->
+      <div class="form-group">
+        <label class="label block text-sm font-medium mb-1"> fecha fin </label>
+        <input [(ngModel)]="fechaFin" [value]="2025 - 01 - 03" class="border" />
+        <!-- <select [(ngModel)]="fechaFin" name="fechaInicio">
+          <option value="">Seleccionar</option>
+          <option [value]="1">Enero</option>
+          <option [value]="2">febrero</option>
+          <option [value]="3">marzo</option>
+          <option [value]="4">abril</option>
+          <option [value]="5">mayo</option>
+          <option [value]="6">junio</option>
+          <option [value]="7">julio</option>
+          <option [value]="8">agosto</option>
+          <option [value]="9">septiembre</option>
+          <option [value]="10">octubre</option>
+          <option [value]="11">noviembre</option>
+          <option [value]="12">diciembre</option>
+        </select> -->
+      </div>
+      <!-- delegacion -->
+      <div class="form-group">
+        <label class="label block text-sm font-medium mb-1"> SELECCIONA UNA DELEGACION </label>
+        <select [(ngModel)]="delegacionSeleccionada" name="delegacion">
+          <option value="">Seleccionar</option>
 
+          <option *ngFor="let item of listaDelegaciones" [value]="item.Id">
+            {{ item.Id }} - {{ item.Nombre }}
+          </option>
+        </select>
+      </div>
+      <!-- estado -->
+      <div class="form-group">
+        <label class="label block text-sm font-medium mb-1"> estado </label>
+        <select [(ngModel)]="estado" name="estado">
+          <option value="">Seleccionar</option>
+          <option [value]="1">Activo</option>
+          <option [value]="2">cancelar</option>
+          <option [value]="3">ambos</option>
+        </select>
+      </div>
+      <button
+        class="w-full max-w-md mt-4 rounded-xl bg-yellow-700 py-3 text-sm font-semibold text-white hover:bg-yellow-800 active:scale-95 transition-all shadow-md"
+        (click)="buscar()"
+      >
+        BUSCAR
+      </button>
     </div>
 
-  <div
-    *ngIf="resultados"
-    class="w-full max-w-md mt-6 rounded-xl border border-gray-200 bg-white p-6 shadow-lg space-y-3"
-  >
-    <h2 class="text-center text-lg font-semibold text-gray-800">
-      Resultados de la búsqueda
-    </h2>
+    <div
+      *ngIf="resultados"
+      class="w-full max-w-md mt-6 rounded-xl border border-gray-200 bg-white p-6 shadow-lg space-y-3"
+    >
+      <h2 class="text-center text-lg font-semibold text-gray-800">Resultados de la búsqueda</h2>
 
-    <div class="flex justify-between text-sm text-gray-700">
-      <span class="font-medium">Archivos encontrados</span>
-      <span class="font-semibold">{{ resultados.archivos }}</span>
+      <div class="flex justify-between text-sm text-gray-700">
+        <span class="font-medium">Archivos encontrados</span>
+        <span class="font-semibold">{{ resultados.archivos }}</span>
+      </div>
+
+      <div class="flex justify-between text-sm text-gray-700">
+        <span class="font-medium">Tamaño aprox</span>
+        <span class="font-semibold">{{ resultados.tamanio }}</span>
+      </div>
+
+      <div class="flex justify-between text-sm text-gray-700">
+        <span class="font-medium">Tiempo aproximado</span>
+        <span class="font-semibold">{{ resultados.tiempo }}</span>
+      </div>
     </div>
 
-    <div class="flex justify-between text-sm text-gray-700">
-      <span class="font-medium">Tamaño aprox</span>
-      <span class="font-semibold">{{ resultados.tamanio }}</span>
-    </div>
-
-    <div class="flex justify-between text-sm text-gray-700">
-      <span class="font-medium">Tiempo aproximado</span>
-      <span class="font-semibold">{{ resultados.tiempo }}</span>
-    </div>
-  </div>
-
-      
-  <button
-    *ngIf="resultados"
-    (click)="confirmarDescarga()"
-    class="w-full max-w-md mt-4 rounded-xl bg-yellow-700 py-3 text-sm font-semibold text-white
-      hover:bg-yellow-800 active:scale-95 transition-all shadow-md"
-  >
-    CONFIRMAR DESCARGA
-  </button>
+    <button
+      *ngIf="resultados"
+      (click)="confirmarDescarga()"
+      class="w-full max-w-md mt-4 rounded-xl bg-yellow-700 py-3 text-sm font-semibold text-white hover:bg-yellow-800 active:scale-95 transition-all shadow-md"
+    >
+      CONFIRMAR DESCARGA
+    </button>
   </div>
 </main>

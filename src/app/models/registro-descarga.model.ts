@@ -14,3 +14,11 @@ export interface RegistroFolio {
   folio: string;
   archivos: ArchivoDescarga[];
 }
+
+export interface FiltrosCFDI {
+  padron: number | null;
+  fechaInicio: string | null;
+  fechaFin: string | null;
+  delegacion: number | null;
+  estado: number | null;
+}

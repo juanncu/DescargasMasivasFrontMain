@@ -1,7 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DescargaFoliosService } from '../../services/descarga-folios.service';
-import { RegistroDescarga } from '../../models/registro-descarga.model';
+import { RegistroDescarga, FiltrosCFDI } from '../../models/registro-descarga.model';
 import { SelectDescarga } from '../../services/select-descarga';
 
 @Component({
@@ -23,22 +23,21 @@ export class ProgresoDescargaComponent implements OnInit {
     private descargaService: DescargaFoliosService,
     private selectDescarga: SelectDescarga,
     private cdr: ChangeDetectorRef, // CORREGIDO: Solo se declara una vez
-    private zone: NgZone
+    private zone: NgZone,
   ) {}
 
   ngOnInit(): void {
-    // Nos suscribimos para saber qué delegación se seleccionó
-    this.selectDescarga.delegacion$.subscribe((delegacion) => {
-      if (delegacion !== null) {
-        
-        // CORREGIDO: Usamos el nombre real de la variable, no texto fijo
+    // Nos suscribimos para saber qué filtros se seleccionaron
+    this.selectDescarga.filtros$.subscribe((filtros: FiltrosCFDI) => {
+      if (filtros.delegacion !== null) {
+        // Usamos el nombre real de la variable
         this.registros.push({
           estado: 'OK',
-          mensaje: `Descarga delegación ${delegacion} iniciada...`,
+          mensaje: `Descarga delegación ${filtros.delegacion} iniciada...`,
         });
 
         // Iniciamos la descarga
-        this.descargaService.iniciarDescarga(delegacion).subscribe({
+        this.descargaService.iniciarDescarga(filtros.delegacion).subscribe({
           next: (evento) => {
             // Lógica de Archivos
             if (evento.tipo === 'ARCHIVO') {
@@ -54,12 +53,12 @@ export class ProgresoDescargaComponent implements OnInit {
               if (typeof valor === 'string') {
                 valor = valor.replace('%', '');
               }
-              
+
               // Math.min/max es una excelente práctica aquí
               this.progreso = Math.min(100, Math.max(0, Number(valor)));
               this.tiempoEstimado = this.calcularTiempo(this.progreso);
             }
-            
+
             // Actualizamos la vista manualmente por si acaso
             this.cdr.detectChanges();
           },
