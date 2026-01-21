@@ -1,8 +1,10 @@
-import { Component, OnInit, ChangeDetectorRef, NgZone } from '@angular/core';
+import { Router } from '@angular/router';
+import { Component, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DescargaFoliosService } from '../../services/descarga-folios.service';
 import { RegistroDescarga } from '../../models/registro-descarga.model';
 import { SelectDescarga } from '../../services/select-descarga';
+import { WebSocketService } from '../../services/websocket'; // <--- 1. IMPORTANTE
 
 @Component({
   selector: 'app-progreso-descarga',
@@ -11,100 +13,107 @@ import { SelectDescarga } from '../../services/select-descarga';
   templateUrl: './progreso-descarga.html',
   styleUrls: ['./progreso-descarga.css'],
 })
-export class ProgresoDescargaComponent implements OnInit {
+export class ProgresoDescargaComponent implements OnInit, OnDestroy {
   progreso = 0;
   registros: RegistroDescarga[] = [];
   tiempoEstimado = 'Calculando...';
-
   mostrarPopup = false;
   urlDescarga = '';
 
   constructor(
     private descargaService: DescargaFoliosService,
     private selectDescarga: SelectDescarga,
-    private cdr: ChangeDetectorRef, // CORREGIDO: Solo se declara una vez
-    private zone: NgZone
+    private wsService: WebSocketService, // <--- 2. INYECTAR SERVICIO WS
+    private cdr: ChangeDetectorRef,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
-    // Nos suscribimos para saber qué delegación se seleccionó
     this.selectDescarga.delegacion$.subscribe((delegacion) => {
-      if (delegacion !== null) {
+      if (delegacion) {
+        const idDelegacion = Number(delegacion);
         
-        // CORREGIDO: Usamos el nombre real de la variable, no texto fijo
-        this.registros.push({
-          estado: 'OK',
-          mensaje: `Descarga delegación ${delegacion} iniciada...`,
-        });
+        // A. Iniciamos la conexión WebSocket PRIMERO
+        this.wsService.conectar(idDelegacion);
 
-        // Iniciamos la descarga
-        this.descargaService.iniciarDescarga(delegacion).subscribe({
-          next: (evento) => {
-            // Lógica de Archivos
-            if (evento.tipo === 'ARCHIVO') {
-              this.registros.push({
-                estado: evento.estado,
-                mensaje: `Folio ${evento.folio} - ${this.nombreArchivo(evento.archivo)}`,
+        // B. Nos suscribimos a los mensajes en tiempo real
+        this.wsService.mensajes$.subscribe({
+          next: (data) => {
+            // data es: {actual: 61, total: 2000, porcentaje: 3, factura: "..."}
+            
+            // 1. Actualizar barra de progreso
+            this.progreso = data.porcentaje;
+
+            // 2. Agregar al registro (Log)
+            // Solo agregamos si hay un número de factura
+            if (data.factura) {
+              this.registros.unshift({ // 'unshift' pone el más nuevo arriba
+                estado: 'OK',
+                mensaje: `[${data.actual}/${data.total}] Procesando factura: ${data.factura}`
               });
             }
 
-            // Lógica de Progreso
-            if (evento.tipo === 'PROGRESO') {
-              let valor = evento.progreso;
-              if (typeof valor === 'string') {
-                valor = valor.replace('%', '');
-              }
-              
-              // Math.min/max es una excelente práctica aquí
-              this.progreso = Math.min(100, Math.max(0, Number(valor)));
-              this.tiempoEstimado = this.calcularTiempo(this.progreso);
+            // 3. Calcular tiempo estimado
+            this.tiempoEstimado = this.calcularTiempo(data.actual, data.total);
+
+            // 4. Detectar fin (cuando llega al 100%)
+            if (this.progreso >= 100) {
+              this.finalizarDescarga();
             }
-            
-            // Actualizamos la vista manualmente por si acaso
-            this.cdr.detectChanges();
-          },
-          error: (err) => {
-            console.error('Error en descarga', err);
-            this.registros.push({ estado: 'ERROR', mensaje: 'Ocurrió un error en la descarga' });
-            this.cdr.detectChanges();
-          },
-          complete: () => {
-            // CORREGIDO: Ahora este bloque está dentro del subscribe correctamente
-            this.registros.push({
-              estado: 'OK',
-              mensaje: 'Descarga finalizada',
-            });
-
-            // OJO: Esto sigue hardcodeado a localhost (te explico abajo)
-            this.urlDescarga = 'http://localhost:8080/descargas/resultado.zip';
-            this.mostrarPopup = true;
 
             this.cdr.detectChanges();
           },
+          error: (err) => console.error('Error WS:', err)
+        });
+
+        this.registros.push({
+          estado: 'OK',
+          mensaje: `Iniciando descarga para delegación ${delegacion}...`,
+        });
+
+        // C. Disparamos la petición HTTP para que el backend empiece a trabajar
+        // (El backend responderá por el WebSocket que ya conectamos arriba)
+        this.descargaService.iniciarDescarga(delegacion).subscribe({
+            error: (e) => {
+                console.error("Error al iniciar proceso:", e);
+                this.registros.push({ estado: 'ERROR', mensaje: 'No se pudo iniciar el proceso.' });
+            }
         });
       }
     });
   }
 
-  nombreArchivo(archivo: string): string {
-    if (archivo.includes('recibo')) return 'Recibo';
-    if (archivo.includes('cfdi.pdf')) return 'CFDI';
-    if (archivo.includes('cfdi.xml')) return 'XML';
-    return archivo;
+  calcularTiempo(actual: number, total: number): string {
+    if (actual === 0) return 'Calculando...';
+    // Lógica simple: si procesamos 'actual' facturas en X tiempo...
+    const pendientes = total - actual;
+    // Esto es un estimado visual, puedes ajustarlo
+    return `${pendientes} archivos pendientes`;
   }
 
-  calcularTiempo(progreso: number): string {
-    if (progreso === 0) return 'Calculando...';
-    const restante = 100 - progreso;
-    return `${Math.round(restante * 0.7)} segundos restantes`;
+  finalizarDescarga() {
+    this.registros.unshift({ estado: 'OK', mensaje: '¡Descarga Completa!' });
+    // Ajusta la IP aquí si es necesario
+    this.urlDescarga = 'http://172.20.23.41:8000/descargas/resultado.zip'; 
+    this.mostrarPopup = true;
   }
 
   cerrarPopup() {
     this.mostrarPopup = false;
+    // A. Cortamos la conexión con el servidor (Detiene la "ejecución")
+    this.wsService.cerrar(); 
+    
+    // B. Regresamos a la pantalla de selección (Inicio)
+    // Asumiendo que tu ruta principal es '' o '/'
+    this.router.navigate(['/']);
   }
 
   descargaArchivo() {
     window.open(this.urlDescarga, '_blank');
-    this.mostrarPopup = false;
+  }
+
+  ngOnDestroy() {
+    // Importante desconectar al salir de la pantalla
+    this.wsService.cerrar();
   }
 }
