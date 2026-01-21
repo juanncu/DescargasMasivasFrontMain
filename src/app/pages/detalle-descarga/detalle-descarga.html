@@ -1,0 +1,53 @@
+<div class="detalle-wrapper">
+
+    <button class="btn-volver" (click)="volver()">
+  ⬅ Volver al historial
+</button>
+    
+  <h2>
+    Detalle de descarga
+    <span class="estado"
+      [class.ok]="detalle.estado === 'COMPLETADO'"
+      [class.error]="detalle.estado !== 'COMPLETADO'">
+      {{ detalle.estado }}
+    </span>
+  </h2>
+
+  <!-- Tarjetas resumen -->
+  <div class="cards">
+    <div class="card">📄 Folios<br><strong>{{ detalle.folios }}</strong></div>
+    <div class="card">📦 Archivos<br><strong>{{ detalle.archivos }}</strong></div>
+    <div class="card error">❌ Errores<br><strong>{{ detalle.errores }}</strong></div>
+    <div class="card">⏱️ Tiempo<br><strong>{{ detalle.tiempo }}</strong></div>
+  </div>
+
+  <!-- Información -->
+  <div class="info">
+    <p><strong>Delegación:</strong> {{ detalle.delegacion }}</p>
+    <p><strong>Mes:</strong> {{ detalle.mes }}</p>
+    <p><strong>Ruta:</strong> {{ detalle.ruta }}</p>
+    <p><strong>Inicio:</strong> {{ detalle.inicio }}</p>
+    <p><strong>Fin:</strong> {{ detalle.fin }}</p>
+    <p><strong>Tamaño:</strong> {{ detalle.tamanio }}</p>
+  </div>
+
+  <!-- Log -->
+  <h3>Registro de actividad</h3>
+
+  <div class="log">
+    <div *ngFor="let r of detalle.registros"
+         class="log-item"
+         [class.OK]="r.estado === 'OK'"
+         [class.ERROR]="r.estado === 'ERROR'">
+      [{{ r.estado }}] {{ r.mensaje }}
+    </div>
+  </div>
+
+  <!-- Acciones -->
+  <div class="acciones">
+    <button>🔄 Reintentar errores</button>
+    <button>📂 Abrir carpeta</button>
+    <button>📄 Exportar log</button>
+  </div>
+
+</div>

@@ -1,0 +1,42 @@
+<div class="contenedor-historial">
+  <div class="acciones-superiores">
+    <button class="btn-regresar" routerLink="/main">
+      ← Volver a Descarga de Folios
+    </button>
+  </div>
+
+<h2 class="titulo">Historial de descargas</h2>
+
+<div class="lista">
+
+  <div class="item" *ngFor="let item of historial">
+
+
+    <div class="fecha">
+      {{ item.fechaLabel }}
+      <span class="hace">{{ item.hace }}</span>
+    </div>
+
+    <div class="contenido">
+      <div>
+        <strong>Delegación:</strong> {{ item.delegacion }} <br>
+        <strong>Mes:</strong> {{ item.mes }} <br>
+        <strong>Archivos:</strong> {{ item.archivos }}
+      </div>
+
+      <div class="lado-derecho">
+        <span class="tamanio">{{ item.tamanio }}</span>
+        <span *ngIf="item.huboErrores" class="error">
+          ⚠ Con errores
+        </span>
+
+        <button [routerLink]="['/detalle-descarga', item.id]">
+           Ver Detalle
+        </button>
+
+      </div>
+    </div>
+
+  </div>
+
+</div>

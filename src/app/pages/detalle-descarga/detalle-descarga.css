@@ -1,0 +1,65 @@
+.detalle-wrapper {
+  max-width: 900px;
+  margin: auto;
+}
+
+.estado {
+  font-size: 14px;
+  margin-left: 10px;
+}
+
+.estado.ok { color: green; }
+.estado.error { color: orange; }
+
+.cards {
+  display: flex;
+  gap: 15px;
+  margin: 20px 0;
+}
+
+.card {
+  flex: 1;
+  padding: 15px;
+  border-radius: 8px;
+  background: #f5f5f5;
+  text-align: center;
+}
+
+.card.error {
+  background: #ffe5e5;
+}
+
+.info p {
+  margin: 4px 0;
+}
+
+.log {
+  background: #111;
+  color: #eee;
+  padding: 10px;
+  max-height: 250px;
+  overflow-y: auto;
+  font-family: monospace;
+}
+
+.log-item {
+  margin-bottom: 4px;
+}
+
+.OK { color: #4caf50; }
+.ERROR { color: #f44336; }
+
+.acciones {
+  margin-top: 20px;
+  display: flex;
+  gap: 10px;
+}
+
+.btn-volver {
+  background: none;
+  border: none;
+  color: #1976d2;
+  cursor: pointer;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
