@@ -78,7 +78,7 @@ export class ProgresoDescargaComponent implements OnInit, OnDestroy {
         });
 
         // 3. Iniciamos el proceso en el Backend (HTTP)
-        this.descargaService.iniciarDescarga(delegacionId.toString()).subscribe({
+        this.descargaService.iniciarDescarga(delegacionId).subscribe({
             error: (e: any) => {
                 console.error("Error al iniciar proceso:", e);
                 this.registros.push({ estado: 'ERROR', mensaje: 'No se pudo iniciar el proceso.' });
