@@ -16,6 +16,10 @@
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
+.item:hover {
+  background-color: #d3d4d8;
+}
+
 /* Fila de fecha */
 .fila-superior {
   display: flex;
