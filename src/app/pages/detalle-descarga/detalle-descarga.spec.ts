@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { MatIconModule } from '@angular/material/icon';
 import { DetalleDescarga } from './detalle-descarga';
 
 describe('DetalleDescarga', () => {
@@ -8,7 +8,7 @@ describe('DetalleDescarga', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [DetalleDescarga]
+      imports: [DetalleDescarga, MatIconModule]
     })
     .compileComponents();
 
@@ -21,3 +21,5 @@ describe('DetalleDescarga', () => {
     expect(component).toBeTruthy();
   });
 });
+
+

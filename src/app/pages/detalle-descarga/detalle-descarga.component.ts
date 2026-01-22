@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   standalone: true,
@@ -19,8 +20,8 @@ export class DetalleDescarga implements OnInit {
     mes: 'Enero 2026',
     estado: 'COMPLETADO_CON_ERRORES',
     ruta: 'C:/Recibos/Calkini/Enero',
-    inicio: '18/01/2026 10:30',
-    fin: '18/01/2026 10:35',
+    inicio: '18/01/2026 10:30 AM',
+    fin: '18/01/2026 10:35 AM',
     tiempo: '5 minutos',
     tamanio: '5 GB',
     folios: 1500,

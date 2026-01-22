@@ -1,11 +1,12 @@
+
+  <button class="btn-volver" (click)="volver()">
+    ← Volver al historial
+  </button>
+
 <div class="detalle-wrapper">
 
-    <button class="btn-volver" (click)="volver()">
-  ⬅ Volver al historial
-</button>
-    
-  <h2>
-    Detalle de descarga
+  <h2 class="titulo">
+    Detalle de la descarga
     <span class="estado"
       [class.ok]="detalle.estado === 'COMPLETADO'"
       [class.error]="detalle.estado !== 'COMPLETADO'">
@@ -13,41 +14,66 @@
     </span>
   </h2>
 
-  <!-- Tarjetas resumen -->
+  <!-- Cards resumen -->
   <div class="cards">
-    <div class="card">📄 Folios<br><strong>{{ detalle.folios }}</strong></div>
-    <div class="card">📦 Archivos<br><strong>{{ detalle.archivos }}</strong></div>
-    <div class="card error">❌ Errores<br><strong>{{ detalle.errores }}</strong></div>
-    <div class="card">⏱️ Tiempo<br><strong>{{ detalle.tiempo }}</strong></div>
+    <div class="card">
+      <mat-icon class="card-icon">description</mat-icon>
+      <p>Folios</p>
+      <strong>{{ detalle.folios }}</strong>
+    </div>
+
+    <div class="card">
+        <mat-icon class="card-icon">inventory_2</mat-icon>
+      <p>Archivos</p>
+      <strong>{{ detalle.archivos }}</strong>
+    </div>
+
+    <div class="card card-error">
+      <mat-icon class="card-icon error">error</mat-icon>
+      <p>Errores</p>
+      <strong>{{ detalle.errores }}</strong>
+    </div>
+
+    <div class="card">
+      ⏱
+      <p>Tiempo</p>
+      <strong>{{ detalle.tiempo }}</strong>
+    </div>
   </div>
 
   <!-- Información -->
-  <div class="info">
-    <p><strong>Delegación:</strong> {{ detalle.delegacion }}</p>
-    <p><strong>Mes:</strong> {{ detalle.mes }}</p>
-    <p><strong>Ruta:</strong> {{ detalle.ruta }}</p>
-    <p><strong>Inicio:</strong> {{ detalle.inicio }}</p>
-    <p><strong>Fin:</strong> {{ detalle.fin }}</p>
-    <p><strong>Tamaño:</strong> {{ detalle.tamanio }}</p>
-  </div>
+  <div class="info-box">
+    <div class="info-header">
+      Delegación {{ detalle.delegacion }}
+    </div>
 
-  <!-- Log -->
-  <h3>Registro de actividad</h3>
+    <div class="info-content">
+      <p><strong>Mes:</strong> {{ detalle.mes }}</p>
+      <p><strong>Ruta:</strong> {{ detalle.ruta }}</p>
+      <p><strong>Inicio:</strong> {{ detalle.inicio }}</p>
+      <p><strong>Fin:</strong> {{ detalle.fin }}</p>
+      <p><strong>Tamaño:</strong> {{ detalle.tamanio }}</p>
+    </div>
 
-  <div class="log">
-    <div *ngFor="let r of detalle.registros"
-         class="log-item"
-         [class.OK]="r.estado === 'OK'"
-         [class.ERROR]="r.estado === 'ERROR'">
-      [{{ r.estado }}] {{ r.mensaje }}
+    <h3>Registro de actividad</h3>
+
+    <div class="log">
+      <div *ngFor="let r of detalle.registros"
+           class="log-item"
+           [class.OK]="r.estado === 'OK'"
+           [class.ERROR]="r.estado === 'ERROR'">
+        [{{ r.estado }}] {{ r.mensaje }}
+      </div>
     </div>
   </div>
 
   <!-- Acciones -->
   <div class="acciones">
-    <button>🔄 Reintentar errores</button>
-    <button>📂 Abrir carpeta</button>
-    <button>📄 Exportar log</button>
+    <button class="btn retry">
+       <mat-icon>refresh</mat-icon>
+    </button>
+    <button class="btn open">📂 Abrir carpeta</button>
+    <button class="btn export">📄 Exportar log</button>
   </div>
 
 </div>
