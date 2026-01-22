@@ -16,6 +16,6 @@ export class ApiService {
   }
 
   getMunicipios(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/cfdis/municipios`);
+    return this.http.get<any[]>(`${this.apiUrl}/cfdis/mu nicipios`);
   }
 }

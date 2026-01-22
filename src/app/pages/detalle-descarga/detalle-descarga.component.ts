@@ -1,9 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
 
 @Component({
   standalone: true,
+ imports: [CommonModule],
   selector: 'app-detalle-descarga',
   templateUrl: './detalle-descarga.html',
   styleUrls: ['./detalle-descarga.css']
