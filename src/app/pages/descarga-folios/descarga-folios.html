@@ -1,74 +1,78 @@
-<main class="bg-gray-100 flex justify-center">
-  <div class="contenedor">
+<main class="main-container">
+  <h2 class="main-title">DESCARGA MASIVA DE FOLIOS</h2>
 
-    <h2 class="text-center text-lg font-semibold mb-6">DESCARGA MASIVA DE FOLIOS</h2>
+  <div class="card-descarga">
+    <h3 class="section-subtitle">Filtros de descarga:</h3>
 
-    <div class="bg-white w-full max-w-md rounded-lg shadow-md p-6">
-      <div class="form-group">
-        <label class="label block text-sm font-medium mb-1">
-        SELECCIONA UNA DELEGACION
-        </label>
-      <select [(ngModel)]="delegacionSeleccionada" name="delegacion">
+    <div class="filter-row">
+      <span class="filter-label">Estado</span>
+      <div class="options-group">
+        <label><input type="radio" name="estado" [(ngModel)]="estadoSeleccionado" value="Activo"> Activo</label>
+        <label><input type="radio" name="estado" [(ngModel)]="estadoSeleccionado" value="Cancelar"> Cancelar</label>
+        <label><input type="radio" name="estado" [(ngModel)]="estadoSeleccionado" value="Ambos"> Ambos</label>
+      </div>
+    </div>
+
+    <div class="filter-row">
+      <span class="filter-label">Padrón</span>
+      <div class="options-group">
+        <label><input type="radio" name="padron" [(ngModel)]="padronSeleccionado" value="Todas"> Todas</label>
+        <label><input type="radio" name="padron" [(ngModel)]="padronSeleccionado" value="Predial"> Predial</label>
+      </div>
+    </div>
+
+    <div class="grid-meses">
+      <div class="input-group">
+        <label>Mes de Inicio:</label>
+        <select [(ngModel)]="mesInicio" class="custom-select">
+          <option value="">Seleccionar</option>
+          <option *ngFor="let m of meses" [value]="m.id">{{ m.id }}-{{ m.nombre }}</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <label>Mes Final:</label>
+        <select [(ngModel)]="mesFinal" class="custom-select">
+          <option value="">Seleccionar</option>
+          <option *ngFor="let m of meses" [value]="m.id">{{ m.id }}-{{ m.nombre }}</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="input-group small-input">
+      <label>Año:</label>
+      <input type="number" [(ngModel)]="anio" class="custom-input">
+    </div>
+
+    <div class="input-group full-width">
+      <label class="large-label">Seleccione una Delegación:</label>
+      <select [(ngModel)]="delegacionSeleccionada" class="custom-select">
         <option value="">Seleccionar</option>
-        
         <option *ngFor="let item of listaDelegaciones" [value]="item.Id">
           {{ item.Id }} - {{ item.Nombre }}
         </option>
-        
       </select>
     </div>
 
-    <div class="form-group">
-      <label class="label block text-sm font-medium mb-1">
-        FILTROS DE DESCARGA </label>
-
-        <select  class="w-full border rounded px-3 py-2" 
-          [(ngModel)]="filtroSeleccionado" name="filtro">
-          <option value="">Seleccionar</option>
-          <option>Enero</option>
-          <option>Febrero</option>
-          <option>Anual</option>
-        </select>
-      </div>
-
-      <button  class="w-full max-w-md mt-4 rounded-xl bg-yellow-700 py-3 text-sm font-semibold text-white
-          hover:bg-yellow-800 active:scale-95 transition-all shadow-md"
-      (click)="buscar()">BUSCAR</button>
-
-    </div>
-
-  <div
-    *ngIf="resultados"
-    class="w-full max-w-md mt-6 rounded-xl border border-gray-200 bg-white p-6 shadow-lg space-y-3"
-  >
-    <h2 class="text-center text-lg font-semibold text-gray-800">
-      Resultados de la búsqueda
-    </h2>
-
-    <div class="flex justify-between text-sm text-gray-700">
-      <span class="font-medium">Archivos encontrados</span>
-      <span class="font-semibold">{{ resultados.archivos }}</span>
-    </div>
-
-    <div class="flex justify-between text-sm text-gray-700">
-      <span class="font-medium">Tamaño aprox</span>
-      <span class="font-semibold">{{ resultados.tamanio }}</span>
-    </div>
-
-    <div class="flex justify-between text-sm text-gray-700">
-      <span class="font-medium">Tiempo aproximado</span>
-      <span class="font-semibold">{{ resultados.tiempo }}</span>
+    <div class="button-container">
+      <button (click)="buscar()" class="btn-buscar">BUSCAR</button>
     </div>
   </div>
+  <div *ngIf="resultados" class="resultados-container">
+  <h3 class="resultados-titulo">Resultados de la busqueda:</h3>
+  
+  <div class="resultados-grid">
+    <p><strong>Archivos encontrados:</strong> {{ resultados.archivos }}</p>
+    <p><strong>Tamaño aprox:</strong> {{ resultados.tamanio }}</p>
+  </div>
+  
+  <p class="resultado-tiempo">
+    <strong>Tiempo aproximado de descarga:</strong> {{ resultados.tiempo }}
+  </p>
+</div>
 
-      
-  <button
-    *ngIf="resultados"
-    (click)="confirmarDescarga()"
-    class="w-full max-w-md mt-4 rounded-xl bg-yellow-700 py-3 text-sm font-semibold text-white
-      hover:bg-yellow-800 active:scale-95 transition-all shadow-md"
-  >
+<div *ngIf="resultados" class="button-container">
+  <button (click)="confirmarDescarga()" class="btn-confirmar">
     CONFIRMAR DESCARGA
   </button>
-  </div>
+</div>
 </main>

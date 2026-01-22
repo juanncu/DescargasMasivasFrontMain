@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
 })
 export class ApiService {
   private http = inject(HttpClient);
-  private apiUrl = 'http://172.20.23.44:8000';
+  private apiUrl = 'http://172.20.23.41:8000';
 
   getCfdis(idDelegacion: number): Observable<any> {
     const params = new HttpParams().set('delegacion_ids', idDelegacion.toString());
@@ -16,6 +16,6 @@ export class ApiService {
   }
 
   getMunicipios(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/cfdis/mu nicipios`);
+    return this.http.get<any[]>(`${this.apiUrl}/cfdis/municipios`);
   }
 }
