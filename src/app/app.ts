@@ -6,6 +6,7 @@ import { SelectDescarga } from './services/select-descarga';
 import { Subscription } from 'rxjs';
 import { WebSocketService } from './services/websocket';
 import { Header } from './layout/header/header';
+import { FiltrosCFDI } from './models/registro-descarga.model';
 
 @Component({
   selector: 'app-root',
@@ -26,10 +27,17 @@ export class App implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.selectDescarga.delegacion$.subscribe((delegacion) => {
-      if (delegacion !== null) {
-        console.log('Delegación recibida:', delegacion);
-        this.consumirApi(delegacion);
+    // this.selectDescarga.delegacion$.subscribe((delegacion) => {
+    //   if (delegacion !== null) {
+    //     console.log('Delegación recibida:', delegacion);
+    //     this.consumirApi(delegacion);
+    //   }
+    // });
+
+    this.selectDescarga.filtros$.subscribe((filtros) => {
+      if (filtros.delegacion !== null) {
+        console.log('Delegación recibida:', filtros);
+        this.consumirApi(filtros);
       }
     });
   }
@@ -39,8 +47,20 @@ export class App implements OnInit {
     this.wsService.cerrar();
   }
 
-  consumirApi(id: number) {
-    this.apiService.getCfdis(id).subscribe({
+  // consumirApi(id: number) {
+  //   this.apiService.getCfdis(id).subscribe({
+  //     next: (respuesta: any) => {
+  //       console.log('¡Facturas recibidas!', respuesta);
+  //       this.datos = Array.isArray(respuesta) ? respuesta : [respuesta];
+  //     },
+  //     error: (error: any) => {
+  //       console.error('Error:', error);
+  //       this.errorMensaje = `Error: ${error.status} - ${error.statusText}`;
+  //     },
+  //   });
+  // }
+  consumirApi(filtros: FiltrosCFDI) {
+    this.apiService.getCfdisConFiltros(filtros).subscribe({
       next: (respuesta: any) => {
         console.log('¡Facturas recibidas!', respuesta);
         this.datos = Array.isArray(respuesta) ? respuesta : [respuesta];

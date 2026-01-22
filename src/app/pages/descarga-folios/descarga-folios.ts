@@ -15,7 +15,6 @@ import { ApiService } from '../../services/api';
   providers: [DescargaFoliosService],
 })
 export class DescargaFoliosComponent implements OnInit {
-  
   // Inyecciones
   private descargaService = inject(DescargaFoliosService);
   private selectDescarga = inject(SelectDescarga);
@@ -25,51 +24,78 @@ export class DescargaFoliosComponent implements OnInit {
 
   // Variables
   delegacionSeleccionada = '';
+  fechaInicio = '';
+  fechaFin = '';
+  padron = '';
+  estado = '';
   filtroSeleccionado = '';
   resultados: any = null;
-  
+
   // Lista donde se guardan los municipios
-  listaDelegaciones: any[] = []; 
+  listaDelegaciones: any[] = [];
 
   constructor() {}
 
   ngOnInit() {
-    console.log("Iniciando carga de municipios...");
-    
+    console.log('Iniciando carga de municipios...');
+
     this.apiService.getMunicipios().subscribe({
       next: (respuesta: any) => {
-        
-        console.log("Respuesta completa del servidor:", respuesta);
+        console.log('Respuesta completa del servidor:', respuesta);
 
         if (respuesta && respuesta.municipios) {
           this.listaDelegaciones = respuesta.municipios;
-          console.log("Lista extraída correctamente:", this.listaDelegaciones);
+          console.log('Lista extraída correctamente:', this.listaDelegaciones);
         } else {
           this.listaDelegaciones = respuesta;
         }
         this.cd.detectChanges();
       },
       error: (error) => {
-        console.error("Error cargando municipios:", error);
-      }
+        console.error('Error cargando municipios:', error);
+      },
     });
   }
 
   buscar() {
-    if (!this.delegacionSeleccionada || !this.filtroSeleccionado) {
-      alert('Seleccione delegación y filtro');
+    if (
+      !this.padron ||
+      !this.fechaInicio ||
+      !this.fechaFin ||
+      !this.delegacionSeleccionada ||
+      !this.estado
+    ) {
+      alert('Falto seleccionar algun filtro');
       return;
     }
 
     const delegacionId = Number(this.delegacionSeleccionada);
-    const buscar = false;
+    const padronid = Number(this.padron);
+    const estadoid = Number(this.estado);
 
-    this.resultados = this.descargaService.buscarFolios(
-      this.delegacionSeleccionada,
-      this.filtroSeleccionado,
-    );
+    const filtros = {
+      padron: padronid || null,
+      fechaInicio: this.fechaInicio || null,
+      fechaFin: this.fechaFin || null,
+      delegacion: delegacionId,
+      estado: estadoid || null,
+    };
 
-    this.selectDescarga.setDelegacion(delegacionId);
+    this.selectDescarga.setFiltros(filtros);
+
+    // Llamar con los filtros y suscribirse al Observable
+    this.descargaService
+      .buscarFolios(this.delegacionSeleccionada, this.filtroSeleccionado, filtros)
+      .subscribe({
+        next: (resultados) => {
+          this.resultados = resultados;
+          this.cd.detectChanges();
+        },
+        error: (error) => {
+          console.error('Error al buscar folios:', error);
+          alert('Error al buscar folios');
+        },
+      });
   }
 
   confirmarDescarga() {

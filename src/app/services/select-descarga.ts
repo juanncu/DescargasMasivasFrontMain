@@ -19,20 +19,24 @@
 
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
+import { FiltrosCFDI } from '../models/registro-descarga.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class SelectDescarga {
-  private delegacionSubject = new BehaviorSubject<number | null>(null);
+  private filtrosSubject = new BehaviorSubject<FiltrosCFDI>({
+    padron: null,
+    fechaInicio: null,
+    fechaFin: null,
+    delegacion: null,
+    estado: null,
+  });
 
-  delegacion$ = this.delegacionSubject.asObservable();
+  filtros$ = this.filtrosSubject.asObservable();
 
-  setDelegacion(delegacion: number) {
-    this.delegacionSubject.next(delegacion);
-  }
-
-  getDelegacionActual(): number | null {
-    return this.delegacionSubject.value;
+  setFiltros(filtros: Partial<FiltrosCFDI>) {
+    const actual = this.filtrosSubject.value;
+    this.filtrosSubject.next({ ...actual, ...filtros });
   }
 }
