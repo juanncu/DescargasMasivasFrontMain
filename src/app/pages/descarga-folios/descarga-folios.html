@@ -82,8 +82,21 @@
       </button>
     </div>
 
+    <!-- Mensaje de carga con animación -->
     <div
-      *ngIf="resultados"
+      *ngIf="cargando"
+      class="w-full max-w-md mt-6 rounded-xl bg-gray-50 border border-[#9F2241] p-6 text-center"
+    >
+      <div class="flex justify-center mb-3">
+        <div
+          class="animate-spin h-6 w-6 border-4 border-red-500 border-t-red-800 rounded-full"
+        ></div>
+      </div>
+      <p class="text-black font-medium">Espere, se está consultando la información solicitada</p>
+    </div>
+
+    <div
+      *ngIf="resultados && !cargando"
       class="w-full max-w-md mt-6 rounded-xl border border-gray-200 bg-white p-6 shadow-lg space-y-3"
     >
       <h2 class="text-center text-lg font-semibold text-gray-800">Resultados de la búsqueda</h2>

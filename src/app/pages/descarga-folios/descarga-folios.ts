@@ -30,6 +30,7 @@ export class DescargaFoliosComponent implements OnInit {
   estado = '';
   filtroSeleccionado = '';
   resultados: any = null;
+  cargando = false;
 
   // Lista donde se guardan los municipios
   listaDelegaciones: any[] = [];
@@ -83,16 +84,20 @@ export class DescargaFoliosComponent implements OnInit {
 
     this.selectDescarga.setFiltros(filtros);
 
+    this.cargando = true;
+
     // Llamar con los filtros y suscribirse al Observable
     this.descargaService
       .buscarFolios(this.delegacionSeleccionada, this.filtroSeleccionado, filtros)
       .subscribe({
         next: (resultados) => {
           this.resultados = resultados;
+          this.cargando = false;
           this.cd.detectChanges();
         },
         error: (error) => {
           console.error('Error al buscar folios:', error);
+          this.cargando = false;
           alert('Error al buscar folios');
         },
       });
