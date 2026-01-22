@@ -124,4 +124,11 @@
   background-color: #f5f5f5;
   border-color: #b61515;
   border-radius: 30px;
+  background-color: #ffffff;
+  border-color: #ffffff;
+  color: #BCA986;
+}
+
+#mat-icon{
+  padding-top: 5px;
 }
