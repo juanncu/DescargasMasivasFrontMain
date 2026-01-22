@@ -3,11 +3,17 @@ import { CommonModule } from '@angular/common';
 import { HistorialDescarga } from '../../models/historial.descarga.model';
 import { Router } from '@angular/router';
 import { RouterLink } from '@angular/router';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatTooltipModule } from '@angular/material/tooltip';
+
 
 @Component({
   selector: 'app-historial-descargas',
   standalone: true,
-  imports: [RouterLink, CommonModule],
+  imports: [RouterLink, CommonModule,    MatIconModule,
+      MatButtonModule,
+      MatTooltipModule ],
   templateUrl: './historial-descargas.html',
   styleUrls: ['./historial-descargas.css']
 })

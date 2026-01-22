@@ -1,7 +1,9 @@
+
+
 <div class="contenedor-historial">
   <div class="acciones-superiores">
     <button class="btn-regresar" routerLink="/main">
-      ← Volver a Descarga de Folios
+       <mat-icon id="mat-icon"> home  </mat-icon> |  Descargar nuevos folios 
     </button>
   </div>
 
@@ -9,34 +11,47 @@
 
 <div class="lista">
 
-  <div class="item" *ngFor="let item of historial">
+ <div class="item" *ngFor="let item of historial">
 
+  <!-- FILA SUPERIOR -->
+  <div class="fila-superior">
+    <span class="fecha-label">{{ item.fechaLabel }}</span>
+    <span class="hace">{{ item.hace }}</span>
+  </div>
 
-    <div class="fecha">
-      {{ item.fechaLabel }}
-      <span class="hace">{{ item.hace }}</span>
+  <!-- FILA PRINCIPAL -->
+  <div class="fila-principal">
+
+    <!-- IZQUIERDA -->
+    <div class="info-izquierda">
+      <div>
+        <span class="delegacion">Delegacion {{ item.delegacion }} , </span>
+        <span class="archivos">{{ item.archivos }} archivos</span>
+      </div>
+      <div class="mes">Mes: {{ item.mes }}</div>
     </div>
 
-    <div class="contenido">
-      <div>
-        <strong>Delegación:</strong> {{ item.delegacion }} <br>
-        <strong>Mes:</strong> {{ item.mes }} <br>
-        <strong>Archivos:</strong> {{ item.archivos }}
-      </div>
+    <!-- CENTRO -->
+    <div class="ruta">
+      Ruta: {{ item.ruta }}
+    </div>
 
-      <div class="lado-derecho">
-        <span class="tamanio">{{ item.tamanio }}</span>
-        <span *ngIf="item.huboErrores" class="error">
-          ⚠ Con errores
-        </span>
+    <!-- DERECHA -->
+    <div class="info-derecha">
+      <span class="tamanio">{{ item.tamanio }}</span>
 
-        <button [routerLink]="['/detalle-descarga', item.id]">
-           Ver Detalle
-        </button>
-
-      </div>
+      <button
+        mat-icon-button
+        class="btn-detalle"
+        [routerLink]="['/detalle-descarga', item.id]"
+        matTooltip = "Ver detalles"
+        aria-label="Ver detalles">
+       <mat-icon>visibility  </mat-icon>
+      </button>
     </div>
 
   </div>
+
+</div>
 
 </div>

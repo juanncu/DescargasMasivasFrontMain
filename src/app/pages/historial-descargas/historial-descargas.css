@@ -1,48 +1,97 @@
 .titulo {
   text-align: center;
   margin-bottom: 25px;
-}
-
-.lista {
-  max-width: 900px;
-  margin: auto;
+  text-transform: uppercase;
+  color: #AB9470;
 }
 
 .item {
-  border: 1px solid #bbb;
+  border: 1px solid #f3f4f6;
   border-radius: 6px;
-  padding: 12px;
-  margin-bottom: 15px;
+  padding: 10px;
+  margin: 14px;
+  margin-left: 10%;
+  margin-right: 10%;
   background: #f8f6f0;
-  display: flex;
-  flex-direction: column;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.fecha {
+/* Fila de fecha */
+.fila-superior {
   display: flex;
   justify-content: space-between;
+  font-size: 13px;
   font-weight: bold;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
 }
 
 .hace {
-  font-size: 12px;
-  color: #777;
+  color: #666;
+  font-weight: normal;
 }
 
-.contenido p {
-  margin: 2px 0;
+/* Fila principal */
+.fila-principal {
+  display: grid;
+  grid-template-columns: 2fr 3fr 1fr;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Izquierda */
+.info-izquierda {
   font-size: 14px;
 }
 
-.archivos {
-  color: #b00000;
+.delegacion {
+  color: #000000;
+  font-weight: bold;
+  margin-right: 6px;
 }
 
-.lado-derecho {
+.archivos {
+  color: #333;
+}
+
+.mes {
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+/* Centro */
+.ruta {
+  font-size: 12px;
+  color: #235B4E;
+  word-break: break-all;
+}
+
+/* Derecha */
+.info-derecha {
   display: flex;
-  justify-content: space-between;
-  margin-top: 6px;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.tamanio {
+  font-weight: bold;
+  font-size: 13px;
+}
+
+/* Botón detalles */
+
+
+.btn-detalle mat-icon {
+  font-size: 18px;
+  color: #444;
+}
+
+.btn-detalle:hover {
+  border-color: #000;
+}
+
+.btn-detalle:hover mat-icon {
+  color: #000;
 }
 
 .tamanio {
@@ -61,13 +110,14 @@
 }
 
 .btn-regresar {
-  background: transparent;
+  background: #BCA986;
   border: 1px solid #ccc;
+  margin-left: 4%;
   padding: 8px 16px;
   border-radius: 25px;
   cursor: pointer;
   font-size: 14px;
-  transition: background 0.3s;
+  color: #ffffff;
 }
 
 .btn-regresar:hover {
