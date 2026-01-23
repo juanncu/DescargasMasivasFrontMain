@@ -54,9 +54,6 @@
         <option value="">Seleccionar</option>
         <option *ngFor="let item of listaDelegaciones" [value]="item.Id">
           {{ item.Nombre }}
-        <option *ngFor="let item of listaDelegaciones" [value]="item.Id || item.id">
-          {{ item.Id || item.id }} - {{ item.Nombre || item.nombre }}
-        </option>
       </select>
     </div>
 
@@ -91,20 +88,4 @@
   </button>
 </div>
 
-  <div *ngIf="resultados" class="resultados-container">
-    <h3 class="resultados-titulo">Resultados de la búsqueda:</h3>
-    <div class="resultados-grid">
-      <p><strong>Archivos encontrados:</strong> {{ resultados.archivos }}</p>
-      <p><strong>Tamaño aprox:</strong> {{ resultados.tamanio }}</p>
-    </div>
-    <p class="resultado-tiempo">
-      <strong>Tiempo aproximado de descarga:</strong> {{ resultados.tiempo }}
-    </p>
-  </div>
-
-  <div *ngIf="resultados" class="button-container">
-    <button (click)="confirmarDescarga()" class="btn-confirmar">
-      CONFIRMAR DESCARGA
-    </button>
-  </div>
 </main>

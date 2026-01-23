@@ -17,12 +17,12 @@
 }
 
 .card-descarga {
-  background-color: #f8f6f0;
+  background-color: #ffffff;
   width: 100%;
   max-width: 600px;
-  border: 2px solid #f3f4f6;
+  border: 2px solid #fdfaf4;
   border-radius: 5px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
 }
 
 .info-header {
@@ -31,12 +31,14 @@
   border-radius: 5px 5px 0 0;
   color: #ffffff;
   padding: 10px;
+  padding-left: 30px;
   font-weight: 600;
   text-transform: uppercase;
 }
 .info-filtros{
   padding: 5%;
 }
+
 .section-subtitle {
   font-weight: bold;
   font-size: 1.1rem;
@@ -119,6 +121,8 @@
   font-size: 1.1rem;
   cursor: pointer;
   transition: all 0.2s;
+  border-radius: 3px;
+   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .btn-buscar:hover {
@@ -132,7 +136,7 @@
   box-shadow: 1px 1px 0px 0px rgb(114, 110, 110);
 }
 .resultados-container {
-  background-color: #f8f6f0;
+  background-color: #ffffff;
   width: 100%;
   max-width: 600px;
   margin-top: 20px;
@@ -167,6 +171,8 @@
   font-size: 1.1rem;
   cursor: pointer;
   transition: all 0.2s;
+  border-radius: 3px;
+   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
 }
 
 .btn-confirmar:hover {
