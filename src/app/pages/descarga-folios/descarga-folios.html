@@ -2,11 +2,16 @@
   <h2 class="main-title">DESCARGA MASIVA DE FOLIOS</h2>
 
   <div class="card-descarga">
-    <h3 class="section-subtitle">Filtros de descarga:</h3>
+
+        <div class="info-header">
+         <h3 class="section-subtitle">Filtros de descarga</h3>
+        </div>
+
+  <div class="info-filtros">
 
     <div class="filter-row">
-      <span class="filter-label">Estado</span>
-      <div class="options-group">
+      <span class="filter-label">Estado:</span>
+      <div class="options-group radio-borde">
         <label><input type="radio" name="estado" [(ngModel)]="estadoSeleccionado" value="Activo"> Activo</label>
         <label><input type="radio" name="estado" [(ngModel)]="estadoSeleccionado" value="Cancelar"> Cancelar</label>
         <label><input type="radio" name="estado" [(ngModel)]="estadoSeleccionado" value="Ambos"> Ambos</label>
@@ -14,8 +19,8 @@
     </div>
 
     <div class="filter-row">
-      <span class="filter-label">Padrón</span>
-      <div class="options-group">
+      <span class="filter-label">Padrón:</span>
+      <div class="options-group radio-borde">
         <label><input type="radio" name="padron" [(ngModel)]="padronSeleccionado" value="Todas"> Todas</label>
         <label><input type="radio" name="padron" [(ngModel)]="padronSeleccionado" value="Predial"> Predial</label>
       </div>
@@ -26,14 +31,14 @@
         <label>Mes de Inicio:</label>
         <select [(ngModel)]="mesInicio" class="custom-select">
           <option value="">Seleccionar</option>
-          <option *ngFor="let m of meses" [value]="m.id">{{ m.id }}-{{ m.nombre }}</option>
+          <option *ngFor="let m of meses" [value]="m.id">{{ m.nombre }}</option>
         </select>
       </div>
       <div class="input-group">
         <label>Mes Final:</label>
         <select [(ngModel)]="mesFinal" class="custom-select">
           <option value="">Seleccionar</option>
-          <option *ngFor="let m of meses" [value]="m.id">{{ m.id }}-{{ m.nombre }}</option>
+          <option *ngFor="let m of meses" [value]="m.id">{{ m.nombre }}</option>
         </select>
       </div>
     </div>
@@ -48,7 +53,7 @@
       <select [(ngModel)]="delegacionSeleccionada" class="custom-select">
         <option value="">Seleccionar</option>
         <option *ngFor="let item of listaDelegaciones" [value]="item.Id">
-          {{ item.Id }} - {{ item.Nombre }}
+          {{ item.Nombre }}
         </option>
       </select>
     </div>
@@ -57,19 +62,27 @@
       <button (click)="buscar()" class="btn-buscar">BUSCAR</button>
     </div>
   </div>
+
+  </div>
+
   <div *ngIf="resultados" class="resultados-container">
-  <h3 class="resultados-titulo">Resultados de la busqueda:</h3>
+
+        <div class="info-header">
+        <h3 class="resultados-titulo">Resultados de la busqueda:</h3>
+        </div>
   
+  <div class="info-filtros">
   <div class="resultados-grid">
-    <p><strong>Archivos encontrados:</strong> {{ resultados.archivos }}</p>
-    <p><strong>Tamaño aprox:</strong> {{ resultados.tamanio }}</p>
+    <p class="resultados-color"><strong>Archivos encontrados:</strong> {{ resultados.archivos }}</p>
+    <p class="resultados-color-3"><strong>Tamaño aprox:</strong> {{ resultados.tamanio }}</p>
   </div>
   
-  <p class="resultado-tiempo">
+  <p class="resultado-tiempo resultados-color-2">
     <strong>Tiempo aproximado de descarga:</strong> {{ resultados.tiempo }}
   </p>
 </div>
 
+</div>
 <div *ngIf="resultados" class="button-container">
   <button (click)="confirmarDescarga()" class="btn-confirmar">
     CONFIRMAR DESCARGA

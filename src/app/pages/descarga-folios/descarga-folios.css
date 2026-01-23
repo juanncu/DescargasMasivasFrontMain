@@ -4,8 +4,9 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-top: 40px;
+  padding-top: 5px;
   font-family: sans-serif;
+  padding-bottom: 5%;
 }
 
 .main-title {
@@ -16,19 +17,29 @@
 }
 
 .card-descarga {
-  background-color: white;
+  background-color: #f8f6f0;
   width: 100%;
   max-width: 600px;
-  padding: 30px;
-  border: 2px solid #333; /* Borde marcado como en el dibujo */
-  border-radius: 8px;
+  border: 2px solid #f3f4f6;
+  border-radius: 5px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
+.info-header {
+  background: #bca986;
+  border-color: #bca986;
+  border-radius: 5px 5px 0 0;
+  color: #ffffff;
+  padding: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+.info-filtros{
+  padding: 5%;
+}
 .section-subtitle {
   font-weight: bold;
   font-size: 1.1rem;
-  margin-bottom: 20px;
 }
 
 .filter-row {
@@ -45,6 +56,7 @@
 .options-group {
   display: flex;
   gap: 20px;
+
 }
 
 .options-group label {
@@ -76,7 +88,8 @@
 }
 
 .custom-select, .custom-input {
-  border: 2px solid #333;
+  border: 2px solid #ebdfdf;
+  background-color: #ebdfdf;
   border-radius: 4px;
   padding: 8px;
   font-size: 14px;
@@ -98,21 +111,20 @@
 }
 
 .btn-buscar {
-  background-color: #f9f9f9;
-  border: 2px solid #333;
+  background-color: #bca986;
+  border: 2px solid #bca986;
+  color :#ffffff;
   padding: 10px 40px;
   font-weight: bold;
   font-size: 1.1rem;
   cursor: pointer;
   transition: all 0.2s;
-  /* Sombra sólida tipo "Neobrutalismo" como el dibujo */
-  box-shadow: 4px 4px 0px 0px rgba(0,0,0,1);
 }
 
 .btn-buscar:hover {
   background-color: #e5e5e5;
   transform: translate(-2px, -2px);
-  box-shadow: 6px 6px 0px 0px rgba(0,0,0,1);
+  color: #9e8e6f;
 }
 
 .btn-buscar:active {
@@ -120,25 +132,24 @@
   box-shadow: 1px 1px 0px 0px rgb(114, 110, 110);
 }
 .resultados-container {
-  background-color: white;
+  background-color: #f8f6f0;
   width: 100%;
   max-width: 600px;
   margin-top: 20px;
-  padding: 20px;
-  border: 2px solid #333; /* Borde estilo dibujo */
-  border-radius: 4px;
+  border: 2px solid #f3f4f6; 
+  border-radius: 5px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .resultados-titulo {
   font-weight: bold;
-  margin-bottom: 15px;
   font-size: 1.1rem;
 }
 
 .resultados-grid {
   display: flex;
   justify-content: space-between; /* Separa archivos de tamaño */
-  margin-bottom: 10px;
+  margin-bottom: 0px;
 }
 
 .resultado-tiempo {
@@ -146,19 +157,78 @@
 }
 
 /* Estilo para el botón de confirmar */
+
 .btn-confirmar {
-  background-color: white;
-  border: 2px solid #333;
-  padding: 8px 30px;
-  border-radius: 12px;
+  background-color: #bca986;
+  border: 2px solid #bca986;
+  color :#ffffff;
+  padding: 10px 40px;
   font-weight: bold;
+  font-size: 1.1rem;
   cursor: pointer;
-  margin-top: 15px;
-  box-shadow: 2px 2px 0px 0px rgba(0,0,0,1);
-  transition: transform 0.1s;
+  transition: all 0.2s;
+}
+
+.btn-confirmar:hover {
+  background-color: #e5e5e5;
+  transform: translate(-2px, -2px);
+  color: #9e8e6f;
 }
 
 .btn-confirmar:active {
-  transform: translate(1px, 1px);
-  box-shadow: 1px 1px 0px 0px rgba(0,0,0,1);
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0px 0px rgb(114, 110, 110);
+}
+
+
+/* Diseño en checkbox de filtros */
+.radio-borde {
+  display: inline-flex;
+  align-items: center;
+}
+
+.radio-borde input {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border: 2px solid #BCA986; /* color del borde */
+  border-radius: 50%;
+  place-content: center;
+}
+
+.radio-borde input:checked {
+  border-color: #9e8d6c;
+    place-content: center;
+}
+
+.radio-borde input:checked::after {
+  content: "";
+  width: 8px;
+  height: 8px;
+  background: #9e8d6c; /* punto interno */
+  border-radius: 50%;
+  display: block;
+  margin: auto;
+}
+
+.resultados-color{
+  background-color: #b9e4a0;
+  font-size: 13px;
+  padding: 6px 10px;
+  border-radius: 12px
+}
+
+.resultados-color-2{
+  background-color: #9ed2f5;
+  font-size: 13px;
+  padding: 6px 10px;
+  border-radius: 12px;
+  margin-right: 45%;
+}
+
+.resultados-color-3{
+  background-color: #f0e68a;
+  font-size: 13px;
+  padding: 6px 10px;
+  border-radius: 12px
 }
