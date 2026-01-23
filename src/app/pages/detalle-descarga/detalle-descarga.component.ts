@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatIcon, MatIconModule } from '@angular/material/icon';
+import { MatIconModule, MatIcon } from '@angular/material/icon';
 
 @Component({
   standalone: true,

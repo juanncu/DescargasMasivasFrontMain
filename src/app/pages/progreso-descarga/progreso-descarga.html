@@ -1,93 +1,46 @@
-
-
-  <div class="min-h-screen flex items-center justify-center bg-gray-100">
-  <div class="w-full max-w-lg bg-white rounded-xl shadow-lg p-6 space-y-6 -mt-100">
+<div class="min-h-screen flex items-center justify-center bg-gray-100 p-4">
+  <div class="w-full max-w-lg bg-white rounded-xl shadow-lg p-6 space-y-6">
     
-    <h3 class="text-lg font-semibold text-gray-800 text-center">
+    <h3 class="text-lg font-semibold text-gray-800 text-center uppercase tracking-tight">
       Descargando archivos...
     </h3>
 
-    <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
-      <div
-        class="h-3 rounded-full transition-all duration-300"
-        [style.width.%]="progreso"
-        [style.background]="'var(--color-barra)'"
-        >
-      </div>
+    <div class="w-full bg-gray-200 rounded-full h-4 overflow-hidden border border-gray-300">
+      <div class="h-full barra-dinamica" [style.width.%]="progreso"></div>
     </div>
 
-    <p class="text-sm text-gray-500 text-center">
-      ⏱ {{ tiempoEstimado }}
-    </p>
+    <div class="flex justify-between text-sm font-medium text-gray-500 px-1">
+      <span>{{ progreso }}% completado</span>
+      <span>⏱ {{ tiempoEstimado }}</span>
+    </div>
 
     <hr class="border-gray-200">
 
-    <h4 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">
-      Registro de actividad
-    </h4>
+    <h4 class="text-xs font-bold text-gray-400 uppercase tracking-widest">Log de Actividad</h4>
 
-    <div class="bg-black rounded-lg p-4 max-h-48 overflow-y-auto text-sm font-mono">
-      <div *ngFor="let r of registros"
-          [ngClass]="{
-            'text-green-400': r.estado === 'OK',
-            'text-red-400': r.estado === 'ERROR'
-          }">
-        [{{ r.estado }}] {{ r.mensaje }}
+    <div class="bg-black rounded-lg p-4 h-48 overflow-y-auto text-sm font-mono shadow-inner">
+      <div *ngFor="let r of registros" class="mb-1" [ngClass]="r.estado">
+        <span class="opacity-50">[{{ r.estado }}]</span> {{ r.mensaje }}
       </div>
     </div>
-
-  
-  <div class="barra">
-    <!-- <div class="progreso" [style.width.%]="progreso"></div> -->
-    <div class="progreso" [style.width]="progreso + '%'"></div>
-    <div class="progreso" style="width: 50%; background: red; height: 100%"></div>
-</div>
-
-<div *ngIf="mostrarPopup"
-  class="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-
-  <div class="bg-white rounded-xl shadow-xl w-full max-w-md p-6 text-center space-y-4">
-
-    <h2 class="text-lg font-semibold text-gray-800">
-      ¡ Descarga terminada !
-    </h2>
-
-    <p class="text-sm text-gray-600">
-      Los archivos se descargaron correctamente.
-    </p>
-
-    <div class="flex justify-center gap-4 pt-4">
-      <button
-        class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
-        (click)="cerrarPopup()">
-        Cerrar
-      </button>
-
-      <button
-        class="px-4 py-2 bg-red-700 text-white rounded hover:bg-red-800"
-        (click)="descargaArchivo()">
-        Abrir
-      </button>
-    </div>
-
-    <p class="text-xs text-gray-500">
-      Para mostrar la ubicacion del archivo.
-    </p>
-
   </div>
 
-  <p class="tiempo">⏱ {{ tiempoEstimado }}</p>
+  <div *ngIf="mostrarPopup" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-8 text-center space-y-5 animate-in">
+      <div class="mx-auto flex items-center justify-center h-14 w-14 rounded-full bg-green-100">
+        <span class="text-green-600 text-3xl font-bold">✓</span>
+      </div>
 
-  <hr />
+      <div class="space-y-1">
+        <h2 class="text-xl font-bold text-gray-900">¡Descarga en proceso!</h2>
+        <p class="text-sm text-gray-500">Los archivos están en proceso para su descarga.</p>
+      </div>
 
-  <h4>Registro de actividad</h4>
-
-  <div class="log">
-    <div *ngFor="let r of registros" class="log-item" [ngClass]="r.estado">
-      [{{ r.estado }}] {{ r.mensaje }}
+      <div class="flex flex-col gap-3 pt-2">
+        <button class="btn-primary" (click)="descargaArchivo()">ABRIR ARCHIVO</button>
+        <button class="btn-secondary" (click)="irANuevaDescarga()">HACER OTRA DESCARGA</button>
+        <button class="text-gray-400 text-xs hover:underline" (click)="cerrarPopup()">Cerrar ventana</button>
+      </div>
     </div>
   </div>
-</div>
-</div>
-  
 </div>
