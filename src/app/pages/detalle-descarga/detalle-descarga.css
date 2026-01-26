@@ -164,3 +164,7 @@ h3{
   border-color: #ffffff;
   color: #BCA986;
 }
+
+.mat-icon{
+  padding-top: 4px;
+}

@@ -34,11 +34,7 @@
       <strong>{{ detalle.errores }}</strong>
     </div>
 
-    <div class="card">
-      ⏱
-      <p>Tiempo</p>
-      <strong>{{ detalle.tiempo }}</strong>
-    </div>
+
   </div>
 
   <!-- Información -->
@@ -71,9 +67,10 @@
   <div class="acciones">
     <button class="btn retry">
        <mat-icon>refresh</mat-icon>
+        Reintentar descarga
     </button> 
-    <button class="btn open">📂 Abrir carpeta</button>
-    <button class="btn export">📄 Exportar log</button>
+    <button class="btn open"><mat-icon>folder_open</mat-icon> Abrir carpeta</button>
+    <button class="btn export"><mat-icon>receipt</mat-icon> Exportar log</button>
   </div>
  
 </div>
