@@ -6,6 +6,7 @@ import { RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { error } from 'console';
 
 
 @Component({
@@ -26,13 +27,16 @@ export class HistorialDescargasComponent implements OnInit {
   ngOnInit(): void {
     this.historial = [
       {
-        id: 1,
+        id: 101,
+        fechaReal: new Date(), // Para calcular el "Hace 5 minutos"
         fechaLabel: 'Hoy',
-        delegacion: 'Calkiní',
-        mes: 'Enero',
-        ruta: 'C:\\Recibos\\Calkini\\Folio12345',
-        archivos: 4500,
-        tamanio: '5 GB',
+        delegacion: 'Campeche', // Viene del filtro seleccionado
+        archivos: 1500,         // Calculado tras la búsqueda
+        mes: 'Febrero - Marzo', // Rango elegido por el usuario
+        rutaRed: 'C:\\Recibos\\Campeche\\Folio_02',
+        tamanio: '1.2 GB',
+        estado: 'completado',
+        ruta: 'C:\\Recibos\\Campeche\\Folio_02',
         hace: 'Hace 5 minutos',
         huboErrores: false
       },
@@ -45,7 +49,9 @@ export class HistorialDescargasComponent implements OnInit {
         archivos: 4500,
         tamanio: '5 GB',
         hace: 'Hace 1 día',
-        huboErrores: true
+        huboErrores: true,
+        estado: 'pendiente',
+        rutaRed: undefined
       },
       {
         id: 3,
@@ -56,7 +62,9 @@ export class HistorialDescargasComponent implements OnInit {
         archivos: 4500,
         tamanio: '5 GB',
         hace: 'Hace 2 días',
-        huboErrores: false
+        huboErrores: false,
+        estado: 'error',
+        rutaRed: undefined
       }
     ];
   }
@@ -65,3 +73,4 @@ export class HistorialDescargasComponent implements OnInit {
     this.router.navigate(['/historial-descargas', id]);
   }
 }
+

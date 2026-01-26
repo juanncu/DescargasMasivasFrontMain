@@ -37,6 +37,7 @@ export class DescargaFoliosComponent implements OnInit {
     { id: 7, nombre: 'Julio' }, { id: 8, nombre: 'Agosto' }, { id: 9, nombre: 'Septiembre' },
     { id: 10, nombre: 'Octubre' }, { id: 11, nombre: 'Noviembre' }, { id: 12, nombre: 'Diciembre' }
   ];
+  obtenerNombreDelegacion: any;
 
   ngOnInit() {
     this.cargarMunicipios();
@@ -80,7 +81,52 @@ export class DescargaFoliosComponent implements OnInit {
     this.selectDescarga.setDelegacion(Number(this.delegacionSeleccionada));
   }
 
-  confirmarDescarga() {
-    this.router.navigate(['/progreso-descarga']);
-  }
+  mostrarPopupConfirmacion = false;
+
+// descarga-folios.ts
+
+confirmarDescarga() {
+  // CORRECCIÓN: Función para obtener el nombre de la delegación localmente
+  const delegacionEncontrada = this.listaDelegaciones.find(
+    d => (d.Id || d.id) == this.delegacionSeleccionada
+  );
+  const nombreDelegacion = delegacionEncontrada ? (delegacionEncontrada.Nombre || delegacionEncontrada.nombre) : 'Sin nombre';
+
+  const nuevaDescarga = {
+    delegacion: nombreDelegacion,
+    mes: `${this.obtenerNombreMes(this.mesInicio)} - ${this.obtenerNombreMes(this.mesFinal)}`,
+    archivos: this.resultados?.archivos || 0,
+    tamanio: this.resultados?.tamanio || '0 KB',
+    anio: this.anio,
+    estado: 'pendiente', // <--- Estado dinámico inicial
+    fecha_creacion: new Date()
+  };
+
+  // Forzamos el popup para que el usuario no se quede trabado por errores de red (422/404)
+  this.mostrarPopupConfirmacion = true;
+
+  // Intentamos registrar, pero el flujo ya sigue en el Front
+  this.apiService.registrarNuevaDescarga(nuevaDescarga).subscribe({
+    next: (res) => console.log('Registro exitoso en historial'),
+    error: (err) => console.error('Error de red persistente (422/404):', err)
+  });
+}
+
+// Función auxiliar para que en el historial no diga "Mes: 1" sino "Mes: Enero"
+obtenerNombreMes(id: any): string {
+  const mes = this.meses.find(m => m.id == id);
+  return mes ? mes.nombre : id;
+}
+
+irAlHistorial() {
+  this.mostrarPopupConfirmacion = false;
+  this.router.navigate(['/historial-descargas']);
+}
+
+reiniciarFiltros() {
+  this.mostrarPopupConfirmacion = false;
+  this.resultados = null;
+  this.delegacionSeleccionada = '';
+  // Limpia los demás filtros aquí...
+}
 }

@@ -88,4 +88,39 @@
   </button>
 </div>
 
+<div *ngIf="mostrarPopupConfirmacion" class="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+  </div>
+<div *ngIf="mostrarPopupConfirmacion" 
+     class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+  
+  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-8 text-center space-y-5 animate-in">
+    <div class="mx-auto flex items-center justify-center h-14 w-14 rounded-full bg-green-100">
+      <span class="text-green-600 text-3xl font-bold">✓</span>
+    </div>
+
+    <div class="space-y-2">
+      <h2 class="text-xl font-bold text-gray-900 italic">¡Descarga en proceso!</h2>
+      <p class="text-sm text-gray-600">
+        Los archivos están en proceso para su descarga.
+      </p>
+    </div>
+
+    <div class="flex flex-col gap-3 pt-2">
+      <button (click)="irAlHistorial()"
+        class="w-full py-3 bg-[#b91c1c] text-white font-bold rounded-xl hover:bg-red-800 transition-all uppercase">
+        Ver descargas
+      </button>
+
+      <button (click)="reiniciarFiltros()"
+        class="w-full py-3 bg-[#1f2937] text-white font-bold rounded-xl hover:bg-black transition-all uppercase">
+        Hacer otra descarga
+      </button>
+
+      <button (click)="mostrarPopupConfirmacion = false"
+        class="w-full py-2 text-gray-500 text-sm hover:underline font-medium">
+        Cerrar ventana
+      </button>
+    </div>
+  </div>
+</div>
 </main>

@@ -1,57 +1,43 @@
-
-
-<div class="contenedor-historial">
+<main class="main-container">
   <div class="acciones-superiores">
-    <button class="btn-regresar" routerLink="/main">
-       <mat-icon id="mat-icon"> home  </mat-icon> |  Descargar nuevos folios 
+    <button routerLink="/main" class="btn-regresar">
+      🏠 | Descargar nuevos folios
     </button>
   </div>
 
-<h2 class="titulo">Historial de descargas</h2>
+  <h2 class="titulo">Historial de descargas</h2>
 
-<div class="lista">
-
- <div class="item" *ngFor="let item of historial">
-
-  <!-- FILA SUPERIOR -->
-  <div class="fila-superior">
-    <span class="fecha-label">{{ item.fechaLabel }}</span>
-    <span class="hace">{{ item.hace }}</span>
-  </div>
-
-  <!-- FILA PRINCIPAL -->
-  <div class="fila-principal">
-
-    <!-- IZQUIERDA -->
-    <div class="info-izquierda">
-      <div>
-        <span class="delegacion">Delegacion {{ item.delegacion }} , </span>
-        <span class="archivos">{{ item.archivos }} archivos</span>
+  <div class="max-w-7xl mx-auto space-y-4">
+    <div *ngFor="let d of historial" class="item">
+      
+      <div class="info-izquierda">
+        <span class="fecha">{{ d.fechaLabel || 'Reciente' }}</span>
+        <div class="sub-info">
+          <strong class="delegacion">Delegación {{ d.delegacion }}</strong>, 
+          <span class="archivos">{{ d.archivos }} archivos</span>
+        </div>
+        <span class="mes">Mes: {{ d.mes }}</span>
       </div>
-      <div class="mes">Mes: {{ item.mes }}</div>
+
+      <div class="ruta hidden lg:block">
+        Ruta: {{ d.rutaRed || 'C:\\Descargas\\Procesando...' }}
+      </div>
+
+      <div class="info-derecha">
+        
+        <div [ngClass]="['estado', d.estado]">
+          <span *ngIf="d.estado === 'completado'">✓ Completado</span>
+          <span *ngIf="d.estado === 'pendiente'" class="animate-pulse">⏳ Pendiente</span>
+          <span *ngIf="d.estado === 'error'">⚠ Error</span>
+        </div>
+
+        <div class="flex items-center gap-4">
+          <span class="tamanio">{{ d.tamanio }}</span>
+          <button class="btn-detalle" [routerLink]="['/detalle-descarga', d.id]">
+            <span style="font-size: 20px;">👁</span>
+          </button>
+        </div>
+      </div>
     </div>
-
-    <!-- CENTRO -->
-    <div class="ruta">
-      Ruta: {{ item.ruta }}
-    </div>
-
-    <!-- DERECHA -->
-    <div class="info-derecha">
-      <span class="tamanio">{{ item.tamanio }}</span>
-
-      <button
-        mat-icon-button
-        class="btn-detalle"
-        [routerLink]="['/detalle-descarga', item.id]"
-        matTooltip = "Ver detalles"
-        aria-label="Ver detalles">
-       <mat-icon>visibility  </mat-icon>
-      </button>
-    </div>
-
   </div>
-
-</div>
-
-</div>
+</main>
