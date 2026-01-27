@@ -83,10 +83,9 @@ export class DescargaFoliosComponent implements OnInit {
 
   mostrarPopupConfirmacion = false;
 
-// descarga-folios.ts
 
 confirmarDescarga() {
-  // CORRECCIÓN: Función para obtener el nombre de la delegación localmente
+  // Función para obtener el nombre de la delegación localmente
   const delegacionEncontrada = this.listaDelegaciones.find(
     d => (d.Id || d.id) == this.delegacionSeleccionada
   );
