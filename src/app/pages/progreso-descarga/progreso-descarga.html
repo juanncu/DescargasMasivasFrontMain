@@ -1,72 +1,73 @@
-<div class="min-h-screen flex items-center justify-center bg-gray-100">
+<div class="min-h-screen flex items-center justify-center bg-gray-100 p-4">
   
   <div class="w-full max-w-lg bg-white rounded-xl shadow-lg p-6 space-y-6">
     
-    <h3 class="text-lg font-semibold text-gray-800 text-center">
+    <h3 class="text-lg font-semibold text-gray-800 text-center uppercase tracking-tight">
       Descargando archivos...
     </h3>
 
-    <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+    <div class="w-full bg-gray-200 rounded-full h-4 overflow-hidden border border-gray-300 relative">
       <div
-        class="h-3 rounded-full transition-all duration-300"
-        [style.width.%]="progreso"
-        [style.background]="'var(--color-barra)'"> 
-      </div>
+        class="h-full bg-yellow-600 transition-all duration-300 ease-out flex items-center justify-end pr-2"
+        [style.width.%]="progreso">
+        </div>
     </div>
 
-    <p class="text-sm text-gray-500 text-center">
-      ⏱ {{ tiempoEstimado }}
-    </p>
+    <div class="flex justify-between text-sm font-medium text-gray-500 px-1">
+      <span>{{ progreso }}% completado</span>
+      <span>⏱ {{ tiempoEstimado }}</span>
+    </div>
 
     <hr class="border-gray-200">
 
-    <h4 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">
-      Registro de actividad
-    </h4>
+    <h4 class="text-xs font-bold text-gray-400 uppercase tracking-widest">Log de Actividad</h4>
 
-    <div class="bg-black rounded-lg p-4 max-h-48 overflow-y-auto text-sm font-mono">
-      <div *ngFor="let r of registros"
+    <div class="bg-black rounded-lg p-4 h-48 overflow-y-auto text-sm font-mono shadow-inner border border-gray-700">
+      <p *ngIf="registros.length === 0" class="text-gray-500 italic">Iniciando conexión...</p>
+
+      <div *ngFor="let r of registros" class="mb-1"
            [ngClass]="{
              'text-green-400': r.estado === 'OK',
-             'text-red-400': r.estado === 'ERROR'
+             'text-red-400': r.estado === 'ERROR',
+             'text-blue-400': r.estado === 'INFO'
            }">
-        [{{ r.estado }}] {{ r.mensaje }}
+        <span class="opacity-50">[{{ r.estado }}]</span> {{ r.mensaje }}
       </div>
     </div>
 
   </div>
 
-  <div *ngIf="mostrarPopup"
-    class="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-
-    <div class="bg-white rounded-xl shadow-xl w-full max-w-md p-6 text-center space-y-4">
-
-      <h2 class="text-lg font-semibold text-gray-800">
-        ¡ Descarga terminada !
-      </h2>
-
-      <p class="text-sm text-gray-600">
-        Los archivos se descargaron correctamente.
-      </p>
-
-      <div class="flex justify-center gap-4 pt-4">
-        <button
-          class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
-          (click)="cerrarPopup()">
-          Cerrar
-        </button>
-
-        <button
-          class="px-4 py-2 bg-red-700 text-white rounded hover:bg-red-800"
-          (click)="descargaArchivo()">
-          Abrir
-        </button>
+  <div *ngIf="mostrarPopup" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-8 text-center space-y-5 animate-in fade-in zoom-in duration-300">
+      
+      <div class="mx-auto flex items-center justify-center h-14 w-14 rounded-full bg-green-100">
+        <span class="text-green-600 text-3xl font-bold">✓</span>
       </div>
 
-      <p class="text-xs text-gray-500">
-        Para mostrar la ubicación del archivo.
-      </p>
+      <div class="space-y-1">
+        <h2 class="text-xl font-bold text-gray-900">¡Descarga Completada!</h2>
+        <p class="text-sm text-gray-500">Los archivos se han procesado y empaquetado correctamente.</p>
+      </div>
 
+      <div class="flex flex-col gap-3 pt-2">
+        <button 
+          (click)="descargaArchivo()"
+          class="w-full py-3 bg-red-700 text-white font-bold rounded-xl hover:bg-red-800 transition-all uppercase shadow-md active:scale-95">
+          ABRIR ARCHIVOS
+        </button>
+        
+        <button 
+          (click)="irANuevaDescarga()"
+          class="w-full py-3 bg-gray-800 text-white font-bold rounded-xl hover:bg-black transition-all uppercase shadow-md active:scale-95">
+          HACER OTRA DESCARGA
+        </button>
+        
+        <button 
+          (click)="cerrarPopup()"
+          class="text-gray-400 text-xs hover:text-gray-600 hover:underline mt-2">
+          Cerrar ventana
+        </button>
+      </div>
     </div>
   </div>
 

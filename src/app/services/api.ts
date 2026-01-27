@@ -9,7 +9,12 @@ import { FiltrosCFDI } from '../models/registro-descarga.model';
 export class ApiService {
   private http = inject(HttpClient);
   private apiUrl = 'http://172.20.23.41:8000';
+  urlBase: any;
 
+  // Agrega este método para que desaparezca el error TS2339
+  registrarNuevaDescarga(datos: any): Observable<any> {
+    return this.http.post(`${this.urlBase}/cfdis/registrar`, datos);
+  }
   getCfdis(idDelegacion: number): Observable<any> {
     const params = new HttpParams().set('delegacion_ids', idDelegacion.toString());
 

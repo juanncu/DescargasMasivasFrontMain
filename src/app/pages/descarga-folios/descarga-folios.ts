@@ -1,7 +1,9 @@
 import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router'; // RouterModule incluye RouterLink
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+
+// Asegúrate que las rutas sean correctas
 import { DescargaFoliosService } from '../../services/descarga-folios.service';
 import { SelectDescarga } from '../../services/select-descarga';
 import { ApiService } from '../../services/api';
@@ -9,86 +11,98 @@ import { ApiService } from '../../services/api';
 @Component({
   selector: 'app-descarga-folios',
   standalone: true,
-  imports: [FormsModule, CommonModule],
+  imports: [FormsModule, CommonModule, RouterModule],
   templateUrl: './descarga-folios.html',
   styleUrls: ['./descarga-folios.css'],
-  providers: [DescargaFoliosService],
+  providers: [DescargaFoliosService]
 })
 export class DescargaFoliosComponent implements OnInit {
-  // Inyecciones
+
+  // --- INYECCIONES (Estilo moderno) ---
   private descargaService = inject(DescargaFoliosService);
   private selectDescarga = inject(SelectDescarga);
   private router = inject(Router);
   private apiService = inject(ApiService);
   private cd = inject(ChangeDetectorRef);
 
-  // Variables
+  // --- VARIABLES DEL FORMULARIO ---
   delegacionSeleccionada = '';
-  fechaInicio = '';
-  fechaFin = '';
-  padron = '';
-  estado = '';
-  filtroSeleccionado = '';
+  mesInicio = '';
+  mesFinal = '';
+  anio: number = new Date().getFullYear();
+  
+  // Valores por defecto
+  estadoSeleccionado = 'Ambos';
+  padronSeleccionado = 'Todas';
+
+  // --- VARIABLES DE ESTADO ---
+  listaDelegaciones: any[] = [];
   resultados: any = null;
   cargando = false;
+  mostrarPopupConfirmacion = false;
 
-  // Lista donde se guardan los municipios
-  listaDelegaciones: any[] = [];
-
-  constructor() {}
+  // Catálogo de meses para el HTML
+  meses = [
+    { id: 1, nombre: 'Enero' }, { id: 2, nombre: 'Febrero' }, { id: 3, nombre: 'Marzo' },
+    { id: 4, nombre: 'Abril' }, { id: 5, nombre: 'Mayo' }, { id: 6, nombre: 'Junio' },
+    { id: 7, nombre: 'Julio' }, { id: 8, nombre: 'Agosto' }, { id: 9, nombre: 'Septiembre' },
+    { id: 10, nombre: 'Octubre' }, { id: 11, nombre: 'Noviembre' }, { id: 12, nombre: 'Diciembre' }
+  ];
 
   ngOnInit() {
-    console.log('Iniciando carga de municipios...');
+    console.log('Iniciando componente...');
+    this.cargarMunicipios();
+  }
 
+  cargarMunicipios() {
     this.apiService.getMunicipios().subscribe({
       next: (respuesta: any) => {
-        console.log('Respuesta completa del servidor:', respuesta);
-
+        // Validación robusta para evitar errores si la respuesta cambia
         if (respuesta && respuesta.municipios) {
           this.listaDelegaciones = respuesta.municipios;
-          console.log('Lista extraída correctamente:', this.listaDelegaciones);
-        } else {
+        } else if (Array.isArray(respuesta)) {
           this.listaDelegaciones = respuesta;
+        } else {
+          this.listaDelegaciones = [];
+          console.warn('Formato de municipios desconocido:', respuesta);
         }
-        this.cd.detectChanges();
+        
+        console.log("Municipios cargados:", this.listaDelegaciones);
+        this.cd.detectChanges(); // Forzamos actualización visual
       },
-      error: (error) => {
-        console.error('Error cargando municipios:', error);
-      },
+      error: (err) => {
+        console.error("Error cargando municipios:", err);
+      }
     });
   }
 
   buscar() {
-    if (
-      !this.padron ||
-      !this.fechaInicio ||
-      !this.fechaFin ||
-      !this.delegacionSeleccionada ||
-      !this.estado
-    ) {
-      alert('Falto seleccionar algun filtro');
+    // 1. Validaciones
+    if (!this.delegacionSeleccionada || !this.mesInicio || !this.mesFinal || !this.anio) {
+      alert('Por favor complete todos los filtros antes de buscar.');
       return;
     }
 
-    const delegacionId = Number(this.delegacionSeleccionada);
-    const padronid = Number(this.padron);
-    const estadoid = Number(this.estado);
+    this.cargando = true;
+    this.resultados = null; // Limpiar resultados previos
 
+    // 2. Preparar filtros
+    // Nota: Ajusta los nombres de parámetros según lo que pida tu Service real
     const filtros = {
-      padron: padronid || null,
-      fechaInicio: this.fechaInicio || null,
-      fechaFin: this.fechaFin || null,
-      delegacion: delegacionId,
-      estado: estadoid || null,
+      delegacion: this.delegacionSeleccionada,
+      mesInicio: this.mesInicio,
+      mesFinal: this.mesFinal,
+      anio: this.anio,
+      estado: this.estadoSeleccionado,
+      padron: this.padronSeleccionado
     };
 
+    // Guardamos en el servicio compartido (por si se necesita en otra pantalla)
     this.selectDescarga.setFiltros(filtros);
 
-    this.cargando = true;
-
-    // Llamar con los filtros y suscribirse al Observable
-    this.descargaService
-      .buscarFolios(this.delegacionSeleccionada, this.filtroSeleccionado, filtros)
+    // 3. Llamada al servicio
+    // NOTA: Verifica si tu servicio pide (delegacion, filtros) o solo (filtros)
+    this.descargaService.buscarFolios(this.delegacionSeleccionada, '', filtros)
       .subscribe({
         next: (resultados) => {
           this.resultados = resultados;
@@ -98,13 +112,59 @@ export class DescargaFoliosComponent implements OnInit {
         error: (error) => {
           console.error('Error al buscar folios:', error);
           this.cargando = false;
-          alert('Error al buscar folios');
-        },
+          alert('Ocurrió un error al buscar la información.');
+        }
       });
   }
 
   confirmarDescarga() {
-    console.log('CLICK CONFIRMAR');
-    this.router.navigate(['/progreso-descarga']);
+    // 1. Obtener nombre de la delegación para el historial
+    const delegacionEncontrada = this.listaDelegaciones.find(
+      d => (d.Id || d.id) == this.delegacionSeleccionada
+    );
+    const nombreDelegacion = delegacionEncontrada ? (delegacionEncontrada.Nombre || delegacionEncontrada.nombre) : 'Desconocida';
+
+    // 2. Crear objeto para el historial
+    const nuevaDescarga = {
+      delegacion: nombreDelegacion,
+      mes: `${this.obtenerNombreMes(this.mesInicio)} - ${this.obtenerNombreMes(this.mesFinal)}`,
+      archivos: this.resultados?.archivos || 0,
+      tamanio: this.resultados?.tamanio || '0 KB',
+      anio: this.anio,
+      estado: 'pendiente',
+      fecha_creacion: new Date()
+    };
+
+    // 3. Mostrar popup visual
+    this.mostrarPopupConfirmacion = true;
+
+    // 4. Registrar en Backend (Historial) - Sin bloquear la UI si falla
+    this.apiService.registrarNuevaDescarga(nuevaDescarga).subscribe({
+      next: (res) => console.log('Registro exitoso en historial'),
+      error: (err) => console.warn('No se pudo guardar en historial (pero la descarga procede):', err)
+    });
+  }
+
+  // --- FUNCIONES AUXILIARES ---
+
+  irAlHistorial() {
+    this.mostrarPopupConfirmacion = false;
+    this.router.navigate(['/historial-descargas']);
+  }
+
+  reiniciarFiltros() {
+    this.mostrarPopupConfirmacion = false;
+    this.resultados = null;
+    this.delegacionSeleccionada = '';
+    this.mesInicio = '';
+    this.mesFinal = '';
+    // Reseteamos a valores por defecto
+    this.estadoSeleccionado = 'Ambos';
+    this.padronSeleccionado = 'Todas';
+  }
+
+  obtenerNombreMes(id: any): string {
+    const mes = this.meses.find(m => m.id == id);
+    return mes ? mes.nombre : String(id);
   }
 }

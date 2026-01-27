@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ProgresoDescargaComponent } from './progreso-descarga.component';
+import { HistorialDescargas } from './historial-descargas';
 
-describe('ProgresoDescarga', () => {
-  let component: ProgresoDescargaComponent;
-  let fixture: ComponentFixture<ProgresoDescargaComponent>;
+describe('HistorialDescargas', () => {
+  let component: HistorialDescargas;
+  let fixture: ComponentFixture<HistorialDescargas>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ProgresoDescargaComponent]
+      imports: [HistorialDescargas]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(ProgresoDescargaComponent);
+    fixture = TestBed.createComponent(HistorialDescargas);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

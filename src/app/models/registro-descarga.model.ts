@@ -1,5 +1,5 @@
 export interface RegistroDescarga {
-  estado: 'OK' | 'ERROR';
+  estado: 'OK' | 'ERROR' | 'INFO';
   mensaje: string;
   archivo?: string;
 }

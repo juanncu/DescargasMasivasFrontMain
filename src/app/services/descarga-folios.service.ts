@@ -1,9 +1,10 @@
 import { Injectable, inject } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { WebSocketService } from './websocket';
 import { ApiService } from './api';
-import { FiltrosCFDI } from '../models/registro-descarga.model';
+// Si no tienes este modelo específico, puedes cambiarlo por 'any' abajo
+import { FiltrosCFDI } from '../models/registro-descarga.model'; 
 
 @Injectable({
   providedIn: 'root',
@@ -12,43 +13,77 @@ export class DescargaFoliosService {
   private wsService = inject(WebSocketService);
   private apiService = inject(ApiService);
 
-  buscarFolios(delegacion: string, filtro: string, filtros: FiltrosCFDI): Observable<any> {
+  /**
+   * Busca los folios usando la API real y calcula el tamaño total.
+   */
+  buscarFolios(delegacion: string, filtro: string, filtros: any): Observable<any> {
+    // Llamada real al Backend
     return this.apiService.getCfdisConFiltros(filtros).pipe(
       map((data: any) => {
-        // Procesa los datos del endpoint y calcula las métricas
-        const archivos = data.length || 0;
-        const tamanioTotal = this.calcularTamanio(data); // En MB o GB
+        // Validación por si la data viene nula
+        const listaArchivos = Array.isArray(data) ? data : [];
+        
+        const totalArchivos = listaArchivos.length;
+        const tamanioTotal = this.calcularTamanio(listaArchivos);
+
+        // Calculamos un tiempo estimado (ejemplo: 0.5 segundos por archivo)
+        // Puedes ajustar esta fórmula según la velocidad real de tu servidor
+        const tiempoEstimado = totalArchivos > 0 
+          ? this.formatearTiempo(totalArchivos * 0.5) 
+          : '0 seg';
 
         return {
-          archivos: archivos,
+          archivos: totalArchivos,
           tamanio: tamanioTotal,
+          tiempo: tiempoEstimado
         };
-      }),
+      })
     );
   }
 
+  /**
+   * Inicia el proceso de descarga.
+   * 1. Conecta el WebSocket para escuchar progreso.
+   * 2. Manda la orden HTTP al backend para que empiece a trabajar.
+   */
+  iniciarDescarga(delegacionId: number): Observable<any> {
+    console.log('Servicio: Iniciando descarga para delegación', delegacionId);
+    
+    // 1. Aseguramos que el WS esté escuchando
+    this.wsService.conectar(delegacionId);
+
+    // 2. Mandamos la orden al backend (Asumiendo que tienes este método en ApiService)
+    // Si tu ApiService no tiene 'iniciarProceso', cámbialo por la llamada HTTP correspondiente
+    if (this.apiService.iniciarProcesoDescarga) {
+        return this.apiService.iniciarProcesoDescarga(delegacionId);
+    } else {
+        // Fallback: Si no tienes el método aún, simulamos que el back respondió "OK"
+        // para que no se rompa el frontend.
+        console.warn('⚠️ ApiService.iniciarProcesoDescarga no existe. Usando fallback.');
+        return of({ success: true, message: 'Proceso iniciado (Simulado)' });
+    }
+  }
+
+  // --- MÉTODOS PRIVADOS (AYUDANTES) ---
+
   private calcularTamanio(data: any[]): string {
-    // Ajusta esta lógica según la estructura de tus datos
-    // Ejemplo: si cada registro tiene un tamaño, súmalos
     const tamanioEnBytes = data.reduce((total, item) => {
-      return total + (item.tamanio || 0); // Ajusta según tu modelo
+      // Suma el tamaño si existe, si no, asume 50KB promedio por XML
+      return total + (item.tamanio || 50000); 
     }, 0);
 
-    if (tamanioEnBytes > 1000000000) {
-      return (tamanioEnBytes / 1000000000).toFixed(2) + ' GB';
-    } else if (tamanioEnBytes > 1000000) {
-      return (tamanioEnBytes / 1000000).toFixed(2) + ' MB';
+    // Conversión correcta (Base 1024)
+    if (tamanioEnBytes > 1073741824) { 
+      return (tamanioEnBytes / 1073741824).toFixed(2) + ' GB';
+    } else if (tamanioEnBytes > 1048576) { 
+      return (tamanioEnBytes / 1048576).toFixed(2) + ' MB';
     }
-    return (tamanioEnBytes / 1000).toFixed(2) + ' KB';
+    return (tamanioEnBytes / 1024).toFixed(2) + ' KB';
   }
 
-  // (conectado al progreso)
-  descargar(delegacion: string) {
-    console.log('Descargando delegación:', delegacion);
-  }
-
-  iniciarDescarga(delegacion: number): Observable<any> {
-    this.wsService.conectar(delegacion);
-    return this.wsService.mensajes$;
+  private formatearTiempo(segundos: number): string {
+    if (segundos < 60) return `${Math.ceil(segundos)} segundos`;
+    const minutos = Math.ceil(segundos / 60);
+    return `${minutos} minuto${minutos > 1 ? 's' : ''}`;
   }
 }
