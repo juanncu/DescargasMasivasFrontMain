@@ -5,14 +5,15 @@ import { CommonModule } from '@angular/common';
 import { DescargaFoliosService } from '../../services/descarga-folios.service';
 import { SelectDescarga } from '../../services/select-descarga';
 import { ApiService } from '../../services/api';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-descarga-folios',
   standalone: true,
-  imports: [FormsModule, CommonModule],
+  imports: [FormsModule, CommonModule, RouterLink],
   templateUrl: './descarga-folios.html',
   styleUrls: ['./descarga-folios.css'],
-  providers: [DescargaFoliosService],
+  providers: [DescargaFoliosService]
 })
 export class DescargaFoliosComponent implements OnInit {
   private descargaService = inject(DescargaFoliosService);
