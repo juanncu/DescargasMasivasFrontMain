@@ -13,7 +13,7 @@ export class WebSocketService implements OnDestroy {
   constructor(private zone: NgZone) {}
 
   conectar(delegacionId: number) {
-    this.ws = new WebSocket(`ws://172.20.23.44:8000/socket/rar/${delegacionId}`);
+    this.ws = new WebSocket(`ws://172.20.23.41:8000/socket/rar/${delegacionId}`);
 
     this.ws.onopen = () => {
       console.log('🟢 Conectado');
