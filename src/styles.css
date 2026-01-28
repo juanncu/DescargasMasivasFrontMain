@@ -1,21 +1,21 @@
-/* You can add global styles to this file, and also import other style files */
-
 @import "tailwindcss";
 
-/* font */
-
+/* Fuente personalizada */
 @font-face {
   font-family: 'QuattroSlab';
-  src: url('/assets/fonts/Quatro\ Slab\ W03\ Bold.ttf') format('truetype');
+  src: url('/assets/fonts/Quatro Slab W03 Bold.ttf') format('truetype');
 }
 
+/* Variables Globales */
 :root {
   --font-app: 'QuattroSlab', serif;
   --color-barra: #9F2241;
 }
 
+/* Estilos Base */
 body {
   margin: 0;
-  padding: 0;;
+  padding: 0;
   font-family: var(--font-app);
+  min-height: 100vh;
 }

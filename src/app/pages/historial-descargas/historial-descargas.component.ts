@@ -1,24 +1,25 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HistorialDescarga } from '../../models/historial.descarga.model';
-import { Router } from '@angular/router';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { error } from 'console';
-
+import { HistorialDescarga } from '../../models/historial.descarga.model';
 
 @Component({
   selector: 'app-historial-descargas',
   standalone: true,
-  imports: [RouterLink, CommonModule,    MatIconModule,
-      MatButtonModule,
-      MatTooltipModule ],
+  imports: [
+    RouterLink, 
+    CommonModule,    
+    MatIconModule,
+    MatButtonModule,
+    MatTooltipModule 
+  ],
   templateUrl: './historial-descargas.html',
   styleUrls: ['./historial-descargas.css']
 })
-export class HistorialDescargasComponent implements OnInit {
+export class HistorialDescargas implements OnInit {
 
   historial: HistorialDescarga[] = [];
 
@@ -28,11 +29,11 @@ export class HistorialDescargasComponent implements OnInit {
     this.historial = [
       {
         id: 101,
-        fechaReal: new Date(), // Para calcular el "Hace 5 minutos"
+        fechaReal: new Date(), 
         fechaLabel: 'Hoy',
-        delegacion: 'Campeche', // Viene del filtro seleccionado
-        archivos: 1500,         // Calculado tras la búsqueda
-        mes: 'Febrero - Marzo', // Rango elegido por el usuario
+        delegacion: 'Campeche', 
+        archivos: 1500,        
+        mes: 'Febrero - Marzo', 
         rutaRed: 'C:\\Recibos\\Campeche\\Folio_02',
         tamanio: '1.2 GB',
         estado: 'completado',
@@ -42,6 +43,7 @@ export class HistorialDescargasComponent implements OnInit {
       },
       {
         id: 2,
+        fechaReal: new Date(), 
         fechaLabel: 'Ayer',
         delegacion: 'Calkiní',
         mes: 'Enero',
@@ -55,6 +57,7 @@ export class HistorialDescargasComponent implements OnInit {
       },
       {
         id: 3,
+        fechaReal: new Date(),
         fechaLabel: '18 de Enero de 2026',
         delegacion: 'Calkiní',
         mes: 'Enero',
@@ -73,4 +76,3 @@ export class HistorialDescargasComponent implements OnInit {
     this.router.navigate(['/historial-descargas', id]);
   }
 }
-

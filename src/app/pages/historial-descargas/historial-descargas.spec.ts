@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
-import { HistorialDescargas } from './historial-descargas';
+import { RouterTestingModule } from '@angular/router/testing';
+import { HistorialDescargas } from './historial-descargas.component';
 
 describe('HistorialDescargas', () => {
   let component: HistorialDescargas;
@@ -8,13 +8,16 @@ describe('HistorialDescargas', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [HistorialDescargas]
+      imports: [
+        HistorialDescargas, 
+        RouterTestingModule 
+      ]
     })
     .compileComponents();
 
     fixture = TestBed.createComponent(HistorialDescargas);
     component = fixture.componentInstance;
-    await fixture.whenStable();
+    fixture.detectChanges();
   });
 
   it('should create', () => {

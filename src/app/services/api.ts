@@ -11,7 +11,6 @@ export class ApiService {
   private apiUrl = 'http://172.20.23.41:8000';
   urlBase: any;
 
-  // Agrega este método para que desaparezca el error TS2339
   registrarNuevaDescarga(datos: any): Observable<any> {
     return this.http.post(`${this.urlBase}/cfdis/registrar`, datos);
   }
@@ -46,4 +45,9 @@ export class ApiService {
   getMunicipios(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/cfdis/municipios`);
   }
+
+  // Dentro de api.ts
+iniciarProcesoDescarga(delegacionId: number) {
+  return this.http.post(`${this.apiUrl}/descargas/iniciar`, { delegacion: delegacionId });
+}
 }

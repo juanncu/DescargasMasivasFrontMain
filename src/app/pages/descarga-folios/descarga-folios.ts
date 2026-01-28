@@ -2,6 +2,7 @@ import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { Router, RouterModule } from '@angular/router'; // RouterModule incluye RouterLink
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { MatIconModule } from '@angular/material/icon';
 
 // Asegúrate que las rutas sean correctas
 import { DescargaFoliosService } from '../../services/descarga-folios.service';
@@ -11,7 +12,7 @@ import { ApiService } from '../../services/api';
 @Component({
   selector: 'app-descarga-folios',
   standalone: true,
-  imports: [FormsModule, CommonModule, RouterModule],
+  imports: [FormsModule, CommonModule, RouterModule, MatIconModule],
   templateUrl: './descarga-folios.html',
   styleUrls: ['./descarga-folios.css'],
   providers: [DescargaFoliosService]
@@ -76,7 +77,7 @@ export class DescargaFoliosComponent implements OnInit {
     });
   }
 
-  buscar() {
+buscar() {
     // 1. Validaciones
     if (!this.delegacionSeleccionada || !this.mesInicio || !this.mesFinal || !this.anio) {
       alert('Por favor complete todos los filtros antes de buscar.');
@@ -84,24 +85,37 @@ export class DescargaFoliosComponent implements OnInit {
     }
 
     this.cargando = true;
-    this.resultados = null; // Limpiar resultados previos
+    this.resultados = null;
+
+    // --- CONVERSIÓN DE PADRÓN (Texto -> Número) ---
+    let padronId = 0; // 0 = Todas
+    if (this.padronSeleccionado === 'Predial') {
+      padronId = 1;
+    }
+
+    // --- CONVERSIÓN DE ESTADO (Texto -> Número) ---
+    // Ajusta estos IDs según lo que espere tu base de datos
+    let estadoId = 3; // 3 = Ambos (Default)
+    if (this.estadoSeleccionado === 'Activo') {
+      estadoId = 1;
+    } else if (this.estadoSeleccionado === 'Cancelar') {
+      estadoId = 2;
+    }
 
     // 2. Preparar filtros
-    // Nota: Ajusta los nombres de parámetros según lo que pida tu Service real
     const filtros = {
-      delegacion: this.delegacionSeleccionada,
+      delegacion: Number(this.delegacionSeleccionada),
       mesInicio: this.mesInicio,
       mesFinal: this.mesFinal,
       anio: this.anio,
-      estado: this.estadoSeleccionado,
-      padron: this.padronSeleccionado
+      estado: estadoId,
+      padron: padronId
     };
 
-    // Guardamos en el servicio compartido (por si se necesita en otra pantalla)
+    // Guardamos en el servicio compartido
     this.selectDescarga.setFiltros(filtros);
 
     // 3. Llamada al servicio
-    // NOTA: Verifica si tu servicio pide (delegacion, filtros) o solo (filtros)
     this.descargaService.buscarFolios(this.delegacionSeleccionada, '', filtros)
       .subscribe({
         next: (resultados) => {

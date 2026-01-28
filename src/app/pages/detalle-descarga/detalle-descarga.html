@@ -1,76 +1,69 @@
-
+<div class="detalle-wrapper">
+  
   <button class="btn-volver" (click)="volver()">
-    ← Volver al historial
+    <mat-icon style="font-size: 16px; height: 16px; width: 16px;">arrow_back</mat-icon> Volver al historial
   </button>
 
-<div class="detalle-wrapper">
-
-  <h2 class="titulo">
-    Detalle de la descarga
-    <span class="estado"
-      [class.ok]="detalle.estado === 'COMPLETADO'"
-      [class.error]="detalle.estado !== 'COMPLETADO'">
+  <div class="titulo" *ngIf="detalle">
+    <h2>{{ detalle.delegacion }}</h2>
+    <span class="estado" [ngClass]="{'ok': detalle.estado === 'COMPLETADO', 'error': detalle.estado !== 'COMPLETADO'}">
       {{ detalle.estado }}
     </span>
-  </h2>
-
-  <!-- Cards resumen -->
-  <div class="cards">
-    <div class="card">
-      <mat-icon class="card-icon">description</mat-icon>
-      <p>Folios</p>
-      <strong>{{ detalle.folios }}</strong>
-    </div>
-
-    <div class="card">
-        <mat-icon class="card-icon">inventory_2</mat-icon>
-      <p>Archivos</p>
-      <strong>{{ detalle.archivos }}</strong>
-    </div>
-
-    <div class="card card-error">
-      <mat-icon class="card-icon error">error</mat-icon>
-      <p>Errores</p>
-      <strong>{{ detalle.errores }}</strong>
-    </div>
-
-
   </div>
 
-  <!-- Información -->
-  <div class="info-box">
-    <div class="info-header">
-      Delegación {{ detalle.delegacion }}
+  <div *ngIf="detalle">
+    <p style="color: #666; margin-left: 5px;">{{ detalle.mes }}</p>
+
+    <div class="cards">
+      <div class="card">
+        <p>Folios</p>
+        <strong>{{ detalle.folios }}</strong>
+      </div>
+
+      <div class="card">
+        <p>Archivos</p>
+        <strong>{{ detalle.archivos }}</strong>
+      </div>
+
+      <div class="card" [ngClass]="{'card-error': detalle.errores > 0}">
+        <p>Errores</p>
+        <strong>{{ detalle.errores }}</strong>
+      </div>
+      
+      <div class="card">
+        <p>Tamaño</p>
+        <strong>{{ detalle.tamanio }}</strong>
+      </div>
     </div>
 
-    <div class="info-content">
-      <p><strong>Mes:</strong> {{ detalle.mes }}</p>
-      <p><strong>Ruta:</strong> {{ detalle.ruta }}</p>
-      <p><strong>Inicio:</strong> {{ detalle.inicio }}</p>
-      <p><strong>Fin:</strong> {{ detalle.fin }}</p>
-      <p><strong>Tamaño:</strong> {{ detalle.tamanio }}</p>
+    <div class="info-box">
+      <div class="info-header">
+        Detalles Técnicos
+      </div>
+      <div class="info-content">
+        <p><strong>Ruta:</strong> {{ detalle.ruta }}</p>
+        <p><strong>Inicio:</strong> {{ detalle.inicio }}</p>
+        <p><strong>Fin:</strong> {{ detalle.fin }}</p>
+        <p><strong>Tiempo:</strong> {{ detalle.tiempo }}</p>
+      </div>
     </div>
 
     <h3>Registro de actividad</h3>
-
     <div class="log">
       <div *ngFor="let r of detalle.registros"
-           class="log-item"
            [class.OK]="r.estado === 'OK'"
            [class.ERROR]="r.estado === 'ERROR'">
         [{{ r.estado }}] {{ r.mensaje }}
       </div>
     </div>
+
+    <div class="acciones">
+      <button class="btn retry" *ngIf="detalle.errores > 0">
+         Reintentar
+      </button> 
+      <button class="btn open">Abrir carpeta</button>
+      <button class="btn export">Exportar log</button>
+    </div>
   </div>
 
-  <!-- Acciones -->
-  <div class="acciones">
-    <button class="btn retry">
-       <mat-icon>refresh</mat-icon>
-        Reintentar descarga
-    </button> 
-    <button class="btn open"><mat-icon>folder_open</mat-icon> Abrir carpeta</button>
-    <button class="btn export"><mat-icon>receipt</mat-icon> Exportar log</button>
-  </div>
- 
 </div>

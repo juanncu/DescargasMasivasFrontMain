@@ -1,25 +1,33 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing'; // <--- Necesario para simular API
+import { RouterTestingModule } from '@angular/router/testing'; // <--- Necesario para simular Router
+import { MatIconModule } from '@angular/material/icon';
 
-import { DescargaFolios } from './descarga-folios';
-import { MatIcon } from '@angular/material/icon';
+// 1. Importamos el nombre CORRECTO de la clase
+import { DescargaFoliosComponent } from './descarga-folios';
 
-describe('DescargaFolios', () => {
-  let component: DescargaFolios;
-  let fixture: ComponentFixture<DescargaFolios>;
+describe('DescargaFoliosComponent', () => {
+  let component: DescargaFoliosComponent;
+  let fixture: ComponentFixture<DescargaFoliosComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [DescargaFolios, MatIcon]
+      // 2. Importamos el componente (es Standalone) y los módulos de prueba
+      imports: [
+        DescargaFoliosComponent, 
+        MatIconModule,
+        HttpClientTestingModule, 
+        RouterTestingModule
+      ]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(DescargaFolios);
+    fixture = TestBed.createComponent(DescargaFoliosComponent);
     component = fixture.componentInstance;
-    await fixture.whenStable();
+    fixture.detectChanges();
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
   });
 });
-

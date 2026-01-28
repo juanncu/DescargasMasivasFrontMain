@@ -1,43 +1,40 @@
-<main class="main-container">
+<div class="main-container">
+  
   <div class="acciones-superiores">
     <button routerLink="/main" class="btn-regresar">
-      🏠 | Descargar nuevos folios
+      <mat-icon>home</mat-icon> Nueva búsqueda
     </button>
   </div>
 
   <h2 class="titulo">Historial de descargas</h2>
 
-  <div class="max-w-7xl mx-auto space-y-4">
+  <div>
     <div *ngFor="let d of historial" class="item">
       
       <div class="info-izquierda">
-        <span class="fecha">{{ d.fechaLabel || 'Reciente' }}</span>
+        <span class="fecha">{{ d.fechaLabel || 'Hoy' }}</span>
         <div class="sub-info">
-          <strong class="delegacion">Delegación {{ d.delegacion }}</strong>, 
-          <span class="archivos">{{ d.archivos }} archivos</span>
+          <strong>{{ d.delegacion }}</strong>
         </div>
-        <span class="mes">Mes: {{ d.mes }}</span>
+        <span class="mes">{{ d.mes }}</span>
       </div>
 
-      <div class="ruta hidden lg:block">
-        Ruta: {{ d.rutaRed || 'C:\\Descargas\\Procesando...' }}
+      <div class="ruta">
+        {{ d.rutaRed || d.ruta }}
       </div>
 
       <div class="info-derecha">
         
-        <div [ngClass]="['estado', d.estado]">
-          <span *ngIf="d.estado === 'completado'">✓ Completado</span>
-          <span *ngIf="d.estado === 'pendiente'" class="animate-pulse">⏳ Pendiente</span>
-          <span *ngIf="d.estado === 'error'">⚠ Error</span>
+        <div class="estado" [ngClass]="d.estado">
+           {{ d.estado | uppercase }}
         </div>
 
-        <div class="flex items-center gap-4">
-          <span class="tamanio">{{ d.tamanio }}</span>
-          <button class="btn-detalle" [routerLink]="['/detalle-descarga', d.id]">
-            <span style="font-size: 20px;">👁</span>
-          </button>
-        </div>
+        <span class="tamanio">{{ d.tamanio }}</span>
+
+        <button class="btn-detalle" [routerLink]="['/detalle-descarga', d.id]">
+          <mat-icon>visibility</mat-icon>
+        </button>
       </div>
     </div>
   </div>
-</main>
+</div>
