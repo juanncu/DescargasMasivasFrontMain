@@ -23,17 +23,18 @@
         {{ d.rutaRed || d.ruta }}
       </div>
 
-      <div class="info-derecha">
+<div class="info-derecha">
         
         <div class="estado" [ngClass]="d.estado">
-           {{ d.estado | uppercase }}
+          {{ d.estado | uppercase }}
         </div>
 
         <span class="tamanio">{{ d.tamanio }}</span>
 
-        <button class="btn-detalle" [routerLink]="['/detalle-descarga', d.id]">
+        <button class="btn-detalle" [routerLink]="['/historial-descargas', d.id]">
           <mat-icon>visibility</mat-icon>
         </button>
+        
       </div>
     </div>
   </div>

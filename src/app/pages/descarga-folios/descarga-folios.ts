@@ -69,7 +69,7 @@ export class DescargaFoliosComponent implements OnInit {
         }
         
         console.log("Municipios cargados:", this.listaDelegaciones);
-        this.cd.detectChanges(); // Forzamos actualización visual
+        this.cd.detectChanges();
       },
       error: (err) => {
         console.error("Error cargando municipios:", err);
@@ -77,7 +77,7 @@ export class DescargaFoliosComponent implements OnInit {
     });
   }
 
-buscar() {
+  buscar() {
     // 1. Validaciones
     if (!this.delegacionSeleccionada || !this.mesInicio || !this.mesFinal || !this.anio) {
       alert('Por favor complete todos los filtros antes de buscar.');
@@ -94,7 +94,6 @@ buscar() {
     }
 
     // --- CONVERSIÓN DE ESTADO (Texto -> Número) ---
-    // Ajusta estos IDs según lo que espere tu base de datos
     let estadoId = 3; // 3 = Ambos (Default)
     if (this.estadoSeleccionado === 'Activo') {
       estadoId = 1;
@@ -102,17 +101,27 @@ buscar() {
       estadoId = 2;
     }
 
+    // --- CÁLCULO DE FECHAS---
+    // Calculamos fechaInicio (YYYY-MM-01)
+    const mesIniStr = this.mesInicio.toString().padStart(2, '0');
+    const fechaInicio = `${this.anio}-${mesIniStr}-01`;
+
+    // Calculamos fechaFin (YYYY-MM-UltimoDia)
+    const ultimoDia = new Date(this.anio, Number(this.mesFinal), 0).getDate();
+    const mesFinStr = this.mesFinal.toString().padStart(2, '0');
+    const fechaFin = `${this.anio}-${mesFinStr}-${ultimoDia}`;
+
     // 2. Preparar filtros
     const filtros = {
       delegacion: Number(this.delegacionSeleccionada),
-      mesInicio: this.mesInicio,
-      mesFinal: this.mesFinal,
-      anio: this.anio,
+      padron: padronId,
       estado: estadoId,
-      padron: padronId
+      ini: fechaInicio, 
+      fin: fechaFin    
     };
 
-    // Guardamos en el servicio compartido
+    console.log('Enviando filtros a API:', filtros);
+
     this.selectDescarga.setFiltros(filtros);
 
     // 3. Llamada al servicio
@@ -152,7 +161,7 @@ buscar() {
     // 3. Mostrar popup visual
     this.mostrarPopupConfirmacion = true;
 
-    // 4. Registrar en Backend (Historial) - Sin bloquear la UI si falla
+    // 4. Registrar en Backend (Historial)
     this.apiService.registrarNuevaDescarga(nuevaDescarga).subscribe({
       next: (res) => console.log('Registro exitoso en historial'),
       error: (err) => console.warn('No se pudo guardar en historial (pero la descarga procede):', err)

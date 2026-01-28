@@ -8,36 +8,37 @@ import { FiltrosCFDI } from '../models/registro-descarga.model';
 })
 export class ApiService {
   private http = inject(HttpClient);
-  private apiUrl = 'http://172.20.23.41:8000';
-  urlBase: any;
+  
+  private apiUrl = 'http://172.20.23.41:8000'; 
 
   registrarNuevaDescarga(datos: any): Observable<any> {
-    return this.http.post(`${this.urlBase}/cfdis/registrar`, datos);
+    return this.http.post(`${this.apiUrl}/cfdis/registrar`, datos);
   }
+
   getCfdis(idDelegacion: number): Observable<any> {
     const params = new HttpParams().set('delegacion_ids', idDelegacion.toString());
-
     return this.http.get(`${this.apiUrl}/cfdis/`, { params });
   }
 
-  getCfdisConFiltros(filtros: FiltrosCFDI): Observable<any> {
+  getCfdisConFiltros(filtros: any): Observable<any> {
     let params = new HttpParams();
 
-    if (filtros.padron) {
-      params = params.set('padron', filtros.padron);
+    if (filtros) {
+      // Recorremos todas las llaves que traiga el objeto filtros
+      Object.keys(filtros).forEach(key => {
+        const valor = filtros[key];
+
+        // VALIDACIÓN CRÍTICA:
+        // Si el valor es 0, LO DEJA PASAR.
+        // Solo ignora si es null, undefined o texto vacío.
+        if (valor !== null && valor !== undefined && valor !== '') {
+          params = params.append(key, valor.toString());
+        }
+      });
     }
-    if (filtros.fechaInicio) {
-      params = params.set('ini', filtros.fechaInicio);
-    }
-    if (filtros.fechaFin) {
-      params = params.set('fin', filtros.fechaFin);
-    }
-    if (filtros.delegacion) {
-      params = params.set('delegacion', filtros.delegacion.toString());
-    }
-    if (filtros.estado) {
-      params = params.set('estado', filtros.estado);
-    }
+
+    // Para depuración: se verá en consola exactamente qué se envía
+    console.log('📡 Enviando a API:', params.toString());
 
     return this.http.get(`${this.apiUrl}/cfdis/`, { params });
   }
@@ -46,8 +47,7 @@ export class ApiService {
     return this.http.get<any[]>(`${this.apiUrl}/cfdis/municipios`);
   }
 
-  // Dentro de api.ts
-iniciarProcesoDescarga(delegacionId: number) {
-  return this.http.post(`${this.apiUrl}/descargas/iniciar`, { delegacion: delegacionId });
-}
+  iniciarProcesoDescarga(delegacionId: number) {
+    return this.http.post(`${this.apiUrl}/descargas/iniciar`, { delegacion: delegacionId });
+  }
 }
