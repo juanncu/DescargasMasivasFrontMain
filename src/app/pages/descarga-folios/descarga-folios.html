@@ -1,49 +1,24 @@
-<div class="main-container">
+<main class="main-container">
+  <div class="main-title" style="color: #AB9470;">DESCARGA MASIVA DE FOLIOS</div>
 
-  <div class="acciones-superiores">
-    <button routerLink="/historial-descargas" class="btn-regresar">
-      <mat-icon>history</mat-icon> Ver descargas
-    </button>
-  </div>
-
-  <h2 class="main-title">DESCARGA MASIVA DE FOLIOS</h2>
-
-  <div class="card-descarga">
-    <div class="info-header">
-      Filtros de descarga
-    </div>
-
+  <section class="card-descarga">
+    <div class="info-header">Filtros de descarga</div>
+    
     <div class="info-filtros">
-      
       <div class="filter-row">
-        <span class="filter-label">Estado:</span>
+        <div class="filter-label">Estado:</div>
         <div class="options-group">
-          <label class="radio-borde">
-            <input type="radio" name="estado" [(ngModel)]="estadoSeleccionado" value="Activo">
-            Activo
-          </label>
-          <label class="radio-borde">
-            <input type="radio" name="estado" [(ngModel)]="estadoSeleccionado" value="Cancelar">
-            Cancelar
-          </label>
-          <label class="radio-borde">
-            <input type="radio" name="estado" [(ngModel)]="estadoSeleccionado" value="Ambos">
-            Ambos
-          </label>
+          <label class="radio-borde"><input type="radio" name="estado" [(ngModel)]="estadoSeleccionado" value="Activo"> Activo</label>
+          <label class="radio-borde"><input type="radio" name="estado" [(ngModel)]="estadoSeleccionado" value="Cancelar"> Cancelar</label>
+          <label class="radio-borde"><input type="radio" name="estado" [(ngModel)]="estadoSeleccionado" value="Ambos"> Ambos</label>
         </div>
       </div>
 
       <div class="filter-row">
-        <span class="filter-label">Padrón:</span>
+        <div class="filter-label">Padrón:</div>
         <div class="options-group">
-          <label class="radio-borde">
-            <input type="radio" name="padron" [(ngModel)]="padronSeleccionado" value="Todas">
-            Todas
-          </label>
-          <label class="radio-borde">
-            <input type="radio" name="padron" [(ngModel)]="padronSeleccionado" value="Predial">
-            Predial
-          </label>
+          <label class="radio-borde"><input type="radio" name="padron" [(ngModel)]="padronSeleccionado" value="Todas"> Todas</label>
+          <label class="radio-borde"><input type="radio" name="padron" [(ngModel)]="padronSeleccionado" value="Predial"> Predial</label>
         </div>
       </div>
 
@@ -51,14 +26,12 @@
         <div class="input-group">
           <label>Mes de Inicio:</label>
           <select [(ngModel)]="mesInicio" class="custom-select">
-            <option value="">Seleccionar</option>
             <option *ngFor="let m of meses" [value]="m.id">{{ m.nombre }}</option>
           </select>
         </div>
         <div class="input-group">
           <label>Mes Final:</label>
           <select [(ngModel)]="mesFinal" class="custom-select">
-            <option value="">Seleccionar</option>
             <option *ngFor="let m of meses" [value]="m.id">{{ m.nombre }}</option>
           </select>
         </div>
@@ -72,51 +45,96 @@
       <div class="input-group">
         <label class="large-label">Seleccione una Delegación:</label>
         <select [(ngModel)]="delegacionSeleccionada" class="custom-select">
-          <option value="">Seleccionar</option>
-          <option *ngFor="let item of listaDelegaciones" [value]="item.Id">
-            {{ item.Nombre }}
+          <option *ngFor="let d of listaDelegaciones" [value]="d.Id || d.id">
+            {{ d.Id || d.id }} {{ d.Nombre || d.nombre }}
           </option>
         </select>
       </div>
 
       <div class="button-container">
-        <button (click)="buscar()" class="btn-buscar">
-          BUSCAR
-        </button>
+        <button (click)="buscar()" class="btn-buscar">BUSCAR</button>
       </div>
-
     </div>
-  </div>
+  </section>
 
-  <div *ngIf="resultados" class="resultados-container">
-    <div class="info-header" style="background: #e5e5e5; color: #333; border-bottom: 1px solid #ccc;">
-      Resultados de la búsqueda
-    </div>
+  <section *ngIf="resultados" class="resultados-container">
+    <div class="info-header">Resultados de la búsqueda</div>
     <div class="info-filtros">
       <div class="resultados-grid">
-        <p><strong>Archivos encontrados:</strong> {{ resultados.archivos }}</p>
-        <p><strong>Tamaño aprox:</strong> {{ resultados.tamanio }}</p>
+        <span class="resultados-color font-bold">Archivos encontrados: {{ resultados.archivos }}</span>
+        <span class="resultados-color-3 font-bold">Tamaño aprox: {{ resultados.tamanio }}</span>
       </div>
-      <p class="resultado-tiempo">Tiempo estimado: {{ resultados.tiempo }}</p>
-      
-      <div class="button-container">
-        <button (click)="confirmarDescarga()" class="btn-confirmar">
-          CONFIRMAR DESCARGA
-        </button>
+      <div class="resultado-tiempo">
+        <span class="resultados-color-2 font-bold">Tiempo aproximado de descarga: 5 minutos</span>
       </div>
     </div>
-  </div>
+  </section>
 
-  <div *ngIf="mostrarPopupConfirmacion" style="position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 50;">
-    <div class="card-descarga" style="max-width: 400px; text-align: center; padding: 20px;">
-      <div style="font-size: 40px; color: green;">✓</div>
-      <h2 class="main-title" style="margin-bottom: 10px;">¡Descarga iniciada!</h2>
-      <p>Los archivos se están procesando.</p>
-      <div class="button-container" style="flex-direction: column; gap: 10px;">
-        <button (click)="irAlHistorial()" class="btn-buscar">Ver descargas</button>
-        <button (click)="reiniciarFiltros()" class="btn-regresar" style="justify-content: center;">Nueva descarga</button>
-      </div>
-    </div>
-  </div>
 
+  <div *ngIf="resultados" class="button-container animate-zoom" style="flex-direction: column; gap: 15px; margin-top: 30px;">
+  
+  <button (click)="confirmarDescarga()" class="btn-confirmar">
+    CONFIRMAR DESCARGA
+  </button>
+
+  <button (click)="simularProgreso()" 
+          class="btn-test-simulador">
+    🧪 PROBAR BARRA (Simulación local)
+  </button>
+  
 </div>
+
+  <div *ngIf="mostrarPopupConfirmacion" class="modal-overlay">
+    
+    <div *ngIf="progreso >= 100" class="confetti-wrapper">
+  <div class="confetti-piece" style="left: 5%;  animation-delay: 0s;   background-color: #f4d4d4;"></div>
+  <div class="confetti-piece" style="left: 15%; animation-delay: 1.5s; background-color: #4d94ff;"></div>
+  <div class="confetti-piece" style="left: 25%; animation-delay: 0.5s; background-color: #ffd700;"></div>
+  <div class="confetti-piece" style="left: 35%; animation-delay: 0.7s; background-color: #ff4d4d;"></div>
+  <div class="confetti-piece" style="left: 45%; animation-delay: 1.7s; background-color: #b91c1c;"></div>
+  
+  <div class="confetti-piece" style="left: 55%; animation-delay: 1.1s; background-color: #f4d4d4;"></div>
+  <div class="confetti-piece" style="left: 65%; animation-delay: 0.2s; background-color: #ffd700;"></div>
+  <div class="confetti-piece" style="left: 75%; animation-delay: 1.3s; background-color: #4d94ff;"></div>
+  <div class="confetti-piece" style="left: 85%; animation-delay: 0.9s; background-color: #ff4d4d;"></div>
+  <div class="confetti-piece" style="left: 95%; animation-delay: 1.9s; background-color: #b91c1c;"></div>
+
+  <div class="confetti-piece" style="left: 10%; animation-delay: 2.5s; background-color: #ffd700;"></div>
+  <div class="confetti-piece" style="left: 30%; animation-delay: 0.4s; background-color: #4d94ff;"></div>
+  <div class="confetti-piece" style="left: 50%; animation-delay: 1.8s; background-color: #ff4d4d;"></div>
+  <div class="confetti-piece" style="left: 70%; animation-delay: 0.1s; background-color: #f4d4d4;"></div>
+  <div class="confetti-piece" style="left: 90%; animation-delay: 1.4s; background-color: #b91c1c;"></div>
+</div>
+
+    <div class="modal-content animate-zoom">
+      <div class="modal-icon-circle" [style.background-color]="progreso >= 100 ? '#dcfce7' : '#f0f9ff'">
+        <span [style.color]="progreso >= 100 ? '#16a34a' : '#0369a1' " class="modal-check">
+          {{ progreso >= 100 ? '✓' : '⬇' }}
+        </span>
+      </div>
+
+      <h2 class="modal-title italic">
+        {{ progreso >= 100 ? '¡Listo para descargar!' : '¡Descarga en proceso!' }}
+      </h2>
+      <p class="modal-text">Los archivos se están procesando para su descarga.</p>
+
+      <div class="progress-section">
+        <div class="progress-bg">
+          <div class="progress-fill" [style.width.%]="progreso">
+            <div class="shimmer-effect"></div>
+          </div>
+        </div>
+        <div class="progress-labels">
+          <span>{{ progreso }}% COMPLETADO</span>
+          <span style="color: #b91c1c;">⏱ {{ tiempoEstimado }}</span>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button (click)="irAlHistorial()" class="btn-modal-red">VER DESCARGAS</button>
+        <button (click)="reiniciarFiltros()" class="btn-modal-dark">HACER OTRA DESCARGA</button>
+        <button (click)="mostrarPopupConfirmacion = false" class="btn-modal-close">Cerrar ventana</button>
+      </div>
+    </div>
+  </div>
+</main>

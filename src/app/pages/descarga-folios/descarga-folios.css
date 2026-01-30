@@ -264,3 +264,206 @@
   padding: 6px 10px;
   border-radius: 12px
 }
+
+/* --- ESTILOS DEL MODAL --- */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modal-content {
+  background: white;
+  width: 100%;
+  max-width: 400px;
+  padding: 40px;
+  border-radius: 20px;
+  text-align: center;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+.modal-icon-circle {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  margin: 0 auto 20px auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-check {
+  font-size: 30px;
+  font-weight: bold;
+}
+
+.modal-title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #1f2937;
+  margin-bottom: 8px;
+}
+
+.modal-text {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-bottom: 24px;
+}
+
+/* --- BARRA DE PROGRESO --- */
+.progress-section {
+  background-color: #f9fafb;
+  padding: 15px;
+  border-radius: 15px;
+  border: 1px solid #f3f4f6;
+  margin-bottom: 24px;
+}
+
+.progress-bg {
+  width: 100%;
+  background-color: #e5e7eb;
+  height: 12px;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  background-color: #b91c1c; /* Rojo delegación */
+  height: 100%;
+  transition: width 0.5s ease-out;
+  position: relative;
+}
+
+.progress-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+  font-size: 11px;
+  font-weight: 800;
+  color: #9ca3af;
+}
+
+/* --- BOTONES DEL MODAL --- */
+.modal-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.btn-modal-red {
+  background-color: #b91c1c;
+  color: white;
+  padding: 12px;
+  border-radius: 12px;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+  text-transform: uppercase;
+}
+
+.btn-modal-dark {
+  background-color: #1f2937;
+  color: white;
+  padding: 12px;
+  border-radius: 12px;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+  text-transform: uppercase;
+}
+
+.btn-modal-close {
+  background: none;
+  border: none;
+  color: #9ca3af;
+  font-size: 12px;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+/* --- EFECTO CONFETI --- */
+/* Contenedor que ocupa todo el modal */
+.confetti-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none; /* Para que no bloquee los botones */
+  z-index: 5;
+}
+
+.confetti-piece {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  top: -20px;
+  opacity: 0.8;
+  border-radius: 2px;
+  animation: fall-and-shake 3s linear infinite;
+}
+
+/* Animación de caída con balanceo y rotación */
+@keyframes fall-and-shake {
+  0% {
+    transform: translateY(0) rotate(0deg) translateX(0);
+    opacity: 1;
+  }
+  25% {
+    transform: translateY(25vh) rotate(90deg) translateX(15px);
+  }
+  50% {
+    transform: translateY(50vh) rotate(180deg) translateX(-15px);
+  }
+  75% {
+    transform: translateY(75vh) rotate(270deg) translateX(15px);
+  }
+  100% {
+    transform: translateY(100vh) rotate(360deg) translateX(0);
+    opacity: 0;
+  }
+}
+
+.animate-zoom {
+  animation: zoomIn 0.3s ease-out;
+}
+
+@keyframes zoomIn {
+  from { transform: scale(0.8); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+
+.btn-test-simulador {
+  background: transparent;
+  color: #9ca3af; 
+  border: 1px dashed #9ca3af;
+  padding: 6px 15px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s;
+  text-transform: uppercase;
+}
+
+.btn-test-simulador:hover {
+  background-color: #f3f4f6;
+  color: #4b5563;
+  border-color: #4b5563;
+}
+
+/* Animación para que los botones entren con estilo */
+.animate-zoom {
+  animation: zoomIn 0.3s ease-out;
+}
+
+@keyframes zoomIn {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
