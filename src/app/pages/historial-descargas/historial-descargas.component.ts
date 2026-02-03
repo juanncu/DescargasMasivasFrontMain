@@ -22,6 +22,7 @@ import { HistorialDescarga } from '../../models/historial.descarga.model';
 export class HistorialDescargas implements OnInit {
 
   historial: HistorialDescarga[] = [];
+  detalle!: HistorialDescarga;
 
   constructor(private router: Router) { }
 
@@ -90,7 +91,12 @@ export class HistorialDescargas implements OnInit {
     ];
   }
 
-  verDetalle(id: number) {
-    this.router.navigate(['/historial-descargas', id]);
-  }
+  verDetalle(descarga: HistorialDescarga) {
+  // Aquí asignamos el objeto completo del historial a la variable que usa el HTML
+  this.detalle = descarga; 
+  console.log('Viendo detalle de:', this.detalle);
+  
+  // Si usas rutas, asegúrate de navegar pasando el ID
+  this.router.navigate(['/historial-descargas', descarga.id]);
+}
 }
