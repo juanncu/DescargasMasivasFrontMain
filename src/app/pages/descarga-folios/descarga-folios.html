@@ -22,6 +22,21 @@
         </div>
       </div>
 
+      <div class="filter-row">
+  <div class="filter-label">Formato:</div>
+  <div class="options-group">
+    <label class="checkbox-borde">
+      <input type="checkbox" [(ngModel)]="formatoPdf" name="pdf"> PDF
+    </label>
+    <label class="checkbox-borde">
+      <input type="checkbox" [(ngModel)]="formatoXml" name="xml"> XML
+    </label>
+    <label class="checkbox-borde">
+      <input type="checkbox" [(ngModel)]="formatoRecibos" name="recibos"> Recibos
+    </label>
+  </div>
+</div>
+
       <div class="grid-meses">
         <div class="input-group">
           <label>Mes de Inicio:</label>
@@ -38,9 +53,11 @@
       </div>
 
       <div class="input-group">
-        <label>Año:</label>
-        <input type="number" [(ngModel)]="anio" class="custom-input small-input">
-      </div>
+  <label>Año:</label>
+  <select [(ngModel)]="anio" class="custom-select small-input">
+    <option *ngFor="let a of aniosDisponibles" [value]="a">{{ a }}</option>
+  </select>
+</div>
 
       <div class="input-group">
         <label class="large-label">Seleccione una Delegación:</label>

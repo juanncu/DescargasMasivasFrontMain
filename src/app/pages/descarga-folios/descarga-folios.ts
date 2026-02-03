@@ -38,9 +38,15 @@ export class DescargaFoliosComponent implements OnInit {
   cargando = false;
   mostrarPopupConfirmacion = false;
 
+  formatoPdf: boolean = true;   // Marcado por defecto
+  formatoXml: boolean = true;   // Marcado por defecto
+  formatoRecibos: boolean = false;
+
   // Variables de progreso
   progreso = 0;
   tiempoEstimado = 'Calculando...'; // Corregido el nombre
+
+  aniosDisponibles: number[] = [2026, 2025];
 
   meses = [
     { id: 1, nombre: 'Enero' }, { id: 2, nombre: 'Febrero' }, { id: 3, nombre: 'Marzo' },
@@ -51,6 +57,7 @@ export class DescargaFoliosComponent implements OnInit {
 
   ngOnInit() {
     this.cargarMunicipios();
+    this.anio = 2026;
   }
 
   cargarMunicipios() {
@@ -108,6 +115,17 @@ export class DescargaFoliosComponent implements OnInit {
           this.cargando = false;
         }
       });
+
+      const formatosSeleccionados = {
+    pdf: this.formatoPdf,
+    xml: this.formatoXml,
+    recibos: this.formatoRecibos
+  };
+
+  if (!this.formatoPdf && !this.formatoXml && !this.formatoRecibos) {
+    alert('Por favor, seleccione al menos un formato (PDF, XML o Recibos)');
+    return;
+  }
   }
 
   confirmarDescarga() {

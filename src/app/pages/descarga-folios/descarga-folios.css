@@ -467,3 +467,36 @@
   from { transform: scale(0.95); opacity: 0; }
   to { transform: scale(1); opacity: 1; }
 }
+
+/* Diseño para Checkboxes consistente con tus Radios */
+.checkbox-borde {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.checkbox-borde input[type="checkbox"] {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border: 2px solid #BCA986; /* Tu color arena */
+  border-radius: 3px; /* Forma cuadrada para checkbox */
+  position: relative;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.checkbox-borde input[type="checkbox"]:checked {
+  background-color: #BCA986;
+}
+
+.checkbox-borde input[type="checkbox"]:checked::after {
+  content: '✓';
+  position: absolute;
+  color: white;
+  font-size: 14px;
+  top: -2px;
+  left: 2px;
+  font-weight: bold;
+}
