@@ -45,8 +45,8 @@
       <div class="input-group">
         <label class="large-label">Seleccione una Delegación:</label>
         <select [(ngModel)]="delegacionSeleccionada" class="custom-select">
-          <option *ngFor="let d of listaDelegaciones" [value]="d.Id || d.id">
-            {{ d.Id || d.id }} {{ d.Nombre || d.nombre }}
+          <option *ngFor="let item of listaDelegaciones" [value]="item.delegacionID">
+            {{ item.delegacion }}
           </option>
         </select>
       </div>
