@@ -5,21 +5,26 @@
     <div class="info-header">Filtros de descarga</div>
     
     <div class="info-filtros">
-      <div class="filter-row">
-        <div class="filter-label">Estado:</div>
-        <div class="options-group">
-          <label class="radio-borde"><input type="radio" name="estado" [(ngModel)]="estadoSeleccionado" value="Activo"> Activo</label>
-          <label class="radio-borde"><input type="radio" name="estado" [(ngModel)]="estadoSeleccionado" value="Cancelar"> Cancelar</label>
-          <label class="radio-borde"><input type="radio" name="estado" [(ngModel)]="estadoSeleccionado" value="Ambos"> Ambos</label>
-        </div>
+     <div class="filter-row"> 
+          <div class="filter-label">Estado de la cuenta :</div>
+        <select [(ngModel)]="estadoSeleccionadoId">
+          <option [ngValue]="null">Seleccione estado</option>
+          <option *ngFor="let e of estados" [ngValue]="e.id">
+            {{ e.nombre }}
+          </option>
+        </select>
       </div>
 
       <div class="filter-row">
-        <div class="filter-label">Padrón:</div>
-        <div class="options-group">
-          <label class="radio-borde"><input type="radio" name="padron" [(ngModel)]="padronSeleccionado" value="Todas"> Todas</label>
-          <label class="radio-borde"><input type="radio" name="padron" [(ngModel)]="padronSeleccionado" value="Predial"> Predial</label>
-        </div>
+          <div class="filter-label">Padrón:</div>
+          <select [(ngModel)]="padronSeleccionadoId">
+          <option [ngValue]="null">Seleccione padrón</option>
+          <option *ngFor="let p of padrones" [ngValue]="p.id">
+            {{ p.nombre }}
+          </option>
+</select>
+
+ 
       </div>
 
       <div class="filter-row">
@@ -34,8 +39,8 @@
     <label class="checkbox-borde">
       <input type="checkbox" [(ngModel)]="formatoRecibos" name="recibos"> Recibos
     </label>
-  </div>
-</div>
+        </div>
+      </div>
 
       <div class="grid-meses">
         <div class="input-group">
@@ -52,10 +57,12 @@
         </div>
       </div>
 
-      <div class="input-group">
+<div class="input-group">
   <label>Año:</label>
-  <select [(ngModel)]="anio" class="custom-select small-input">
-    <option *ngFor="let a of aniosDisponibles" [value]="a">{{ a }}</option>
+  <select [(ngModel)]="aniosDisponibles" class="custom-select">
+    <option *ngFor="let a of aniosDisponibles" [value]="a">
+      {{ a }}
+    </option>
   </select>
 </div>
 
