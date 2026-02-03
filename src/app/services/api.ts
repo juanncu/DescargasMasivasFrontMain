@@ -9,7 +9,7 @@ import { FiltrosCFDI } from '../models/registro-descarga.model';
 export class ApiService {
   private http = inject(HttpClient);
   
-  private apiUrl = 'http://172.20.23.41:8000'; 
+  private apiUrl = 'http://172.20.23.41:5000'; 
 
   registrarNuevaDescarga(datos: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/cfdis/registrar`, datos);
@@ -40,11 +40,11 @@ export class ApiService {
     // Para depuración: se verá en consola exactamente qué se envía
     console.log('📡 Enviando a API:', params.toString());
 
-    return this.http.get(`${this.apiUrl}/cfdis/`, { params });
+    return this.http.get(`${this.apiUrl}/ObtenerTotalDeArchivos/`, { params });
   }
 
   getMunicipios(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/cfdis/municipios`);
+    return this.http.get<any[]>(`${this.apiUrl}/ObtenerDelegaciones`);
   }
 
   iniciarProcesoDescarga(delegacionId: number) {
