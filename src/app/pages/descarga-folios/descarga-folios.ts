@@ -50,14 +50,15 @@ export class DescargaFoliosComponent implements OnInit {
   ];
 
   ngOnInit() {
+    console.log('Iniciando componente...');
     this.cargarMunicipios();
   }
 
   cargarMunicipios() {
     this.apiService.getMunicipios().subscribe({
       next: (respuesta: any) => {
-        if (respuesta && respuesta.municipios) {
-          this.listaDelegaciones = respuesta.municipios;
+        if (respuesta && respuesta.delegacion) {
+          this.listaDelegaciones = respuesta.delegacion;
         } else if (Array.isArray(respuesta)) {
           this.listaDelegaciones = respuesta;
         }
@@ -87,13 +88,15 @@ export class DescargaFoliosComponent implements OnInit {
     const fechaFin = `${this.anio}-${mesFinStr}-${ultimoDia}`;
 
     const filtros = {
-      delegacion: Number(this.delegacionSeleccionada),
       padron: padronId,
       estado: estadoId,
-      ini: fechaInicio, 
-      fin: fechaFin    
+      delegacion: Number(this.delegacionSeleccionada),
+      anio: this.anio,
+      inicio: this.mesInicio,
+      fin: this.mesFinal,    
     };
 
+    console.log('Enviando filtros a API:', filtros);
     this.selectDescarga.setFiltros(filtros);
 
     this.descargaService.buscarFolios(this.delegacionSeleccionada, '', filtros)
