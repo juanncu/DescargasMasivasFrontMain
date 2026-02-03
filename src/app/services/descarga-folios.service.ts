@@ -66,7 +66,7 @@ export class DescargaFoliosService {
 
   // --- MÉTODOS PRIVADOS (AYUDANTES) ---
 
-  private calcularTamanio(data: any[]): string {
+  private calcularTamanio(data: number): string {
     const tamanioKB = data * 3000;
     const tamanioMB = tamanioKB / 1024;
 
