@@ -14,10 +14,9 @@ import { ApiService } from '../../services/api';
   imports: [FormsModule, CommonModule, RouterModule, MatIconModule],
   templateUrl: './descarga-folios.html',
   styleUrls: ['./descarga-folios.css'],
-  providers: [DescargaFoliosService]
+  providers: [DescargaFoliosService],
 })
 export class DescargaFoliosComponent implements OnInit {
-
   private descargaService = inject(DescargaFoliosService);
   private selectDescarga = inject(SelectDescarga);
   private router = inject(Router);
@@ -29,12 +28,12 @@ export class DescargaFoliosComponent implements OnInit {
   mesInicio = '';
   mesFinal = '';
   anio: number = new Date().getFullYear();
-  
+
   estadoSeleccionado = 'Ambos';
   padronSeleccionado = 'Todas';
 
   listaDelegaciones: any[] = [];
-  resultados: any = { archivos: 0, tamanio: '0 KB' };
+  resultados: any = null;
   cargando = false;
   mostrarPopupConfirmacion = false;
 
@@ -43,10 +42,18 @@ export class DescargaFoliosComponent implements OnInit {
   tiempoEstimado = 'Calculando...'; // Corregido el nombre
 
   meses = [
-    { id: 1, nombre: 'Enero' }, { id: 2, nombre: 'Febrero' }, { id: 3, nombre: 'Marzo' },
-    { id: 4, nombre: 'Abril' }, { id: 5, nombre: 'Mayo' }, { id: 6, nombre: 'Junio' },
-    { id: 7, nombre: 'Julio' }, { id: 8, nombre: 'Agosto' }, { id: 9, nombre: 'Septiembre' },
-    { id: 10, nombre: 'Octubre' }, { id: 11, nombre: 'Noviembre' }, { id: 12, nombre: 'Diciembre' }
+    { id: 1, nombre: 'Enero' },
+    { id: 2, nombre: 'Febrero' },
+    { id: 3, nombre: 'Marzo' },
+    { id: 4, nombre: 'Abril' },
+    { id: 5, nombre: 'Mayo' },
+    { id: 6, nombre: 'Junio' },
+    { id: 7, nombre: 'Julio' },
+    { id: 8, nombre: 'Agosto' },
+    { id: 9, nombre: 'Septiembre' },
+    { id: 10, nombre: 'Octubre' },
+    { id: 11, nombre: 'Noviembre' },
+    { id: 12, nombre: 'Diciembre' },
   ];
 
   ngOnInit() {
@@ -61,10 +68,15 @@ export class DescargaFoliosComponent implements OnInit {
           this.listaDelegaciones = respuesta.delegacion;
         } else if (Array.isArray(respuesta)) {
           this.listaDelegaciones = respuesta;
+        } else {
+          this.listaDelegaciones = [];
+          console.warn('Formato de municipios desconocido:', respuesta);
         }
+
+        console.log('Municipios cargados:', this.listaDelegaciones);
         this.cd.detectChanges();
       },
-      error: (err) => console.error("Error cargando municipios:", err)
+      error: (err) => console.error('Error cargando municipios:', err),
     });
   }
 
@@ -78,7 +90,8 @@ export class DescargaFoliosComponent implements OnInit {
     this.resultados = null;
 
     let padronId = this.padronSeleccionado === 'Predial' ? 1 : 0;
-    let estadoId = this.estadoSeleccionado === 'Activo' ? 1 : (this.estadoSeleccionado === 'Cancelar' ? 2 : 3);
+    let estadoId =
+      this.estadoSeleccionado === 'Activo' ? 1 : this.estadoSeleccionado === 'Cancelar' ? 2 : 3;
 
     const mesIniStr = this.mesInicio.toString().padStart(2, '0');
     const fechaInicio = `${this.anio}-${mesIniStr}-01`;
@@ -93,31 +106,32 @@ export class DescargaFoliosComponent implements OnInit {
       delegacion: Number(this.delegacionSeleccionada),
       anio: this.anio,
       inicio: this.mesInicio,
-      fin: this.mesFinal,    
+      fin: this.mesFinal,
     };
 
     console.log('Enviando filtros a API:', filtros);
     this.selectDescarga.setFiltros(filtros);
 
-    this.descargaService.buscarFolios(this.delegacionSeleccionada, '', filtros)
-      .subscribe({
-        next: (resultados) => {
-          this.resultados = resultados;
-          this.cargando = false;
-          this.cd.detectChanges();
-        },
-        error: (error) => {
-          console.error('Error al buscar folios:', error);
-          this.cargando = false;
-        }
-      });
+    this.descargaService.buscarFolios(this.delegacionSeleccionada, '', filtros).subscribe({
+      next: (resultados) => {
+        this.resultados = resultados;
+        this.cargando = false;
+        this.cd.detectChanges();
+      },
+      error: (error) => {
+        console.error('Error al buscar folios:', error);
+        this.cargando = false;
+      },
+    });
   }
 
   confirmarDescarga() {
     const delegacionEncontrada = this.listaDelegaciones.find(
-      d => (d.Id || d.id) == this.delegacionSeleccionada
+      (d) => (d.Id || d.id) == this.delegacionSeleccionada,
     );
-    const nombreDelegacion = delegacionEncontrada ? (delegacionEncontrada.Nombre || delegacionEncontrada.nombre) : 'Desconocida';
+    const nombreDelegacion = delegacionEncontrada
+      ? delegacionEncontrada.Nombre || delegacionEncontrada.nombre
+      : 'Desconocida';
 
     const nuevaDescarga = {
       delegacion: nombreDelegacion,
@@ -126,7 +140,7 @@ export class DescargaFoliosComponent implements OnInit {
       tamanio: this.resultados?.tamanio || '0 KB',
       anio: this.anio,
       estado: 'pendiente',
-      fecha_creacion: new Date()
+      fecha_creacion: new Date(),
     };
 
     // --- REINTEGRACIÓN DE LA BARRA ---
@@ -136,7 +150,8 @@ export class DescargaFoliosComponent implements OnInit {
     // Iniciamos la escucha del progreso vía WebSocket
     this.descargaService.iniciarDescarga(Number(this.delegacionSeleccionada)).subscribe({
       next: (evento) => {
-        this.zone.run(() => { // NgZone asegura que la barra se mueva visualmente
+        this.zone.run(() => {
+          // NgZone asegura que la barra se mueva visualmente
           if (evento.tipo?.toUpperCase() === 'PROGRESO') {
             const valor = parseFloat(evento.progreso.toString().replace('%', ''));
             if (!isNaN(valor)) {
@@ -146,13 +161,13 @@ export class DescargaFoliosComponent implements OnInit {
           }
         });
       },
-      error: (err) => console.error('Error en WebSocket de progreso:', err)
+      error: (err) => console.error('Error en WebSocket de progreso:', err),
     });
 
     // Registro paralelo en el historial
     this.apiService.registrarNuevaDescarga(nuevaDescarga).subscribe({
       next: (res) => console.log('Registro exitoso en historial'),
-      error: (err) => console.warn('Error en registro de historial:', err)
+      error: (err) => console.warn('Error en registro de historial:', err),
     });
   }
 
@@ -177,28 +192,26 @@ export class DescargaFoliosComponent implements OnInit {
   }
 
   obtenerNombreMes(id: any): string {
-    const mes = this.meses.find(m => m.id == id);
+    const mes = this.meses.find((m) => m.id == id);
     return mes ? mes.nombre : String(id);
   }
 
+  simularProgreso() {
+    this.mostrarPopupConfirmacion = true; // Abrimos el modal
+    this.progreso = 0; // Reiniciamos la barra
+    this.tiempoEstimado = 'Calculando...';
 
-
-simularProgreso() {
-  this.mostrarPopupConfirmacion = true; // Abrimos el modal
-  this.progreso = 0; // Reiniciamos la barra
-  this.tiempoEstimado = 'Calculando...';
-
-  const intervalo = setInterval(() => {
-    this.zone.run(() => {
-      if (this.progreso < 100) {
-        this.progreso += 10; // Sube de 10 en 10
-        this.tiempoEstimado = this.calcularTiempoRestante(this.progreso);
-      } else {
-        clearInterval(intervalo); // Se detiene al llegar a 100
-        console.log('Simulación completada con éxito');
-      }
-      this.cd.detectChanges(); // Forzamos a que Angular pinte el cambio
-    });
-  }, 500); // Se actualiza cada 500ms
-}
+    const intervalo = setInterval(() => {
+      this.zone.run(() => {
+        if (this.progreso < 100) {
+          this.progreso += 10; // Sube de 10 en 10
+          this.tiempoEstimado = this.calcularTiempoRestante(this.progreso);
+        } else {
+          clearInterval(intervalo); // Se detiene al llegar a 100
+          console.log('Simulación completada con éxito');
+        }
+        this.cd.detectChanges(); // Forzamos a que Angular pinte el cambio
+      });
+    }, 500); // Se actualiza cada 500ms
+  }
 }
