@@ -21,10 +21,10 @@ export class DescargaFoliosService {
     return this.apiService.getCfdisConFiltros(filtros).pipe(
       map((data: any) => {
         // Validación por si la data viene nula
-        const listaArchivos = Array.isArray(data) ? data : [];
+        //const listaArchivos = Array.isArray(data) ? data : [];
         
-        const totalArchivos = listaArchivos.length;
-        const tamanioTotal = this.calcularTamanio(listaArchivos);
+        const totalArchivos = data.total;
+        const tamanioTotal = this.calcularTamanio(totalArchivos);
 
         // Calculamos un tiempo estimado (ejemplo: 0.5 segundos por archivo)
         // Puedes ajustar esta fórmula según la velocidad real de tu servidor
@@ -67,18 +67,15 @@ export class DescargaFoliosService {
   // --- MÉTODOS PRIVADOS (AYUDANTES) ---
 
   private calcularTamanio(data: any[]): string {
-    const tamanioEnBytes = data.reduce((total, item) => {
-      // Suma el tamaño si existe, si no, asume 50KB promedio por XML
-      return total + (item.tamanio || 50000); 
-    }, 0);
+    const tamanioKB = data * 3000;
+    const tamanioMB = tamanioKB / 1024;
 
-    // Conversión correcta (Base 1024)
-    if (tamanioEnBytes > 1073741824) { 
-      return (tamanioEnBytes / 1073741824).toFixed(2) + ' GB';
-    } else if (tamanioEnBytes > 1048576) { 
-      return (tamanioEnBytes / 1048576).toFixed(2) + ' MB';
+    if (tamanioMB < 1024) {
+      return `${tamanioMB.toFixed(2)} MB`;
     }
-    return (tamanioEnBytes / 1024).toFixed(2) + ' KB';
+
+    const tamanioGB = tamanioMB / 1024;
+    return `${tamanioGB.toFixed(2)} GB`;
   }
 
   private formatearTiempo(segundos: number): string {
