@@ -1,5 +1,5 @@
 <div class="detalle-wrapper">
-  
+
   <button class="btn-volver" (click)="volver()">
     <mat-icon style="font-size: 16px; height: 16px; width: 16px;">arrow_back</mat-icon> Volver al historial
   </button>
@@ -14,25 +14,27 @@
   <div *ngIf="detalle">
     <p style="color: #666; margin-left: 5px;">{{ detalle.mes }}</p>
 
-    <div class="cards">
-      <div class="card">
-        <p>Folios</p>
-        <strong>{{ detalle.folios }}</strong>
+    <div class="grid grid-cols-4 gap-4 mb-8">
+      <div class="stat-card">
+        <span class="label">PDFs</span>
+        <span class="value">{{ detalle?.totalPdf || 0 }}</span>
       </div>
 
-      <div class="card">
-        <p>Archivos</p>
-        <strong>{{ detalle.archivos }}</strong>
+      <div class="stat-card">
+        <span class="label">XMLs</span>
+        <span class="value">{{ detalle?.totalXml || 0 }}</span>
       </div>
 
-      <div class="card" [ngClass]="{'card-error': detalle.errores > 0}">
-        <p>Errores</p>
-        <strong>{{ detalle.errores }}</strong>
+      <div class="stat-card">
+        <span class="label">Recibos</span>
+        <span class="value">{{ detalle?.totalRecibos || 0 }}</span>
       </div>
-      
-      <div class="card">
-        <p>Tamaño</p>
-        <strong>{{ detalle.tamanio }}</strong>
+
+      <div class="stat-card" [ngClass]="{'has-errors': detalle.omitidos > 0}">
+        <span class="label">Omitidos</span>
+        <span class="value" [class.text-danger]="detalle.omitidos > 0">
+          {{ detalle.omitidos || 0 }}
+        </span>
       </div>
     </div>
 
@@ -50,17 +52,15 @@
 
     <h3>Registro de actividad</h3>
     <div class="log">
-      <div *ngFor="let r of detalle.registros"
-           [class.OK]="r.estado === 'OK'"
-           [class.ERROR]="r.estado === 'ERROR'">
+      <div *ngFor="let r of detalle.registros" [class.OK]="r.estado === 'OK'" [class.ERROR]="r.estado === 'ERROR'">
         [{{ r.estado }}] {{ r.mensaje }}
       </div>
     </div>
 
     <div class="acciones">
       <button class="btn retry" *ngIf="detalle.errores > 0">
-         Reintentar
-      </button> 
+        Reintentar
+      </button>
       <button class="btn open">Abrir carpeta</button>
       <button class="btn export">Exportar log</button>
     </div>

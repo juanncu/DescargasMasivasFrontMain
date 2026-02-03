@@ -1,13 +1,17 @@
-<header class="header w-full bg-red-700 text-white shadow-md">
-  <div class="max-w-7xl mx-auto flex items-center justify-between px-6 py-4">
+<header class="bg-[#b91c1c] text-white p-4 flex justify-between items-center shadow-md">
+  <div class="font-bold tracking-widest uppercase text-sm md:text-base">
+    AUTOMATIZACIÓN CDFI POR DELEGACIÓN
+  </div>
+
+  <div class="flex items-center gap-4">
+    <div class="flex items-center gap-2 cursor-default">
+      <span class="text-xs font-bold uppercase tracking-tighter opacity-80">Usuario:</span>
+      <span class="font-bold text-sm">ADMIN_01</span>
+    </div>
     
-    <h1 class="text-lg font-semibold tracking-wide">
-      AUTOMATIZACIÓN CDFI POR DELEGACIÓN
-    </h1>
-
-    <nav class="flex items-center gap-6">
-      <span class="text-sm font-medium">USUARIO</span>
-    </nav>
-
+    <button (click)="logout()" class="btn-logout" title="Cerrar Sesión">
+      <mat-icon>logout</mat-icon>
+      <span class="hidden md:inline">SALIR</span>
+    </button>
   </div>
 </header>

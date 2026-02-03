@@ -16,9 +16,12 @@ export interface RegistroFolio {
 }
 
 export interface FiltrosCFDI {
-  padron: number | null;
   fechaInicio: string | null;
   fechaFin: string | null;
   delegacion: number | null;
   estado: number | null;
+  anio: number;          // <--- Agregar este
+  padron: number | null;        // <--- Agregar este
+  estadoFiltro: string;  // <--- Agregar este
+  formatos: string;
 }

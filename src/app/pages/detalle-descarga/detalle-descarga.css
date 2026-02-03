@@ -168,3 +168,50 @@ h3{
 .mat-icon{
   padding-top: 4px;
 }
+
+
+/* Contenedor base de las estadísticas (Folios, Archivos, Omitidos, Tamaño) */
+.stat-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: all 0.3s ease;
+}
+
+/* Estilo específico para cuando hay archivos omitidos/errores */
+.stat-card.has-errors {
+  background-color: #fef2f2; /* Un fondo rojo muy tenue */
+  border-color: #fecaca;     /* Borde rojizo */
+  box-shadow: 0 4px 6px -1px rgba(220, 38, 38, 0.1);
+}
+
+.stat-card .label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #6b7280; /* Gris para la etiqueta */
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.stat-card .value {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #1f2937; /* Negro/Gris oscuro para el número */
+}
+
+/* El número en rojo resaltado si hay fallos */
+.text-danger {
+  color: #b91c1c !important; /* Rojo institucional */
+  animation: pulse-red 2s infinite;
+}
+
+@keyframes pulse-red {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
