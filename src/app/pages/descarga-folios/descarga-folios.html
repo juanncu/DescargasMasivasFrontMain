@@ -3,39 +3,44 @@
 
   <section class="card-descarga">
     <div class="info-header">Filtros de descarga</div>
-    
+
     <div class="info-filtros">
       <div class="filter-row">
         <div class="filter-label">Estado:</div>
         <div class="options-group">
-          <label class="radio-borde"><input type="radio" name="estado" [(ngModel)]="estadoSeleccionado" value="Activo"> Activo</label>
-          <label class="radio-borde"><input type="radio" name="estado" [(ngModel)]="estadoSeleccionado" value="Cancelar"> Cancelar</label>
-          <label class="radio-borde"><input type="radio" name="estado" [(ngModel)]="estadoSeleccionado" value="Ambos"> Ambos</label>
+          <label class="radio-borde"><input type="radio" name="estado" [(ngModel)]="estadoSeleccionado" value="Activo">
+            Activo</label>
+          <label class="radio-borde"><input type="radio" name="estado" [(ngModel)]="estadoSeleccionado"
+              value="Cancelar"> Cancelar</label>
+          <label class="radio-borde"><input type="radio" name="estado" [(ngModel)]="estadoSeleccionado" value="Ambos">
+            Ambos</label>
         </div>
       </div>
 
       <div class="filter-row">
         <div class="filter-label">Padrón:</div>
         <div class="options-group">
-          <label class="radio-borde"><input type="radio" name="padron" [(ngModel)]="padronSeleccionado" value="Todas"> Todas</label>
-          <label class="radio-borde"><input type="radio" name="padron" [(ngModel)]="padronSeleccionado" value="Predial"> Predial</label>
+          <label class="radio-borde"><input type="radio" name="padron" [(ngModel)]="padronSeleccionado" value="Todas">
+            Todas</label>
+          <label class="radio-borde"><input type="radio" name="padron" [(ngModel)]="padronSeleccionado" value="Predial">
+            Predial</label>
         </div>
       </div>
 
       <div class="filter-row">
-  <div class="filter-label">Formato:</div>
-  <div class="options-group">
-    <label class="checkbox-borde">
-      <input type="checkbox" [(ngModel)]="formatoPdf" name="pdf"> PDF
-    </label>
-    <label class="checkbox-borde">
-      <input type="checkbox" [(ngModel)]="formatoXml" name="xml"> XML
-    </label>
-    <label class="checkbox-borde">
-      <input type="checkbox" [(ngModel)]="formatoRecibos" name="recibos"> Recibos
-    </label>
-  </div>
-</div>
+        <div class="filter-label">Formato:</div>
+        <div class="options-group">
+          <label class="checkbox-borde">
+            <input type="checkbox" [(ngModel)]="formatoPdf" name="pdf"> PDF
+          </label>
+          <label class="checkbox-borde">
+            <input type="checkbox" [(ngModel)]="formatoXml" name="xml"> XML
+          </label>
+          <label class="checkbox-borde">
+            <input type="checkbox" [(ngModel)]="formatoRecibos" name="recibos"> Recibos
+          </label>
+        </div>
+      </div>
 
       <div class="grid-meses">
         <div class="input-group">
@@ -53,11 +58,11 @@
       </div>
 
       <div class="input-group">
-  <label>Año:</label>
-  <select [(ngModel)]="anio" class="custom-select small-input">
-    <option *ngFor="let a of aniosDisponibles" [value]="a">{{ a }}</option>
-  </select>
-</div>
+        <label>Año:</label>
+        <select [(ngModel)]="anio" class="custom-select small-input">
+          <option *ngFor="let a of aniosDisponibles" [value]="a">{{ a }}</option>
+        </select>
+      </div>
 
       <div class="input-group">
         <label class="large-label">Seleccione una Delegación:</label>
@@ -88,40 +93,40 @@
   </section>
 
 
-  <div *ngIf="resultados" class="button-container animate-zoom" style="flex-direction: column; gap: 15px; margin-top: 30px;">
-  
-  <button (click)="confirmarDescarga()" class="btn-confirmar">
-    CONFIRMAR DESCARGA
-  </button>
+  <div *ngIf="resultados" class="button-container animate-zoom"
+    style="flex-direction: column; gap: 15px; margin-top: 30px;">
 
-  <button (click)="simularProgreso()" 
-          class="btn-test-simulador">
-    🧪 PROBAR BARRA (Simulación local)
-  </button>
-  
-</div>
+    <button (click)="confirmarDescarga()" class="btn-confirmar">
+      CONFIRMAR DESCARGA
+    </button>
+
+    <button (click)="simularProgreso()" class="btn-test-simulador">
+      🧪 PROBAR BARRA (Simulación local)
+    </button>
+
+  </div>
 
   <div *ngIf="mostrarPopupConfirmacion" class="modal-overlay">
-    
-    <div *ngIf="progreso >= 100" class="confetti-wrapper">
-  <div class="confetti-piece" style="left: 5%;  animation-delay: 0s;   background-color: #f4d4d4;"></div>
-  <div class="confetti-piece" style="left: 15%; animation-delay: 1.5s; background-color: #4d94ff;"></div>
-  <div class="confetti-piece" style="left: 25%; animation-delay: 0.5s; background-color: #ffd700;"></div>
-  <div class="confetti-piece" style="left: 35%; animation-delay: 0.7s; background-color: #ff4d4d;"></div>
-  <div class="confetti-piece" style="left: 45%; animation-delay: 1.7s; background-color: #b91c1c;"></div>
-  
-  <div class="confetti-piece" style="left: 55%; animation-delay: 1.1s; background-color: #f4d4d4;"></div>
-  <div class="confetti-piece" style="left: 65%; animation-delay: 0.2s; background-color: #ffd700;"></div>
-  <div class="confetti-piece" style="left: 75%; animation-delay: 1.3s; background-color: #4d94ff;"></div>
-  <div class="confetti-piece" style="left: 85%; animation-delay: 0.9s; background-color: #ff4d4d;"></div>
-  <div class="confetti-piece" style="left: 95%; animation-delay: 1.9s; background-color: #b91c1c;"></div>
 
-  <div class="confetti-piece" style="left: 10%; animation-delay: 2.5s; background-color: #ffd700;"></div>
-  <div class="confetti-piece" style="left: 30%; animation-delay: 0.4s; background-color: #4d94ff;"></div>
-  <div class="confetti-piece" style="left: 50%; animation-delay: 1.8s; background-color: #ff4d4d;"></div>
-  <div class="confetti-piece" style="left: 70%; animation-delay: 0.1s; background-color: #f4d4d4;"></div>
-  <div class="confetti-piece" style="left: 90%; animation-delay: 1.4s; background-color: #b91c1c;"></div>
-</div>
+    <div *ngIf="progreso >= 100" class="confetti-wrapper">
+      <div class="confetti-piece" style="left: 5%;  animation-delay: 0s;   background-color: #f4d4d4;"></div>
+      <div class="confetti-piece" style="left: 15%; animation-delay: 1.5s; background-color: #4d94ff;"></div>
+      <div class="confetti-piece" style="left: 25%; animation-delay: 0.5s; background-color: #ffd700;"></div>
+      <div class="confetti-piece" style="left: 35%; animation-delay: 0.7s; background-color: #ff4d4d;"></div>
+      <div class="confetti-piece" style="left: 45%; animation-delay: 1.7s; background-color: #b91c1c;"></div>
+
+      <div class="confetti-piece" style="left: 55%; animation-delay: 1.1s; background-color: #f4d4d4;"></div>
+      <div class="confetti-piece" style="left: 65%; animation-delay: 0.2s; background-color: #ffd700;"></div>
+      <div class="confetti-piece" style="left: 75%; animation-delay: 1.3s; background-color: #4d94ff;"></div>
+      <div class="confetti-piece" style="left: 85%; animation-delay: 0.9s; background-color: #ff4d4d;"></div>
+      <div class="confetti-piece" style="left: 95%; animation-delay: 1.9s; background-color: #b91c1c;"></div>
+
+      <div class="confetti-piece" style="left: 10%; animation-delay: 2.5s; background-color: #ffd700;"></div>
+      <div class="confetti-piece" style="left: 30%; animation-delay: 0.4s; background-color: #4d94ff;"></div>
+      <div class="confetti-piece" style="left: 50%; animation-delay: 1.8s; background-color: #ff4d4d;"></div>
+      <div class="confetti-piece" style="left: 70%; animation-delay: 0.1s; background-color: #f4d4d4;"></div>
+      <div class="confetti-piece" style="left: 90%; animation-delay: 1.4s; background-color: #b91c1c;"></div>
+    </div>
 
     <div class="modal-content animate-zoom">
       <div class="modal-icon-circle" [style.background-color]="progreso >= 100 ? '#dcfce7' : '#f0f9ff'">
@@ -148,10 +153,13 @@
       </div>
 
       <div class="modal-actions">
-        <button (click)="irAlHistorial()" class="btn-modal-red">VER DESCARGAS</button>
+        <button (click)="irAlHistorial()" [disabled]="progreso < 100" class="btn-modal-red"
+          [ngClass]="{'btn-disabled': progreso < 100}">
+          VER DESCARGAS
+        </button>
       </div>
       <!-- <button (click)="reiniciarFiltros()" class="btn-modal-dark">HACER OTRA DESCARGA</button>*/ -->
-        <button (click)="mostrarPopupConfirmacion = false" class="btn-modal-close">Cerrar ventana</button>
-      </div>
+      <button (click)="mostrarPopupConfirmacion = false" class="btn-modal-close">Cerrar ventana</button>
     </div>
+  </div>
 </main>

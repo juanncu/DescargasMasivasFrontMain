@@ -39,10 +39,10 @@ export class HistorialDescargas implements OnInit {
         totalXml: 1500,
         totalRecibos: 1500,
         omitidos: 0,
-        anio: 2026,             // <-- Agregar
-        formatos: 'PDF, XML',   // <-- Agregar
-        padron: 'Todas',         // <-- Agregar
-        estadoFiltro: 'Ambos',  // <-- Agregar
+        anio: 2026,             
+        formatos: 'PDF, XML',   
+        padron: 'Todas',       
+        estadoFiltro: 'Ambos', 
         rutaRed: 'C:\\Recibos\\Campeche\\Folio_01',
         tamanio: '1.2 GB',
         estado: 'completado',
@@ -59,10 +59,10 @@ export class HistorialDescargas implements OnInit {
         totalXml: 1500,
         totalRecibos: 1500,
         omitidos: 0,
-        anio: 2026,             // <-- Agregar
-        formatos: 'PDF, XML',   // <-- Agregar
-        padron: 'Todas',         // <-- Agregar
-        estadoFiltro: 'Ambos',  // <-- Agregar
+        anio: 2026,            
+        formatos: 'PDF, XML',   
+        padron: 'Todas',        
+        estadoFiltro: 'Ambos', 
         rutaRed: 'C:\\Recibos\\Campeche\\Folio_02',
         tamanio: '5 GB',
         huboErrores: true,
@@ -79,10 +79,10 @@ export class HistorialDescargas implements OnInit {
         totalXml: 1450,
         totalRecibos: 1500,
         omitidos: 0,
-        anio: 2026,             // <-- Agregar
-        formatos: 'PDF, XML',   // <-- Agregar
-        padron: 'Todas',         // <-- Agregar
-        estadoFiltro: 'Ambos',  // <-- Agregar
+        anio: 2026,             
+        formatos: 'PDF, XML',   
+        padron: 'Todas',         
+        estadoFiltro: 'Ambos',  
         tamanio: '5 GB',
         huboErrores: true,
         estado: 'pendiente',
