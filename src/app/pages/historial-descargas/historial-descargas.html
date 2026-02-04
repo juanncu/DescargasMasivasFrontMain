@@ -11,11 +11,11 @@
   <div>
     <div *ngFor="let d of historial" class="item">
       
-      <div class="info-izquierda">
-  <span class="fecha">{{ d.fechaLabel }}</span>
-  <strong class="delegacion">{{ d.delegacion }} </strong>
+  <div class="info-izquierda">
+  <span class="fecha">Se descargo: {{ d.fechaLabel }}</span>
+  <strong class="delegacion"> Delegacion : {{ d.delegacion }} </strong> <br>
   
-  <span class="periodo">{{ d.mes }} {{ d.anio }}</span>
+  <span class="periodo">Periodo: {{ d.mes }} {{ d.anio }}</span>
 
   <div class="filtros-tags">
     <span class="tag">📂 {{ d.formatos }}</span>

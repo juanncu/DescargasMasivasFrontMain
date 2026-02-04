@@ -1,4 +1,4 @@
-// En tu archivo de modelos o donde esté HistorialDescarga
+
 export interface HistorialDescarga {
   id: number;
   fechaReal: Date;

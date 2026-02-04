@@ -68,8 +68,8 @@ padrones = [
 ];
 
 // valores seleccionados del select
-estadoSeleccionadoId = '3'; // AMBOS por defecto
-padronSeleccionadoId = '1'; // TODOS por defecto
+estadoSeleccionadoId = null;
+padronSeleccionadoId = null;
 
   listaDelegaciones: any[] = [];
   resultados: any = { archivos: 0, tamanio: '0 KB' };

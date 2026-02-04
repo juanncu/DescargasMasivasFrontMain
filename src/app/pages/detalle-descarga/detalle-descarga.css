@@ -16,6 +16,7 @@ body {
   display: flex;
   align-items: center;
   gap: 12px;
+  padding: 5px;
 }
 
 .estado {
@@ -137,21 +138,12 @@ h3{
 }
 
 /* Volver */
-.btn-volver {
-  background-color: #4caf50;
-  border-radius: 2PX;
-  color: #ffffff;
-  cursor: pointer;
-  font-size: 14px;
-  margin-bottom: 10px;
-  margin-left: 6%;
-  padding: 1%;
-}
 
 .btn-volver {
   background: #BCA986;
   border: 1px solid #ccc;
-  margin-left: 4%;
+  margin-left: 0.5%;
+  margin-bottom: 2%;
   padding: 8px 16px;
   border-radius: 4px;
   cursor: pointer;
@@ -204,9 +196,8 @@ h3{
   color: #1f2937; /* Negro/Gris oscuro para el número */
 }
 
-/* El número en rojo resaltado si hay fallos */
 .text-danger {
-  color: #b91c1c !important; /* Rojo institucional */
+  color: #691a1a !important; 
   animation: pulse-red 2s infinite;
 }
 
@@ -214,4 +205,8 @@ h3{
   0% { transform: scale(1); }
   50% { transform: scale(1.05); }
   100% { transform: scale(1); }
+}
+
+.detalle-mes{
+  padding-bottom: 5px;
 }
