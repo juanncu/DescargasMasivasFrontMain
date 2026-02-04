@@ -50,4 +50,8 @@ export class ApiService {
   iniciarProcesoDescarga(delegacionId: number) {
     return this.http.post(`${this.apiUrl}/descargas/iniciar`, { delegacion: delegacionId });
   }
+
+  getHistorialDescargas(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/ObtenerRegistroPeticiones`);
+  }
 }
