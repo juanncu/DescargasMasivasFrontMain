@@ -12,15 +12,20 @@
     <div *ngFor="let d of historial" class="item">
       
       <div class="info-izquierda">
-        <span class="fecha">{{ d.fechaLabel || 'Hoy' }}</span>
-        <div class="sub-info">
-          <strong>{{ d.delegacion }}</strong>
-        </div>
-        <span class="mes">{{ d.mes }}</span>
-      </div>
+  <span class="fecha">{{ d.fechaLabel }}</span>
+  <strong class="delegacion">{{ d.delegacion }} </strong>
+  
+  <span class="periodo">{{ d.mes }} {{ d.anio }}</span>
+
+  <div class="filtros-tags">
+    <span class="tag">📂 {{ d.formatos }}</span>
+    <span class="tag">📋 {{ d.padron }}</span>
+    <span class="tag">⚙️ {{ d.estadoFiltro }}</span>
+  </div>
+</div>
 
       <div class="ruta">
-        {{ d.rutaRed || d.ruta }}
+        {{ d.rutaRed || d.rutaRed }}
       </div>
 
 <div class="info-derecha">

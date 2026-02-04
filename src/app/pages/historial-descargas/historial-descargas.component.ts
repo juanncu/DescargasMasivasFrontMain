@@ -10,11 +10,11 @@ import { HistorialDescarga } from '../../models/historial.descarga.model';
   selector: 'app-historial-descargas',
   standalone: true,
   imports: [
-    RouterLink, 
-    CommonModule,    
+    RouterLink,
+    CommonModule,
     MatIconModule,
     MatButtonModule,
-    MatTooltipModule 
+    MatTooltipModule
   ],
   templateUrl: './historial-descargas.html',
   styleUrls: ['./historial-descargas.css']
@@ -22,57 +22,81 @@ import { HistorialDescarga } from '../../models/historial.descarga.model';
 export class HistorialDescargas implements OnInit {
 
   historial: HistorialDescarga[] = [];
+  detalle!: HistorialDescarga;
 
-  constructor(private router: Router) {}
+  constructor(private router: Router) { }
 
   ngOnInit(): void {
     this.historial = [
       {
-        id: 101,
-        fechaReal: new Date(), 
+        id: 1,
+        fechaReal: new Date(),
         fechaLabel: 'Hoy',
-        delegacion: 'Campeche', 
-        archivos: 1500,        
-        mes: 'Febrero - Marzo', 
-        rutaRed: 'C:\\Recibos\\Campeche\\Folio_02',
+        delegacion: 'Campeche',
+        archivos: 1500,
+        mes: 'Enero - Febrero',
+        totalPdf: 1500,
+        totalXml: 1500,
+        totalRecibos: 1500,
+        omitidos: 0,
+        anio: 2026,             
+        formatos: 'PDF, XML',   
+        padron: 'Todas',       
+        estadoFiltro: 'Ambos', 
+        rutaRed: 'C:\\Recibos\\Campeche\\Folio_01',
         tamanio: '1.2 GB',
         estado: 'completado',
-        ruta: 'C:\\Recibos\\Campeche\\Folio_02',
-        hace: 'Hace 5 minutos',
         huboErrores: false
       },
       {
         id: 2,
-        fechaReal: new Date(), 
+        fechaReal: new Date(),
         fechaLabel: 'Ayer',
         delegacion: 'Calkiní',
-        mes: 'Enero',
-        ruta: 'C:\\Recibos\\Calkini\\Folio12344',
-        archivos: 4500,
+        archivos: 1500,
+        mes: 'Febrero - Marzo',
+        totalPdf: 1500,
+        totalXml: 1500,
+        totalRecibos: 1500,
+        omitidos: 0,
+        anio: 2026,            
+        formatos: 'PDF, XML',   
+        padron: 'Todas',        
+        estadoFiltro: 'Ambos', 
+        rutaRed: 'C:\\Recibos\\Campeche\\Folio_02',
         tamanio: '5 GB',
-        hace: 'Hace 1 día',
         huboErrores: true,
         estado: 'pendiente',
-        rutaRed: undefined
       },
       {
         id: 3,
         fechaReal: new Date(),
-        fechaLabel: '18 de Enero de 2026',
-        delegacion: 'Calkiní',
-        mes: 'Enero',
-        ruta: 'C:\\Recibos\\Calkini\\Folio12343',
-        archivos: 4500,
+        fechaLabel: 'Ayer',
+        delegacion: 'Carmen',
+        archivos: 500,
+        mes: 'Marzo - Abril',
+        totalPdf: 1450,
+        totalXml: 1450,
+        totalRecibos: 1500,
+        omitidos: 0,
+        anio: 2026,             
+        formatos: 'PDF, XML',   
+        padron: 'Todas',         
+        estadoFiltro: 'Ambos',  
         tamanio: '5 GB',
-        hace: 'Hace 2 días',
-        huboErrores: false,
-        estado: 'error',
-        rutaRed: undefined
-      }
+        huboErrores: true,
+        estado: 'pendiente',
+        rutaRed: 'undefined'
+      },
     ];
   }
 
-  verDetalle(id: number) {
-    this.router.navigate(['/historial-descargas', id]);
-  }
+  verDetalle(descarga: HistorialDescarga) {
+  // Aquí asignamos el objeto completo del historial a la variable que usa el HTML
+  this.detalle = descarga; 
+  console.log('Viendo detalle de:', this.detalle);
+  
+  // Si usas rutas, asegúrate de navegar pasando el ID
+  this.router.navigate(['/historial-descargas', descarga.id]);
+}
 }

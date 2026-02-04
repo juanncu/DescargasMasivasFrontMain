@@ -1,14 +1,21 @@
+// En tu archivo de modelos o donde esté HistorialDescarga
 export interface HistorialDescarga {
-  estado: any;
-  rutaRed: any;
   id: number;
-  fechaLabel: string;      // Hoy, Ayer, 18 de Enero 2026
+  fechaReal: Date;
+  fechaLabel: string;
   delegacion: string;
-  mes: string;
-  ruta: string;
   archivos: number;
+  mes: string;
+  anio: number;          
+  formatos: string;    
+  padron: string;       
+  estadoFiltro: string;  
+  rutaRed: string;
   tamanio: string;
-  hace: string;            // Hace 5 minutos, Hace 1 día
+  estado: string;
   huboErrores: boolean;
-  fechaReal?: Date; // Fecha real de la descarga, opcional
+  totalPdf: number;    
+  totalXml: number;     
+  totalRecibos: number;
+  omitidos: number;
 }
