@@ -4,43 +4,68 @@
   <section class="card-descarga">
     <div class="info-header">Filtros de descarga</div>
 
-    <div class="info-filtros">
-      <div class="filter-row">
-        <div class="filter-label">Estado:</div>
-        <div class="options-group">
-          <label class="radio-borde"><input type="radio" name="estado" [(ngModel)]="estadoSeleccionado" value="Activo">
-            Activo</label>
-          <label class="radio-borde"><input type="radio" name="estado" [(ngModel)]="estadoSeleccionado"
-              value="Cancelar"> Cancelar</label>
-          <label class="radio-borde"><input type="radio" name="estado" [(ngModel)]="estadoSeleccionado" value="Ambos">
-            Ambos</label>
-        </div>
+  <div class="info-filtros">
+     <div class="filter-row"> 
+          <div class="filter-label">Estado de cuenta :</div>
+        <select [(ngModel)]="estadoSeleccionadoId"  class="custom-select">
+          <option [ngValue]="null">Seleccione estado</option>
+          <option *ngFor="let e of estados" [ngValue]="e.id">
+            {{ e.nombre }}
+          </option>
+        </select>
+
+            <!-- AMBOS -->
+    <div *ngIf="estadoSeleccionadoId === '3'"
+      class="tooltip-padron">
+      COBRADO, CANCELADO, CONCILIADO, CONCILIADO PARCIAL
+    </div>
+            <!-- ACTIVO -->
+    <div *ngIf="estadoSeleccionadoId === '1'"
+      class="tooltip-padron">
+      COBRADO, CONCILIADO, <br> CONCILIADO PARCIAL
+    </div>
+
       </div>
 
-      <div class="filter-row">
-        <div class="filter-label">Padrón:</div>
-        <div class="options-group">
-          <label class="radio-borde"><input type="radio" name="padron" [(ngModel)]="padronSeleccionado" value="Todas">
-            Todas</label>
-          <label class="radio-borde"><input type="radio" name="padron" [(ngModel)]="padronSeleccionado" value="Predial">
-            Predial</label>
-        </div>
-      </div>
+<div class="filter-row">
+  <div class="filter-label">Padrón:</div>
+
+  <div class="select-wrapper">
+    <select [(ngModel)]="padronSeleccionadoId" class="custom-select">
+      <option [ngValue]="null">Seleccione padrón</option>
+      <option *ngFor="let p of padrones" [ngValue]="p.id">
+        {{ p.nombre }}
+      </option>
+    </select>
+
+    <!-- PADRON SELECT TODOS -->
+    <div
+      *ngIf="padronSeleccionadoId === '1'"
+      class="tooltip-padron"
+      id="padron-tool">
+      Contrato Vehicular, Contrato Obligaciones, Contrato Crédito,
+      Contrato Infracciones, Contrato Alcohol
+    </div>
+  </div>
+</div>
+
+ 
+
 
       <div class="filter-row">
-        <div class="filter-label">Formato:</div>
-        <div class="options-group">
-          <label class="checkbox-borde">
-            <input type="checkbox" [(ngModel)]="formatoPdf" name="pdf"> PDF
-          </label>
-          <label class="checkbox-borde">
-            <input type="checkbox" [(ngModel)]="formatoXml" name="xml"> XML
-          </label>
-          <label class="checkbox-borde">
-            <input type="checkbox" [(ngModel)]="formatoRecibos" name="recibos"> Recibos
-          </label>
-        </div>
-      </div>
+  <div class="filter-label">Formato:</div>
+  <div class="options-group">
+    <label class="checkbox-borde">
+      <input type="checkbox" [(ngModel)]="formatoPdf" name="pdf"> PDF
+    </label>
+    <label class="checkbox-borde">
+      <input type="checkbox" [(ngModel)]="formatoXml" name="xml"> XML
+    </label>
+    <label class="checkbox-borde">
+      <input type="checkbox" [(ngModel)]="formatoRecibos" name="recibos"> Recibos
+    </label>
+  </div>
+</div>
 
       <div class="grid-meses">
         <div class="input-group">
@@ -58,11 +83,11 @@
       </div>
 
       <div class="input-group">
-        <label>Año:</label>
-        <select [(ngModel)]="anio" class="custom-select small-input">
-          <option *ngFor="let a of aniosDisponibles" [value]="a">{{ a }}</option>
-        </select>
-      </div>
+  <label>Año:</label>
+  <select [(ngModel)]="anio" class="custom-select small-input">
+    <option *ngFor="let a of aniosDisponibles" [value]="a">{{ a }}</option>
+  </select>
+</div>
 
       <div class="input-group">
         <label class="large-label">Seleccione una Delegación:</label>

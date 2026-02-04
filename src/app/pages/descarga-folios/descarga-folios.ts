@@ -33,6 +33,44 @@ export class DescargaFoliosComponent implements OnInit {
   estadoSeleccionado = 'Ambos';
   padronSeleccionado = 'Todas';
 
+  // -------------------------
+// LISTAS PARA SELECT (JSON)
+// -------------------------
+estados = [
+  {
+    id: '1',
+    nombre: 'ACTIVO',
+    estadoID: '1, 3, 4'
+  },
+  {
+    id: '2',
+    nombre: 'CANCELADO',
+    estadoID: '2'
+  },
+  {
+    id: '3',
+    nombre: 'AMBOS',
+    estadoID: '1, 2, 3, 4'
+  }
+];
+
+padrones = [
+  {
+    id: '1',
+    nombre: 'TODOS',
+    padronID: '1, 3, 4, 5, 6'
+  },
+  {
+    id: '2',
+    nombre: 'PREDIAL',
+    padronID: '2'
+  }
+];
+
+// valores seleccionados del select
+estadoSeleccionadoId = null;
+padronSeleccionadoId = null;
+
   listaDelegaciones: any[] = [];
   resultados: any = { archivos: 0, tamanio: '0 KB' };
   cargando = false;
@@ -83,8 +121,8 @@ export class DescargaFoliosComponent implements OnInit {
     this.cargando = true;
     this.resultados = null;
 
-    let padronId = this.padronSeleccionado === 'Predial' ? 1 : 0;
-    let estadoId = this.estadoSeleccionado === 'Activo' ? 1 : (this.estadoSeleccionado === 'Cancelar' ? 2 : 3);
+   const estado = this.estados.find(e => e.id === this.estadoSeleccionadoId);
+   const padron = this.padrones.find(p => p.id === this.padronSeleccionadoId);
 
     const mesIniStr = this.mesInicio.toString().padStart(2, '0');
     const fechaInicio = `${this.anio}-${mesIniStr}-01`;
@@ -95,10 +133,10 @@ export class DescargaFoliosComponent implements OnInit {
 
     const filtros = {
       delegacion: Number(this.delegacionSeleccionada),
-      padron: padronId,
-      estado: estadoId,
-      ini: fechaInicio, 
-      fin: fechaFin    
+      estado: Number(this.estadoSeleccionadoId),   
+      padron: Number(this.padronSeleccionadoId),   
+      ini: fechaInicio,
+      fin: fechaFin
     };
 
     this.selectDescarga.setFiltros(filtros);

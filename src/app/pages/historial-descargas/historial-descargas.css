@@ -14,7 +14,7 @@
   letter-spacing: 0.1em;
 }
 
-/* Botón Regresar (Estilo Arena) */
+
 .acciones-superiores {
   max-width: 1200px;
   margin: 0 auto 1.5rem auto;
@@ -84,9 +84,8 @@
   margin-top: 4px;
 }
 
-/* Bloque Ruta Central */
+/* Bloque Central */
 .ruta {
-  flex: 2;
   font-size: 12px;
   color: #235B4E;
   font-family: monospace;
@@ -159,3 +158,4 @@
   text-transform: uppercase;
   border: 1px solid #e5e7eb;
 }
+

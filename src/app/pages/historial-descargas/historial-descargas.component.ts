@@ -92,11 +92,11 @@ export class HistorialDescargas implements OnInit {
   }
 
   verDetalle(descarga: HistorialDescarga) {
-  // Aquí asignamos el objeto completo del historial a la variable que usa el HTML
+  // Objeto del historial a la variable que usa el HTML
   this.detalle = descarga; 
   console.log('Viendo detalle de:', this.detalle);
   
-  // Si usas rutas, asegúrate de navegar pasando el ID
+  // Ruta para navegar pasando el ID
   this.router.navigate(['/historial-descargas', descarga.id]);
 }
 }
