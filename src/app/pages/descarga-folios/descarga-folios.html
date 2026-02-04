@@ -6,26 +6,48 @@
     
     <div class="info-filtros">
      <div class="filter-row"> 
-          <div class="filter-label">Estado de la cuenta :</div>
-        <select [(ngModel)]="estadoSeleccionadoId">
+          <div class="filter-label">Estado de cuenta :</div>
+        <select [(ngModel)]="estadoSeleccionadoId"  class="custom-select">
           <option [ngValue]="null">Seleccione estado</option>
           <option *ngFor="let e of estados" [ngValue]="e.id">
             {{ e.nombre }}
           </option>
         </select>
+
+            <!-- AMBOS -->
+    <div *ngIf="estadoSeleccionadoId === '3'"
+      class="tooltip-padron">
+      COBRADO, CANCELADO, CONCILIADO, CONCILIADO PARCIAL
+    </div>
+            <!-- ACTIVO -->
+    <div *ngIf="estadoSeleccionadoId === '1'"
+      class="tooltip-padron">
+      COBRADO, CONCILIADO, <br> CONCILIADO PARCIAL
+    </div>
+
       </div>
 
-      <div class="filter-row">
-          <div class="filter-label">Padrón:</div>
-          <select [(ngModel)]="padronSeleccionadoId">
-          <option [ngValue]="null">Seleccione padrón</option>
-          <option *ngFor="let p of padrones" [ngValue]="p.id">
-            {{ p.nombre }}
-          </option>
-</select>
+<div class="filter-row">
+  <div class="filter-label">Padrón:</div>
 
- 
-      </div>
+  <div class="select-wrapper">
+    <select [(ngModel)]="padronSeleccionadoId" class="custom-select">
+      <option [ngValue]="null">Seleccione padrón</option>
+      <option *ngFor="let p of padrones" [ngValue]="p.id">
+        {{ p.nombre }}
+      </option>
+    </select>
+
+    <!-- PADRON SELECT TODOS -->
+    <div
+      *ngIf="padronSeleccionadoId === '1'"
+      class="tooltip-padron"
+      id="padron-tool">
+      Contrato Vehicular, Contrato Obligaciones, Contrato Crédito,
+      Contrato Infracciones, Contrato Alcohol
+    </div>
+  </div>
+</div>
 
       <div class="filter-row">
   <div class="filter-label">Formato:</div>

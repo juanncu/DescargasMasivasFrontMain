@@ -34,7 +34,7 @@ export class DescargaFoliosComponent implements OnInit {
   padronSeleccionado = 'Todas';
 
   // -------------------------
-// LISTAS PARA SELECT (JSON)
+// LISTAS PARA SELECT 
 // -------------------------
 estados = [
   {
@@ -121,8 +121,8 @@ padronSeleccionadoId = '1'; // TODOS por defecto
     this.cargando = true;
     this.resultados = null;
 
-   const estado = this.estados.find(e => e.id === this.estadoSeleccionadoId);
-   const padron = this.padrones.find(p => p.id === this.padronSeleccionadoId);
+    const estado = this.estados.find(e => e.id === this.estadoSeleccionadoId);
+    const padron = this.padrones.find(p => p.id === this.padronSeleccionadoId);
 
     const mesIniStr = this.mesInicio.toString().padStart(2, '0');
     const fechaInicio = `${this.anio}-${mesIniStr}-01`;
