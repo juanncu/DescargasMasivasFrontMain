@@ -215,5 +215,6 @@ simularProgreso() {
       this.cd.detectChanges(); // Forzamos a que Angular pinte el cambio
     });
   }, 500); // Se actualiza cada 500ms
+  
 }
 }
