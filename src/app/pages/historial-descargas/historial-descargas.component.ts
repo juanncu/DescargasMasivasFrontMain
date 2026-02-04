@@ -10,7 +10,13 @@ import { ApiService } from '../../services/api';
 @Component({
   selector: 'app-historial-descargas',
   standalone: true,
-  imports: [RouterLink, CommonModule, MatIconModule, MatButtonModule, MatTooltipModule],
+  imports: [
+    RouterLink, 
+    CommonModule, 
+    MatIconModule, 
+    MatButtonModule, 
+    MatTooltipModule
+  ],
   providers: [DatePipe],
   templateUrl: './historial-descargas.html',
   styleUrls: ['./historial-descargas.css']
@@ -18,14 +24,13 @@ import { ApiService } from '../../services/api';
 export class HistorialDescargas implements OnInit {
 
   historial: HistorialDescarga[] = [];
-  
-  // Inyecciones
+  detalle!: HistorialDescarga; // Propuesto por Katia para la vista de detalle
+
+  // Inyecciones mediante inject (más moderno)
   private apiService = inject(ApiService);
   private datePipe = inject(DatePipe);
   private router = inject(Router);
   private cd = inject(ChangeDetectorRef);
-
-  constructor() {}
 
   ngOnInit(): void {
     this.cargarDatosReales();
@@ -36,7 +41,7 @@ export class HistorialDescargas implements OnInit {
       next: (datosApi) => {
         console.log("Datos recibidos de API:", datosApi);
 
-        // Transformación de datos
+        // Transformación de datos: Unimos tu lógica con los campos de Katia
         this.historial = datosApi.map((item: any) => {
           const fecha = item.fecheCreacionRegistro ? new Date(item.fecheCreacionRegistro) : new Date();
           const totalArchivos = item.total || 0;
@@ -45,22 +50,30 @@ export class HistorialDescargas implements OnInit {
             id: item.id,
             fechaReal: fecha,
             fechaLabel: this.formatearFechaAmigable(fecha),
-            delegacion: `Referencia: ${item.idDescarga}`, 
+            delegacion: item.delegacion || `Referencia: ${item.idDescarga}`, 
             archivos: totalArchivos,
-            mes: 'Periodo pendiente',
-            ruta: `C:\\Descargas\\${item.idDescarga}\\Resultados`,
-            rutaRed: undefined,
-            tamanio: this.calcularPesoEstimado(totalArchivos),
-            estado: totalArchivos > 0 ? 'completado' : 'pendiente',
-            hace: this.calcularHaceTiempo(fecha),
-            huboErrores: totalArchivos === 0
+            // Campos extendidos de KatiaNue (se mapean si vienen de la API o se inicializan)
+            mes: item.mes || 'Periodo pendiente',
+            anio: item.anio || fecha.getFullYear(),
+            totalPdf: item.totalPdf || 0,
+            totalXml: item.totalXml || 0,
+            totalRecibos: item.totalRecibos || 0,
+            omitidos: item.omitidos || 0,
+            formatos: item.formatos || 'N/A',
+            padron: item.padron || 'No especificado',
+            estadoFiltro: item.estadoFiltro || 'N/A',
+            rutaRed: item.rutaRed || `C:\\Descargas\\${item.idDescarga}\\Resultados`,
+            tamanio: item.tamanio || this.calcularPesoEstimado(totalArchivos),
+            estado: item.estado || (totalArchivos > 0 ? 'completado' : 'pendiente'),
+            huboErrores: item.huboErrores ?? (totalArchivos === 0),
+            hace: this.calcularHaceTiempo(fecha)
           };
         });
 
-        // Ordenamiento seguro
+        // Ordenamiento por fecha descendente
         this.historial.sort((a, b) => {
-          const tiempoA = a.fechaReal ? a.fechaReal.getTime() : 0;
-          const tiempoB = b.fechaReal ? b.fechaReal.getTime() : 0;
+          const tiempoA = a.fechaReal?.getTime() || 0;
+          const tiempoB = b.fechaReal?.getTime() || 0;
           return tiempoB - tiempoA;
         });
 
@@ -70,7 +83,7 @@ export class HistorialDescargas implements OnInit {
     });
   }
 
-  // --- Funciones Auxiliares ---
+  // --- Funciones de Lógica y Formato ---
 
   calcularPesoEstimado(archivos: number): string {
     if (!archivos) return '0 KB';
@@ -92,8 +105,8 @@ export class HistorialDescargas implements OnInit {
 
   esMismaFecha(f1: Date, f2: Date): boolean {
     return f1.getDate() === f2.getDate() &&
-          f1.getMonth() === f2.getMonth() &&
-          f1.getFullYear() === f2.getFullYear();
+           f1.getMonth() === f2.getMonth() &&
+           f1.getFullYear() === f2.getFullYear();
   }
 
   calcularHaceTiempo(fecha: Date): string {
@@ -108,8 +121,10 @@ export class HistorialDescargas implements OnInit {
     return `Hace ${diffDays} días`;
   }
 
-  // Función para ver detalles
-  verDetalle(id: number) {
-    this.router.navigate(['/historial-descargas', id]);
+  // Se mejora la función para guardar el detalle antes de navegar, como pide Katia
+  verDetalle(descarga: HistorialDescarga) {
+    this.detalle = descarga;
+    console.log('Navegando al detalle de:', descarga.id);
+    this.router.navigate(['/historial-descargas', descarga.id]);
   }
 }

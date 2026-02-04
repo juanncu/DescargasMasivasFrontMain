@@ -26,12 +26,15 @@ import { FiltrosCFDI } from '../models/registro-descarga.model';
 })
 export class SelectDescarga {
   private filtrosSubject = new BehaviorSubject<FiltrosCFDI>({
-    padron: null,
-    fechaInicio: null,
-    fechaFin: null,
-    delegacion: null,
-    estado: null,
-  });
+  fechaInicio: null,
+  fechaFin: null,
+  delegacion: null,
+  estado: null,
+  anio: 2026,           
+  padron: null,        
+  estadoFiltro: 'Ambos', 
+  formatos: ''         
+});
 
   filtros$ = this.filtrosSubject.asObservable();
 

@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, ChangeDetectorRef, NgZone } from '@angular/core'; // Importamos NgZone
+import { Component, OnInit, inject, ChangeDetectorRef, NgZone } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -22,58 +22,59 @@ export class DescargaFoliosComponent implements OnInit {
   private router = inject(Router);
   private apiService = inject(ApiService);
   private cd = inject(ChangeDetectorRef);
-  private zone = inject(NgZone); // Inyectamos NgZone para el progreso en tiempo real
+  private zone = inject(NgZone);
 
   delegacionSeleccionada = '';
   mesInicio = '';
   mesFinal = '';
   anio: number = new Date().getFullYear();
 
-  estadoSeleccionado = 'Ambos';
-  padronSeleccionado = 'Todas';
+  // Listas para Select de Katia
+  estados = [
+    { id: '1', nombre: 'ACTIVO', estadoID: '1, 3, 4' },
+    { id: '2', nombre: 'CANCELADO', estadoID: '2' },
+    { id: '3', nombre: 'AMBOS', estadoID: '1, 2, 3, 4' }
+  ];
+
+  padrones = [
+    { id: '1', nombre: 'TODOS', padronID: '1, 3, 4, 5, 6' },
+    { id: '2', nombre: 'PREDIAL', padronID: '2' }
+  ];
+
+  // Vinculación con los nuevos Selects
+  estadoSeleccionadoId = null;
+  padronSeleccionadoId = null;
 
   listaDelegaciones: any[] = [];
   resultados: any = null;
   cargando = false;
   mostrarPopupConfirmacion = false;
 
-  // Variables de progreso
+  // Filtros de formato
+  formatoPdf: boolean = true;
+  formatoXml: boolean = true;
+  formatoRecibos: boolean = false;
+
   progreso = 0;
-  tiempoEstimado = 'Calculando...'; // Corregido el nombre
+  tiempoEstimado = 'Calculando...';
+  aniosDisponibles: number[] = [2026, 2025];
 
   meses = [
-    { id: 1, nombre: 'Enero' },
-    { id: 2, nombre: 'Febrero' },
-    { id: 3, nombre: 'Marzo' },
-    { id: 4, nombre: 'Abril' },
-    { id: 5, nombre: 'Mayo' },
-    { id: 6, nombre: 'Junio' },
-    { id: 7, nombre: 'Julio' },
-    { id: 8, nombre: 'Agosto' },
-    { id: 9, nombre: 'Septiembre' },
-    { id: 10, nombre: 'Octubre' },
-    { id: 11, nombre: 'Noviembre' },
-    { id: 12, nombre: 'Diciembre' },
+    { id: 1, nombre: 'Enero' }, { id: 2, nombre: 'Febrero' }, { id: 3, nombre: 'Marzo' },
+    { id: 4, nombre: 'Abril' }, { id: 5, nombre: 'Mayo' }, { id: 6, nombre: 'Junio' },
+    { id: 7, nombre: 'Julio' }, { id: 8, nombre: 'Agosto' }, { id: 9, nombre: 'Septiembre' },
+    { id: 10, nombre: 'Octubre' }, { id: 11, nombre: 'Noviembre' }, { id: 12, nombre: 'Diciembre' },
   ];
 
   ngOnInit() {
-    console.log('Iniciando componente...');
     this.cargarMunicipios();
+    this.anio = 2026;
   }
 
   cargarMunicipios() {
     this.apiService.getMunicipios().subscribe({
       next: (respuesta: any) => {
-        if (respuesta && respuesta.delegacion) {
-          this.listaDelegaciones = respuesta.delegacion;
-        } else if (Array.isArray(respuesta)) {
-          this.listaDelegaciones = respuesta;
-        } else {
-          this.listaDelegaciones = [];
-          console.warn('Formato de municipios desconocido:', respuesta);
-        }
-
-        console.log('Municipios cargados:', this.listaDelegaciones);
+        this.listaDelegaciones = respuesta.delegacion || (Array.isArray(respuesta) ? respuesta : []);
         this.cd.detectChanges();
       },
       error: (err) => console.error('Error cargando municipios:', err),
@@ -81,35 +82,35 @@ export class DescargaFoliosComponent implements OnInit {
   }
 
   buscar() {
-    if (!this.delegacionSeleccionada || !this.mesInicio || !this.mesFinal || !this.anio) {
+    if (!this.delegacionSeleccionada || !this.mesInicio || !this.mesFinal || !this.anio || !this.estadoSeleccionadoId || !this.padronSeleccionadoId) {
       alert('Por favor complete todos los filtros antes de buscar.');
+      return;
+    }
+
+    if (!this.formatoPdf && !this.formatoXml && !this.formatoRecibos) {
+      alert('Por favor, seleccione al menos un formato (PDF, XML o Recibos)');
       return;
     }
 
     this.cargando = true;
     this.resultados = null;
 
-    let padronId = this.padronSeleccionado === 'Predial' ? 1 : 0;
-    let estadoId =
-      this.estadoSeleccionado === 'Activo' ? 1 : this.estadoSeleccionado === 'Cancelar' ? 2 : 3;
-
+    // Procesamiento de fechas
     const mesIniStr = this.mesInicio.toString().padStart(2, '0');
     const fechaInicio = `${this.anio}-${mesIniStr}-01`;
-
     const ultimoDia = new Date(this.anio, Number(this.mesFinal), 0).getDate();
     const mesFinStr = this.mesFinal.toString().padStart(2, '0');
     const fechaFin = `${this.anio}-${mesFinStr}-${ultimoDia}`;
 
     const filtros = {
-      padron: padronId,
-      estado: estadoId,
       delegacion: Number(this.delegacionSeleccionada),
-      anio: this.anio,
-      inicio: this.mesInicio,
-      fin: this.mesFinal,
+      estado: Number(this.estadoSeleccionadoId),
+      padron: Number(this.padronSeleccionadoId),
+      ini: fechaInicio,
+      fin: fechaFin,
+      anio: this.anio
     };
 
-    console.log('Enviando filtros a API:', filtros);
     this.selectDescarga.setFiltros(filtros);
 
     this.descargaService.buscarFolios(this.delegacionSeleccionada, '', filtros).subscribe({
@@ -126,12 +127,8 @@ export class DescargaFoliosComponent implements OnInit {
   }
 
   confirmarDescarga() {
-    const delegacionEncontrada = this.listaDelegaciones.find(
-      (d) => (d.Id || d.id) == this.delegacionSeleccionada,
-    );
-    const nombreDelegacion = delegacionEncontrada
-      ? delegacionEncontrada.Nombre || delegacionEncontrada.nombre
-      : 'Desconocida';
+    const delegacionEncontrada = this.listaDelegaciones.find(d => (d.Id || d.id) == this.delegacionSeleccionada);
+    const nombreDelegacion = delegacionEncontrada ? (delegacionEncontrada.Nombre || delegacionEncontrada.nombre) : 'Desconocida';
 
     const nuevaDescarga = {
       delegacion: nombreDelegacion,
@@ -143,15 +140,12 @@ export class DescargaFoliosComponent implements OnInit {
       fecha_creacion: new Date(),
     };
 
-    // --- REINTEGRACIÓN DE LA BARRA ---
     this.progreso = 0;
     this.mostrarPopupConfirmacion = true;
 
-    // Iniciamos la escucha del progreso vía WebSocket
     this.descargaService.iniciarDescarga(Number(this.delegacionSeleccionada)).subscribe({
       next: (evento) => {
         this.zone.run(() => {
-          // NgZone asegura que la barra se mueva visualmente
           if (evento.tipo?.toUpperCase() === 'PROGRESO') {
             const valor = parseFloat(evento.progreso.toString().replace('%', ''));
             if (!isNaN(valor)) {
@@ -161,21 +155,18 @@ export class DescargaFoliosComponent implements OnInit {
           }
         });
       },
-      error: (err) => console.error('Error en WebSocket de progreso:', err),
+      error: (err) => console.error('Error en WebSocket:', err),
     });
 
-    // Registro paralelo en el historial
     this.apiService.registrarNuevaDescarga(nuevaDescarga).subscribe({
-      next: (res) => console.log('Registro exitoso en historial'),
-      error: (err) => console.warn('Error en registro de historial:', err),
+      next: () => console.log('Registro exitoso'),
+      error: (err) => console.warn('Error en historial:', err),
     });
   }
 
-  // --- FUNCIONES AUXILIARES ---
-
   calcularTiempoRestante(p: number): string {
     if (p >= 100) return 'Completado';
-    const segundos = Math.round((100 - p) * 0.6); // Estimación simple
+    const segundos = Math.round((100 - p) * 0.6);
     return `${segundos} seg. restantes aprox.`;
   }
 
@@ -188,6 +179,8 @@ export class DescargaFoliosComponent implements OnInit {
     this.mostrarPopupConfirmacion = false;
     this.resultados = null;
     this.delegacionSeleccionada = '';
+    this.estadoSeleccionadoId = null;
+    this.padronSeleccionadoId = null;
     this.progreso = 0;
   }
 
@@ -197,21 +190,18 @@ export class DescargaFoliosComponent implements OnInit {
   }
 
   simularProgreso() {
-    this.mostrarPopupConfirmacion = true; // Abrimos el modal
-    this.progreso = 0; // Reiniciamos la barra
-    this.tiempoEstimado = 'Calculando...';
-
+    this.mostrarPopupConfirmacion = true;
+    this.progreso = 0;
     const intervalo = setInterval(() => {
       this.zone.run(() => {
         if (this.progreso < 100) {
-          this.progreso += 10; // Sube de 10 en 10
+          this.progreso += 10;
           this.tiempoEstimado = this.calcularTiempoRestante(this.progreso);
         } else {
-          clearInterval(intervalo); // Se detiene al llegar a 100
-          console.log('Simulación completada con éxito');
+          clearInterval(intervalo);
         }
-        this.cd.detectChanges(); // Forzamos a que Angular pinte el cambio
+        this.cd.detectChanges();
       });
-    }, 500); // Se actualiza cada 500ms
+    }, 500);
   }
 }
