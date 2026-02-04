@@ -33,12 +33,12 @@ export class DescargaFoliosComponent implements OnInit {
   estados = [
     { id: '1', nombre: 'ACTIVO', estadoID: '1, 3, 4' },
     { id: '2', nombre: 'CANCELADO', estadoID: '2' },
-    { id: '3', nombre: 'AMBOS', estadoID: '1, 2, 3, 4' }
+    { id: '3', nombre: 'AMBOS', estadoID: '1, 2, 3, 4' },
   ];
 
   padrones = [
     { id: '1', nombre: 'TODOS', padronID: '1, 3, 4, 5, 6' },
-    { id: '2', nombre: 'PREDIAL', padronID: '2' }
+    { id: '2', nombre: 'PREDIAL', padronID: '2' },
   ];
 
   // Vinculación con los nuevos Selects
@@ -60,10 +60,18 @@ export class DescargaFoliosComponent implements OnInit {
   aniosDisponibles: number[] = [2026, 2025];
 
   meses = [
-    { id: 1, nombre: 'Enero' }, { id: 2, nombre: 'Febrero' }, { id: 3, nombre: 'Marzo' },
-    { id: 4, nombre: 'Abril' }, { id: 5, nombre: 'Mayo' }, { id: 6, nombre: 'Junio' },
-    { id: 7, nombre: 'Julio' }, { id: 8, nombre: 'Agosto' }, { id: 9, nombre: 'Septiembre' },
-    { id: 10, nombre: 'Octubre' }, { id: 11, nombre: 'Noviembre' }, { id: 12, nombre: 'Diciembre' },
+    { id: 1, nombre: 'Enero' },
+    { id: 2, nombre: 'Febrero' },
+    { id: 3, nombre: 'Marzo' },
+    { id: 4, nombre: 'Abril' },
+    { id: 5, nombre: 'Mayo' },
+    { id: 6, nombre: 'Junio' },
+    { id: 7, nombre: 'Julio' },
+    { id: 8, nombre: 'Agosto' },
+    { id: 9, nombre: 'Septiembre' },
+    { id: 10, nombre: 'Octubre' },
+    { id: 11, nombre: 'Noviembre' },
+    { id: 12, nombre: 'Diciembre' },
   ];
 
   ngOnInit() {
@@ -74,7 +82,8 @@ export class DescargaFoliosComponent implements OnInit {
   cargarMunicipios() {
     this.apiService.getMunicipios().subscribe({
       next: (respuesta: any) => {
-        this.listaDelegaciones = respuesta.delegacion || (Array.isArray(respuesta) ? respuesta : []);
+        this.listaDelegaciones =
+          respuesta.delegacion || (Array.isArray(respuesta) ? respuesta : []);
         this.cd.detectChanges();
       },
       error: (err) => console.error('Error cargando municipios:', err),
@@ -82,7 +91,14 @@ export class DescargaFoliosComponent implements OnInit {
   }
 
   buscar() {
-    if (!this.delegacionSeleccionada || !this.mesInicio || !this.mesFinal || !this.anio || !this.estadoSeleccionadoId || !this.padronSeleccionadoId) {
+    if (
+      !this.delegacionSeleccionada ||
+      !this.mesInicio ||
+      !this.mesFinal ||
+      !this.anio ||
+      !this.estadoSeleccionadoId ||
+      !this.padronSeleccionadoId
+    ) {
       alert('Por favor complete todos los filtros antes de buscar.');
       return;
     }
@@ -97,18 +113,16 @@ export class DescargaFoliosComponent implements OnInit {
 
     // Procesamiento de fechas
     const mesIniStr = this.mesInicio.toString().padStart(2, '0');
-    const fechaInicio = `${this.anio}-${mesIniStr}-01`;
     const ultimoDia = new Date(this.anio, Number(this.mesFinal), 0).getDate();
     const mesFinStr = this.mesFinal.toString().padStart(2, '0');
-    const fechaFin = `${this.anio}-${mesFinStr}-${ultimoDia}`;
 
     const filtros = {
-      delegacion: Number(this.delegacionSeleccionada),
-      estado: Number(this.estadoSeleccionadoId),
       padron: Number(this.padronSeleccionadoId),
-      ini: fechaInicio,
-      fin: fechaFin,
-      anio: this.anio
+      estado: Number(this.estadoSeleccionadoId),
+      delegacion: Number(this.delegacionSeleccionada),
+      anio: this.anio,
+      inicio: this.mesInicio,
+      fin: this.mesFinal,
     };
 
     this.selectDescarga.setFiltros(filtros);
@@ -127,8 +141,12 @@ export class DescargaFoliosComponent implements OnInit {
   }
 
   confirmarDescarga() {
-    const delegacionEncontrada = this.listaDelegaciones.find(d => (d.Id || d.id) == this.delegacionSeleccionada);
-    const nombreDelegacion = delegacionEncontrada ? (delegacionEncontrada.Nombre || delegacionEncontrada.nombre) : 'Desconocida';
+    const delegacionEncontrada = this.listaDelegaciones.find(
+      (d) => (d.Id || d.id) == this.delegacionSeleccionada,
+    );
+    const nombreDelegacion = delegacionEncontrada
+      ? delegacionEncontrada.Nombre || delegacionEncontrada.nombre
+      : 'Desconocida';
 
     const nuevaDescarga = {
       delegacion: nombreDelegacion,
