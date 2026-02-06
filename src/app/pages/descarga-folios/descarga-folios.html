@@ -1,4 +1,163 @@
 <main class="main-container">
+  <div class="main-title">DESCARGA MASIVA DE FOLIOS</div>
+
+  <section class="filter-card">
+    <div class="filter-header">
+      <div class="header-icon-title">
+        <span class="material-icons">filter_alt</span>
+        <h2>Filtros de Búsqueda</h2>
+      </div>
+      <p>Seleccione los criterios para generar el reporte</p>
+    </div>
+
+    <div class="filter-body">
+      <div class="selection-grid">
+        <div class="input-field">
+          <label>Estado de Cuenta</label>
+          <select [(ngModel)]="estadoSeleccionadoId" class="modern-select">
+            <option [ngValue]="null">Seleccione estado</option>
+            <option *ngFor="let e of estados" [ngValue]="e.id">{{ e.nombre }}</option>
+          </select>
+          <div *ngIf="estadoSeleccionadoId === '3'" class="modern-tooltip">
+            COBRADO, CANCELADO, CONCILIADO, CONCILIADO PARCIAL
+          </div>
+          <div *ngIf="estadoSeleccionadoId === '1'" class="modern-tooltip">
+            COBRADO, CONCILIADO, CONCILIADO PARCIAL
+          </div>
+        </div>
+
+        <div class="input-field">
+          <label>Padrón</label>
+          <select [(ngModel)]="padronSeleccionadoId" class="modern-select">
+            <option [ngValue]="null">Seleccione padrón</option>
+            <option *ngFor="let p of padrones" [ngValue]="p.id">{{ p.nombre }}</option>
+          </select>
+          <div *ngIf="padronSeleccionadoId === '1'" class="modern-tooltip">
+            Contrato Vehicular, Obligaciones, Crédito, Infracciones, Alcohol
+          </div>
+        </div>
+
+        <div class="input-field">
+          <label>Formato</label>
+          <div class="format-options">
+            <label class="check-item">
+              <input type="checkbox" [(ngModel)]="formatoPdf"> PDF
+            </label>
+            <label class="check-item">
+              <input type="checkbox" [(ngModel)]="formatoXml"> XML
+            </label>
+            <label class="check-item">
+              <input type="checkbox" [(ngModel)]="formatoRecibos"> Recibos
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="date-grid">
+        <div class="input-field">
+          <label>Mes Inicio</label>
+          <select [(ngModel)]="mesInicio" class="modern-select">
+            <option *ngFor="let m of meses" [value]="m.id">{{ m.nombre }}</option>
+          </select>
+        </div>
+        <div class="input-field">
+          <label>Mes Final</label>
+          <select [(ngModel)]="mesFinal" class="modern-select">
+            <option *ngFor="let m of meses" [value]="m.id">{{ m.nombre }}</option>
+          </select>
+        </div>
+        <div class="input-field">
+          <label>Año</label>
+          <select [(ngModel)]="anio" class="modern-select">
+            <option *ngFor="let a of aniosDisponibles" [value]="a">{{ a }}</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="input-field full-width">
+        <label>Delegación</label>
+        <select [(ngModel)]="delegacionSeleccionada" class="modern-select">
+          <option value="" disabled>Seleccione una delegación</option>
+          <option *ngFor="let d of listaDelegaciones" [value]="d.Id || d.id">
+            {{ d.Id || d.id }} {{ d.Nombre || d.nombre }}
+          </option>
+        </select>
+      </div>
+
+      <div class="action-footer">
+        <button (click)="buscar()" class="btn-buscar-modern">
+          <span class="material-icons">search</span> BUSCAR DOCUMENTOS
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <section *ngIf="resultados" class="results-card animate-up">
+    <div class="results-grid">
+      <div class="result-item">
+        <span class="res-label">Archivos encontrados:</span>
+        <span class="res-value">{{ resultados.archivos }}</span>
+      </div>
+      <div class="result-item">
+        <span class="res-label">Tamaño aprox:</span>
+        <span class="res-value">{{ resultados.tamanio }}</span>
+      </div>
+    </div>
+    
+    <div class="results-actions">
+      <button (click)="confirmarDescarga()" class="btn-confirmar-modern">
+        CONFIRMAR DESCARGA
+      </button>
+    <!--  <button (click)="simularProgreso()" class="btn-test-light">
+        🧪 SIMULAR PROGRESO
+      </button> -->
+    </div>
+  </section>
+
+  <div *ngIf="mostrarPopupConfirmacion" class="modal-overlay">
+    </div>
+</main>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!--<main class="main-container">
   <div class="main-title" style="color: #AB9470;">DESCARGA MASIVA DE FOLIOS</div>
 
   <section class="card-descarga">
@@ -14,12 +173,12 @@
           </option>
         </select>
 
-            <!-- AMBOS -->
+            
     <div *ngIf="estadoSeleccionadoId === '3'"
       class="tooltip-padron">
       COBRADO, CANCELADO, CONCILIADO, CONCILIADO PARCIAL
     </div>
-            <!-- ACTIVO -->
+           
     <div *ngIf="estadoSeleccionadoId === '1'"
       class="tooltip-padron">
       COBRADO, CONCILIADO, <br> CONCILIADO PARCIAL
@@ -38,7 +197,7 @@
       </option>
     </select>
 
-    <!-- PADRON SELECT TODOS -->
+    -- PADRON SELECT TODOS --
     <div
       *ngIf="padronSeleccionadoId === '1'"
       class="tooltip-padron"
@@ -112,7 +271,7 @@
         <span class="resultados-color-3 font-bold">Tamaño aprox: {{ resultados.tamanio }}</span>
       </div>
       <div class="resultado-tiempo">
-       <!-- <span class="resultados-color-2 font-bold">Tiempo aproximado de descarga: 5 minutos</span> --> 
+       -- <span class="resultados-color-2 font-bold">Tiempo aproximado de descarga: 5 minutos</span> --
       </div>
     </div>
   </section>
@@ -183,8 +342,9 @@
           VER DESCARGAS
         </button>
       </div>
-      <!-- <button (click)="reiniciarFiltros()" class="btn-modal-dark">HACER OTRA DESCARGA</button>*/ -->
+      !-- <button (click)="reiniciarFiltros()" class="btn-modal-dark">HACER OTRA DESCARGA</button>*/ --
       <button (click)="mostrarPopupConfirmacion = false" class="btn-modal-close">Cerrar ventana</button>
     </div>
   </div>
 </main>
+-->
