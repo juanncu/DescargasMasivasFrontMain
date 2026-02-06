@@ -19,3 +19,104 @@ body {
   font-family: var(--font-app);
   min-height: 100vh;
 }
+
+.results-modal {
+  max-width: 500px !important;
+  padding: 0 !important;
+  border-radius: 15px !important;
+  overflow: hidden;
+}
+
+.modal-header-red {
+  background-color: #8B0F28;
+  color: #f4f5f7;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.modal-body {
+  padding: 25px;
+}
+
+.stats-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  margin: 20px 0;
+}
+
+.stat-box {
+  background: #f8f9fa;
+  padding: 15px;
+  border-radius: 10px;
+  border: 1px solid #e9ecef;
+  text-align: center;
+}
+
+.stat-label {
+  display: block;
+  font-size: 11px;
+  color: #6c757d;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+.stat-value {
+  font-size: 20px;
+  font-weight: 800;
+  color: #8B0F28;
+}
+
+.btn-confirmar-modal {
+  background: #8B0F28;
+  color: white;
+  border: none;
+  width: 100%;
+  padding: 15px;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.btn-cancelar-modal {
+  background: transparent;
+  color: #6c757d;
+  border: none;
+  width: 100%;
+  padding: 10px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.btn-preview {
+  background: transparent;
+  color: #8B0F28; /* Rojo institucional */
+  border: 1.5px dashed #8B0F28;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  margin-right: 15px;
+  transition: all 0.2s ease;
+}
+
+.btn-preview:hover {
+  background: #fff5f5;
+  transform: translateY(-1px);
+}
+
+.btn-preview mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}

@@ -75,6 +75,7 @@ padronSeleccionadoId = null;
   resultados: any = { archivos: 0, tamanio: '0 KB' };
   cargando = false;
   mostrarPopupConfirmacion = false;
+  mostrarModalResultados: boolean = false;
 
   formatoPdf: boolean = true;   // Marcado por defecto
   formatoXml: boolean = true;   // Marcado por defecto
@@ -164,51 +165,101 @@ padronSeleccionadoId = null;
     alert('Por favor, seleccione al menos un formato (PDF, XML o Recibos)');
     return;
   }
+
+
+  this.resultados = {
+    archivos: 1500,
+    tamanio: '1.2 GB'
+  };
+
+  this.mostrarModalResultados = true;
   }
+
+  cerrarModalResultados() {
+  this.mostrarModalResultados = false;
+  this.resultados = null; // Opcional: limpiar búsqueda si cancela
+}
 
   confirmarDescarga() {
-    const delegacionEncontrada = this.listaDelegaciones.find(
-      d => (d.Id || d.id) == this.delegacionSeleccionada
-    );
-    const nombreDelegacion = delegacionEncontrada ? (delegacionEncontrada.Nombre || delegacionEncontrada.nombre) : 'Desconocida';
+  // 1. Cerramos el modal de resumen de resultados
+  this.mostrarModalResultados = false; 
 
-    const nuevaDescarga = {
-      delegacion: nombreDelegacion,
-      mes: `${this.obtenerNombreMes(this.mesInicio)} - ${this.obtenerNombreMes(this.mesFinal)}`,
-      archivos: this.resultados?.archivos || 0,
-      tamanio: this.resultados?.tamanio || '0 KB',
-      anio: this.anio,
-      estado: 'pendiente',
-      fecha_creacion: new Date()
-    };
+  // 2. Mapeo de nombres para el historial
+  const delegacionEncontrada = this.listaDelegaciones.find(
+    d => (d.Id || d.id) == this.delegacionSeleccionada
+  );
+  const nombreDelegacion = delegacionEncontrada ? (delegacionEncontrada.Nombre || delegacionEncontrada.nombre) : 'Desconocida';
 
-    // --- REINTEGRACIÓN DE LA BARRA ---
-    this.progreso = 0;
-    this.mostrarPopupConfirmacion = true;
+  // 3. Obtener etiquetas de formatos seleccionados
+  const formatos = [];
+  if (this.formatoPdf) formatos.push('PDF');
+  if (this.formatoXml) formatos.push('XML');
+  if (this.formatoRecibos) formatos.push('Recibos');
 
-    // Iniciamos la escucha del progreso vía WebSocket
-    this.descargaService.iniciarDescarga(Number(this.delegacionSeleccionada)).subscribe({
-      next: (evento) => {
-        this.zone.run(() => { // NgZone asegura que la barra se mueva visualmente
-          if (evento.tipo?.toUpperCase() === 'PROGRESO') {
-            const valor = parseFloat(evento.progreso.toString().replace('%', ''));
-            if (!isNaN(valor)) {
-              this.progreso = Math.min(100, Math.max(0, valor));
-              this.tiempoEstimado = this.calcularTiempoRestante(this.progreso);
-            }
+  // 4. Preparar el objeto para el historial con los nuevos filtros
+  const nuevaDescarga = {
+    delegacion: nombreDelegacion,
+    mes: `${this.obtenerNombreMes(this.mesInicio)} - ${this.obtenerNombreMes(this.mesFinal)}`,
+    anio: this.anio,
+    archivos: this.resultados?.archivos || 0,
+    tamanio: this.resultados?.tamanio || '0 KB',
+    formatos: formatos.join(', '), // Nuevo campo
+    padron: this.padrones.find(p => p.id == this.padronSeleccionadoId)?.nombre || 'General', // Nuevo campo
+    estadoFiltro: this.estados.find(e => e.id == this.estadoSeleccionadoId)?.nombre || 'Ambos', // Nuevo campo
+    estado: 'pendiente',
+    fecha_creacion: new Date()
+  };
+
+  // 5. Iniciar Barra de Progreso y Modal de Carga
+  this.progreso = 0;
+  this.mostrarPopupConfirmacion = true;
+
+  // Escucha del WebSocket
+  this.descargaService.iniciarDescarga(Number(this.delegacionSeleccionada)).subscribe({
+    next: (evento) => {
+      this.zone.run(() => {
+        if (evento.tipo?.toUpperCase() === 'PROGRESO') {
+          const valor = parseFloat(evento.progreso.toString().replace('%', ''));
+          if (!isNaN(valor)) {
+            this.progreso = Math.min(100, Math.max(0, valor));
+            this.tiempoEstimado = this.calcularTiempoRestante(this.progreso);
           }
-        });
-      },
-      error: (err) => console.error('Error en WebSocket de progreso:', err)
-    });
+        }
+      });
+    },
+    error: (err) => {
+      console.error('Error en WebSocket de progreso:', err);
+      this.mostrarPopupConfirmacion = false; // Opcional: cerrar si hay error crítico
+    }
+  });
 
-    // Registro paralelo en el historial
-    this.apiService.registrarNuevaDescarga(nuevaDescarga).subscribe({
-      next: (res) => console.log('Registro exitoso en historial'),
-      error: (err) => console.warn('Error en registro de historial:', err)
-    });
+  // 6. Registro en Base de Datos (Historial)
+  this.apiService.registrarNuevaDescarga(nuevaDescarga).subscribe({
+    next: (res) => console.log('Registro exitoso en historial'),
+    error: (err) => console.warn('Error en registro de historial:', err)
+  });
+}
+
+
+// descarga-folios.ts
+
+modoVistaPrevia() {
+  console.log('Iniciando vista previa (Modo Demo)');
+  
+  // 1. Forzamos datos de búsqueda ficticios
+  this.resultados = {
+    archivos: 2450,
+    tamanio: '1.8 GB'
+  };
+
+  // 2. Si no hay delegación seleccionada, forzamos una para que el historial no truene
+  if (!this.delegacionSeleccionada) {
+    this.delegacionSeleccionada = '1'; // Campeche por defecto
   }
 
+  // 3. Abrimos el modal de resumen directamente
+  this.mostrarModalResultados = true;
+}
   // --- FUNCIONES AUXILIARES ---
 
   calcularTiempoRestante(p: number): string {

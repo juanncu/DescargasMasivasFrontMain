@@ -84,35 +84,63 @@
         </select>
       </div>
 
-      <div class="action-footer">
+   <!--   <div class="action-footer">
         <button (click)="buscar()" class="btn-buscar-modern">
           <span class="material-icons">search</span> BUSCAR DOCUMENTOS
         </button>
-      </div>
+      </div> --> 
+      <div class="action-footer">
+  <button (click)="modoVistaPrevia()" class="btn-preview">
+    <mat-icon>visibility</mat-icon> VISTA PREVIA
+  </button>
+
+  <button (click)="buscar()" class="btn-buscar-modern" [disabled]="!delegacionSeleccionada">
+    <mat-icon>search</mat-icon> BUSCAR DOCUMENTOS
+  </button>
+</div>
     </div>
   </section>
 
-  <section *ngIf="resultados" class="results-card animate-up">
-    <div class="results-grid">
-      <div class="result-item">
-        <span class="res-label">Archivos encontrados:</span>
-        <span class="res-value">{{ resultados.archivos }}</span>
-      </div>
-      <div class="result-item">
-        <span class="res-label">Tamaño aprox:</span>
-        <span class="res-value">{{ resultados.tamanio }}</span>
-      </div>
-    </div>
+  <div *ngIf="mostrarModalResultados" class="modal-overlay">
+  <div class="modal-content animate-zoom results-modal-custom">
     
-    <div class="results-actions">
-      <button (click)="confirmarDescarga()" class="btn-confirmar-modern">
-        CONFIRMAR DESCARGA
-      </button>
-    <!--  <button (click)="simularProgreso()" class="btn-test-light">
-        🧪 SIMULAR PROGRESO
-      </button> -->
+    <div class="modal-header-red">
+      <span class="material-icons">analytics</span>
+      <h2>Resumen de Búsqueda</h2>
+      <button class="close-x" (click)="cerrarModalResultados()">×</button>
     </div>
-  </section>
+
+    <div class="modal-body-padding">
+      <p class="instruction-text">Se han localizado los siguientes documentos según sus filtros:</p>
+      
+      <div class="modal-stats-grid">
+        <div class="stat-card-mini">
+          <span class="stat-label">Archivos encontrados</span>
+          <span class="stat-value-red">{{ resultados?.archivos }}</span>
+        </div>
+        <div class="stat-card-mini">
+          <span class="stat-label">Tamaño aproximado</span>
+          <span class="stat-value-red">{{ resultados?.tamanio }}</span>
+        </div>
+      </div>
+
+      <div class="modal-info-footer">
+        <span class="material-icons">timer</span>
+        <span>Tiempo estimado de procesamiento: <strong>5 minutos</strong></span>
+      </div>
+    </div>
+
+    <div class="modal-actions-column">
+      <button (click)="confirmarDescarga()" class="btn-confirmar-descarga-full">
+        <span class="material-icons">cloud_download</span> CONFIRMAR DESCARGA
+      </button>
+      
+      <button (click)="cerrarModalResultados()" class="btn-link-cancel">
+        Regresar a filtros
+      </button>
+    </div>
+  </div>
+</div>
 
   <div *ngIf="mostrarPopupConfirmacion" class="modal-overlay">
     </div>
@@ -128,7 +156,15 @@
 
 
 
-
+<!-- <div class="results-actions">
+      <button (click)="confirmarDescarga()" class="btn-confirmar-modern">
+        CONFIRMAR DESCARGA
+      </button>
+    <!-  <button (click)="simularProgreso()" class="btn-test-light">
+        🧪 SIMULAR PROGRESO
+      </button> --
+    </div>
+  -->
 
 
 

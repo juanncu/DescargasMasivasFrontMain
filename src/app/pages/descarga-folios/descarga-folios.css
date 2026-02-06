@@ -145,7 +145,84 @@
 }
 
 
+/* Overlay oscuro que cubre toda la pantalla */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5); /* Fondo semitransparente */
+  backdrop-filter: blur(2px);     /* Efecto de desenfoque */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;                  /* Asegura que esté sobre todo */
+}
 
+/* El cuadro blanco central */
+.results-modal-custom {
+  background: white;
+  width: 90%;
+  max-width: 450px;
+  border-radius: 16px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+  overflow: hidden;
+}
+
+.modal-header-red {
+  background-color: #8B0F28;
+  color: white;
+  padding: 18px 25px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+}
+
+.modal-header-red h2 { margin: 0; font-size: 18px; font-weight: 600; }
+
+.modal-body-padding { padding: 25px; }
+
+.modal-stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  margin: 20px 0;
+}
+
+.stat-card-mini {
+  background: #fdf2f2;
+  border: 1px solid #fee2e2;
+  border-radius: 12px;
+  padding: 15px;
+  text-align: center;
+}
+
+.stat-label { display: block; font-size: 10px; color: #991b1b; text-transform: uppercase; font-weight: bold; }
+.stat-value-red { font-size: 22px; font-weight: 800; color: #8B0F28; }
+
+.btn-confirmar-descarga-full {
+  background-color: #8B0F28;
+  color: white;
+  border: none;
+  width: 100%;
+  padding: 14px;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  transition: background 0.2s;
+}
+
+.btn-confirmar-descarga-full:hover { background-color: #6d0a1f; }
+
+.modal-actions-column { padding: 0 25px 25px; display: flex; flex-direction: column; align-items: center; }
+
+.btn-link-cancel { background: none; border: none; color: #6b7280; margin-top: 10px; cursor: pointer; font-size: 13px; }
 
 
 
