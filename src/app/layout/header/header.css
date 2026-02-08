@@ -1,18 +1,23 @@
-.header {
-  background-color: #f4f5f7;
-  border-bottom: 1px solid #9F2241;
-  font-family: var(--font-app); 
+.header-container {
+  display: flex;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
 }
 
-nav a {
-  margin-left: 16px;
-  text-decoration: none;
-  color: #f4f5f7;
-  font-weight: 500;
+/* Ocultar hamburguesa en escritorio */
+@media (min-width: 769px) {
+  .menu-btn, .header-title-mobile {
+    display: none; 
+  }
 }
 
-h1{
-    color: #f4f5f7;
-    text-align: left;
+/* Mostrar solo en móviles */
+@media (max-width: 768px) {
+  .menu-btn {
+    display: block;
+    cursor: pointer;
+  }
 }
 

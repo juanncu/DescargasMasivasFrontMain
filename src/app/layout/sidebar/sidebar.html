@@ -1,0 +1,47 @@
+<aside class="sidebar" [ngClass]="{'open': isSidebarOpen}">
+  <div class="sidebar-header">
+    <div class="logo-circle">*Logo*</div>
+    <h1 class="sidebar-title">Gobierno</h1>
+    <h1 class="sidebar-title">de Todos</h1>
+  </div>
+
+  <button class="close-sidebar-btn" (click)="toggleMenu()">
+      <mat-icon>close</mat-icon>
+    </button>
+
+  <nav class="sidebar-nav">
+    <ul class="nav-list">
+      <li>
+        <a routerLink="/descarga-folios" routerLinkActive="active" class="nav-item">
+          <mat-icon>home</mat-icon>
+          <span>Inicio</span>
+        </a>
+      </li>
+      <li>
+        <a routerLink="/historial-descargas" routerLinkActive="active" class="nav-item">
+          <mat-icon>history</mat-icon>
+          <span>Historial</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+<hr style="opacity: 50%;">
+  <footer class="sidebar-footer">
+    <a routerLink="/perfil" class="footer-item">
+      <mat-icon>person_outline</mat-icon>
+      <span>Perfil</span>
+    </a>
+    <button  class="footer-item btn-logout">
+      <mat-icon>logout</mat-icon>
+      <span>Cerrar Sesión</span>
+    </button>
+  </footer>
+</aside>  
+
+<div 
+  *ngIf="isSidebarOpen" 
+  class="mobile-backdrop" 
+  >
+</div>
+
+<!--(click)="closeMenu()"-->

@@ -6,99 +6,161 @@
   src: url('/assets/fonts/Quatro Slab W03 Bold.ttf') format('truetype');
 }
 
-/* Variables Globales */
 :root {
   --font-app: 'QuattroSlab', serif;
-  --color-barra: #9F2241 ;
+  --color-institucional: #8B0F28;
 }
 
-/* Estilos Base */
-body {
+/* 1. Corrección Base de Scroll */
+html, body {
   margin: 0;
   padding: 0;
   font-family: var(--font-app);
+  background-color: #f4f5f7;
+  /* Permitir scroll natural */
+  min-height: 100vh;
+  overflow-x: hidden; 
+  overflow-y: auto; 
+}
+
+/* 2. Layout Estructural */
+.app-layout {
   min-height: 100vh;
 }
 
+.main-wrapper {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  transition: margin-left 0.3s ease;
+  min-width: 0;
+}
+
+
+/* --- MÓVIL (iPhone / Tablets) --- */
+@media (max-width: 768px) {
+  .main-wrapper {
+    margin-left: 0 !important; /* Centra el contenido */
+  }
+
+  .main-title {
+    font-size: 1.2rem !important;
+    padding: 15px 10px;
+    text-align: center;
+  }
+}
+
+/* 3. Estilos de Modales Responsivos */
 .results-modal {
   max-width: 500px !important;
-  padding: 0 !important;
   border-radius: 15px !important;
   overflow: hidden;
 }
 
+@media (max-width: 600px) {
+  .results-modal-custom, .modal-content {
+    width: 95% !important;
+    margin: 0 auto;
+  }
+  .stats-container {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* --- POSICIONAMIENTO DEL MODAL --- */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999; /* Asegura que esté sobre el sidebar y header */
+}
+
+/* El cuadro blanco centralizado */
+.results-modal-custom {
+  background: white;
+  width: 95%;
+  max-width: 480px;
+  border-radius: 20px;
+  box-shadow: 0 25px 50px rgba(0,0,0,0.2);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Encabezado del modal */
 .modal-header-red {
-  background-color: #8B0F28;
-  color: #f4f5f7;
-  padding: 20px;
+  background-color: var(--color-institucional);
+  color: white;
+  padding: 22px 30px;
   display: flex;
   align-items: center;
   gap: 15px;
 }
 
-.modal-body {
-  padding: 25px;
-}
+.modal-header-red h2 { margin: 0; font-size: 18px; }
 
-.stats-container {
+/* Cuerpo y Grilla de estadísticas */
+.modal-body-padding { padding: 25px; }
+
+.modal-stats-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 15px;
   margin: 20px 0;
 }
 
-.stat-box {
-  background: #f8f9fa;
+.stat-card-mini {
+  background: #fdf2f2;
+  border: 1px solid #fee2e2;
+  border-radius: 12px;
   padding: 15px;
-  border-radius: 10px;
-  border: 1px solid #e9ecef;
   text-align: center;
 }
 
-.stat-label {
-  display: block;
-  font-size: 11px;
-  color: #6c757d;
-  text-transform: uppercase;
-  font-weight: bold;
+.stat-label { 
+  display: block; 
+  font-size: 10px; 
+  color: #991b1b; 
+  text-transform: uppercase; 
+  font-weight: bold; 
 }
 
-.stat-value {
-  font-size: 20px;
-  font-weight: 800;
-  color: #8B0F28;
+.stat-value-red { 
+  font-size: 22px; 
+  font-weight: 800; 
+  color: var(--color-institucional); 
 }
 
-.btn-confirmar-modal {
-  background: #8B0F28;
-  color: white;
-  border: none;
-  width: 100%;
-  padding: 15px;
-  border-radius: 8px;
-  font-weight: bold;
-  cursor: pointer;
+/* Acciones */
+.modal-actions-column {
+  padding: 0 25px 25px;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 10px;
 }
 
-.btn-cancelar-modal {
-  background: transparent;
-  color: #6c757d;
+.btn-link-cancel {
+  background: none;
   border: none;
-  width: 100%;
-  padding: 10px;
-  font-size: 13px;
+  color: #6b7280;
+  margin-top: 10px;
   cursor: pointer;
+  font-size: 13px;
+  text-decoration: underline;
 }
 
+/* 4. Elementos de Interfaz (Botones) */
 .btn-preview {
   background: transparent;
-  color: #8B0F28; /* Rojo institucional */
-  border: 1.5px dashed #8B0F28;
+  color: var(--color-institucional);
+  border: 1.5px dashed var(--color-institucional);
   padding: 10px 20px;
   border-radius: 8px;
   font-weight: 600;
@@ -106,17 +168,16 @@ body {
   align-items: center;
   gap: 8px;
   cursor: pointer;
-  margin-right: 15px;
   transition: all 0.2s ease;
 }
 
-.btn-preview:hover {
-  background: #fff5f5;
-  transform: translateY(-1px);
-}
-
-.btn-preview mat-icon {
-  font-size: 18px;
-  width: 18px;
-  height: 18px;
+.btn-confirmar-modal {
+  background: var(--color-institucional);
+  color: white;
+  border: none;
+  width: 100%;
+  padding: 15px;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
 }

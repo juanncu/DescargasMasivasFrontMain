@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 import { ApiService } from './services/api';
@@ -7,17 +7,22 @@ import { Subscription } from 'rxjs';
 import { WebSocketService } from './services/websocket';
 import { Header } from './layout/header/header';
 import { FiltrosCFDI } from './models/registro-descarga.model';
+import { SidebarComponent } from "./layout/sidebar/sidebar";
+import { UiService } from './services/ui.services'; // Corregido: sin la 's' final si tu archivo es ui.service.ts
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, Header],
+  imports: [CommonModule, RouterOutlet, Header, SidebarComponent],
   templateUrl: './app.html',
 })
-export class App implements OnInit {
+export class App implements OnInit, OnDestroy {
   private apiService = inject(ApiService);
-  private sub!: Subscription;
+  private uiService = inject(UiService); // Inyectamos el servicio de interfaz
+  private subFiltros!: Subscription;
+  private subSidebar!: Subscription;
 
+  isSidebarOpen = false;
   datos: any[] = [];
   errorMensaje: string = '';
 
@@ -27,38 +32,27 @@ export class App implements OnInit {
   ) {}
 
   ngOnInit() {
-    // this.selectDescarga.delegacion$.subscribe((delegacion) => {
-    //   if (delegacion !== null) {
-    //     console.log('Delegación recibida:', delegacion);
-    //     this.consumirApi(delegacion);
-    //   }
-    // });
+    // 1. Escuchar el estado del Sidebar para el Backdrop y Layout
+    this.subSidebar = this.uiService.sidebarOpen$.subscribe((status) => {
+      this.isSidebarOpen = status;
+    });
 
-    this.selectDescarga.filtros$.subscribe((filtros) => {
+    // 2. Escuchar filtros para la API
+    this.subFiltros = this.selectDescarga.filtros$.subscribe((filtros) => {
       if (filtros.delegacion !== null) {
-        console.log('Delegación recibida:', filtros);
+        console.log('Filtros recibidos:', filtros);
         this.consumirApi(filtros);
       }
     });
   }
 
   ngOnDestroy() {
-    this.sub.unsubscribe();
+    // Limpieza de todas las suscripciones para evitar fugas de memoria
+    if (this.subFiltros) this.subFiltros.unsubscribe();
+    if (this.subSidebar) this.subSidebar.unsubscribe();
     this.wsService.cerrar();
   }
 
-  // consumirApi(id: number) {
-  //   this.apiService.getCfdis(id).subscribe({
-  //     next: (respuesta: any) => {
-  //       console.log('¡Facturas recibidas!', respuesta);
-  //       this.datos = Array.isArray(respuesta) ? respuesta : [respuesta];
-  //     },
-  //     error: (error: any) => {
-  //       console.error('Error:', error);
-  //       this.errorMensaje = `Error: ${error.status} - ${error.statusText}`;
-  //     },
-  //   });
-  // }
   consumirApi(filtros: FiltrosCFDI) {
     this.apiService.getCfdisConFiltros(filtros).subscribe({
       next: (respuesta: any) => {
@@ -70,5 +64,10 @@ export class App implements OnInit {
         this.errorMensaje = `Error: ${error.status} - ${error.statusText}`;
       },
     });
+  }
+
+  // Método opcional para cerrar el menú desde el backdrop
+  closeMenu() {
+    this.uiService.toggleSidebar(); // O crea un método closeSidebar() en tu servicio
   }
 }
