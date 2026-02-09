@@ -27,10 +27,10 @@
 
 /* 2. TARJETA DE FILTROS  */
 .filter-card {
-  max-width: 1200px; /* Estaba en un valor menor, lo subimos para ocupar la pantalla */
+  max-width: 1250px !important; /* Estaba en un valor menor, lo subimos para ocupar la pantalla */
   width: 95%; 
-  margin: 0 auto;
-  padding: 40px; /* Más espacio interno para que no se vea apretado */
+  margin: 20px auto;
+  padding: 45px; /* Más espacio interno para que no se vea apretado */
   background: white;
   border-radius: 12px;
   box-shadow: 0 10px 25px rgba(0,0,0,0.05);
@@ -60,7 +60,7 @@
 .selection-grid, .date-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr); /* 3 columnas iguales */
-  gap: 30px; /* Mayor separación entre campos */
+  gap: 35px; /* Mayor separación entre campos */
   margin-bottom: 25px;
 }
 
@@ -238,4 +238,45 @@
   visibility: visible;
   opacity: 1;
   transform: translateX(-50%) translateY(-5px); /* Efecto de elevación suave */
+}
+
+
+.modal-progreso-safin {
+  background: white;
+  width: 600px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+}
+
+.modal-header-rojo {
+  background: #8B0F28; /* Rojo institucional */
+  color: white;
+  padding: 15px;
+  text-align: center;
+}
+
+.log-terminal {
+  background: #1a1a1a; /* Fondo negro de consola */
+  height: 200px;
+  overflow-y: auto;
+  padding: 15px;
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  margin-top: 20px;
+  border-radius: 4px;
+  text-align: left;
+}
+
+.txt-green { color: #00ff00; }
+.txt-red { color: #ff4d4d; }
+
+.btn-primary-safin {
+  background: #bca986; /* Color arena */
+  color: white;
+  border: none;
+  padding: 10px 25px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
 }
