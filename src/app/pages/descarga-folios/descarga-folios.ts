@@ -3,7 +3,7 @@ import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
-
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import { DescargaFoliosService } from '../../services/descarga-folios.service';
 import { SelectDescarga } from '../../services/select-descarga';
 import { ApiService } from '../../services/api';
@@ -11,7 +11,7 @@ import { ApiService } from '../../services/api';
 @Component({
   selector: 'app-descarga-folios',
   standalone: true,
-  imports: [FormsModule, CommonModule, RouterModule, MatIconModule],
+  imports: [FormsModule, CommonModule, RouterModule, MatIconModule, MatProgressSpinnerModule],
   templateUrl: './descarga-folios.html',
   styleUrls: ['./descarga-folios.css'],
   providers: [DescargaFoliosService]

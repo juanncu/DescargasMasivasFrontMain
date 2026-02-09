@@ -1,4 +1,4 @@
-/* --- 1. ESTADO BASE (Escritorio) --- */
+/* --- 1. side bar izquierda --- */
 .sidebar {
   width: 260px;
   height: 100vh;
@@ -25,13 +25,11 @@
   gap: 12px;
 }
 
-/* --- 2. NAVEGACIÓN Y BOTONES --- */
+/* --- NAVEGACIÓN Y BOTONES --- */
 .sidebar-nav {
   flex-grow: 1;
   padding: 0 16px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center; /* Centra Inicio/Consultas verticalmente */
+
 }
 
 .nav-list {
