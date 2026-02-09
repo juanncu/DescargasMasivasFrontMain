@@ -81,11 +81,11 @@
       <div class="input-field full-width">
         <label>Delegación</label>
         <select [(ngModel)]="delegacionSeleccionada" class="modern-select">
-          <option value="" disabled>Seleccione una delegación</option>
-          <option *ngFor="let d of listaDelegaciones" [value]="d.Id || d.id">
-            {{ d.Id || d.id }} {{ d.Nombre || d.nombre }}
-          </option>
-        </select>
+  <option [ngValue]="null" disabled>Seleccione una delegación</option>
+  <option *ngFor="let d of listaDelegaciones" [ngValue]="d.delegacionID">
+    {{ d.delegacion }}
+  </option>
+</select>
       </div>
 
       <div class="action-footer">

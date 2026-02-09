@@ -1,68 +1,75 @@
-<div class="detalle-wrapper">
-
-  <button class="btn-volver" (click)="volver()">
-    <mat-icon style="font-size: 16px; height: 16px; width: 16px;">arrow_back</mat-icon> Volver al historial
-  </button>
-
-  <div class="titulo" *ngIf="detalle">
-    <h2>{{ detalle.delegacion }}</h2>
-    <span class="estado" [ngClass]="{'ok': detalle.estado === 'COMPLETADO', 'error': detalle.estado !== 'COMPLETADO'}">
-      {{ detalle.estado }}
-    </span>
+<div class="main-container-detalle">
+  <div class="header-actions">
+    <button (click)="volver()" class="btn-regresar-historial">
+      <mat-icon>arrow_back</mat-icon> Volver al historial
+    </button>
   </div>
 
-  <div *ngIf="detalle">
-    <p style="color: #666; margin-left: 5px;" class="detalle-mes">{{ detalle.mes }}</p>
-
-    <div class="grid grid-cols-4 gap-4 mb-8">
-      <div class="stat-card">
-        <span class="label">PDFs</span>
-        <span class="value">{{ detalle?.totalPdf || 0 }}</span>
-      </div>
-
-      <div class="stat-card">
-        <span class="label">XMLs</span>
-        <span class="value">{{ detalle?.totalXml || 0 }}</span>
-      </div>
-
-      <div class="stat-card">
-        <span class="label">Recibos</span>
-        <span class="value">{{ detalle?.totalRecibos || 0 }}</span>
-      </div>
-
-      <div class="stat-card" [ngClass]="{'has-errors': detalle.omitidos > 0}">
-        <span class="label">Omitidos</span>
-        <span class="value" [class.text-danger]="detalle.omitidos > 0">
-          {{ detalle.omitidos || 0 }}
+  <section class="card-detalle-principal">
+    <div class="encabezado-info">
+      <div class="titulo-estatus">
+        <h2>{{ detalle?.delegacion }}</h2>
+        <span class="badge-estado" [ngClass]="detalle?.estado">
+          {{ detalle?.estado }}
         </span>
       </div>
+      <p class="periodo-texto">{{ detalle?.periodoLabel }}</p>
     </div>
 
-    <div class="info-box">
-      <div class="info-header">
-        Detalles Técnicos
+    <div class="stats-grid">
+      <div class="stat-item">
+        <span class="stat-label">PDFS</span>
+        <span class="stat-value">{{ detalle?.stats.pdfs }}</span>
       </div>
-      <div class="info-content">
-        <p><strong>Ruta de la descarga:</strong> {{ detalle.ruta }}</p>
-        <p><strong>Inicio de descarga:</strong> {{ detalle.inicio }}</p>
-        <p><strong>Fin de la descarga:</strong> {{ detalle.fin }}</p>
-        <p><strong>Tiempo:</strong> {{ detalle.tiempo }}</p>
+      <div class="stat-item">
+        <span class="stat-label">XMLS</span>
+        <span class="stat-value">{{ detalle?.stats.xmls }}</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">RECIBOS</span>
+        <span class="stat-value">{{ detalle?.stats.recibos }}</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">OMITIDOS</span>
+        <span class="stat-value">{{ detalle?.stats.omitidos }}</span>
       </div>
     </div>
 
-    <h3>Registro de actividad</h3>
-    <div class="log">
-      <div *ngFor="let r of detalle.registros" [class.OK]="r.estado === 'OK'" [class.ERROR]="r.estado === 'ERROR'">
-        [{{ r.estado }}] {{ r.mensaje }}
+    <div class="seccion-tecnica">
+      <div class="tecnica-header">Detalles Técnicos</div>
+      <div class="tecnica-body">
+        <p><strong>Ruta de la descarga:</strong> {{ detalle?.tecnico.ruta }}</p>
+        <p><strong>Inicio de descarga:</strong> {{ detalle?.tecnico.inicio }}</p>
+        <p><strong>Fin de descarga:</strong> {{ detalle?.tecnico.fin }}</p>
+        <p><strong>Tiempo:</strong> {{ detalle?.tecnico.tiempo }}</p>
+           <div class="filtros-resumen">
+  <span class="badge-filtro">
+    <mat-icon>folder</mat-icon> Padrón: {{ detalle?.filtrosAplicados.padron }}
+  </span>
+  <span class="badge-filtro">
+    <mat-icon>filter_alt</mat-icon> Estado: {{ detalle?.filtrosAplicados.estadoRecibo }}
+  </span>
+  <span class="badge-formato-detalle" *ngFor="let f of detalle?.filtrosAplicados.formatos">
+    <mat-icon>insert_drive_file</mat-icon> {{ f }}
+  </span>
+</div>
       </div>
     </div>
 
-    <div class="acciones">
-      <button class="btn retry" *ngIf="detalle.errores > 0">
-        Reintentar
-      </button>
-      <button class="btn open">Abrir carpeta</button>
-    </div>
-  </div>
+ 
 
+    <div class="registro-actividad">
+      <h3>Registro de actividad</h3>
+      <div class="consola-negra">
+        <div *ngFor="let log of detalle?.logs" [ngClass]="{'log-error': log.tipo === 'ERROR', 'log-ok': log.tipo === 'OK'}">
+          [{{ log.tipo }}] {{ log.mensaje }}
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-acciones">
+      <button class="btn-reintentar">Reintentar</button>
+      <button class="btn-abrir-carpeta">Abrir carpeta</button>
+    </div>
+  </section>
 </div>

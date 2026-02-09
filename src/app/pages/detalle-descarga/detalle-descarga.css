@@ -1,212 +1,185 @@
-body {
-  background: radial-gradient(circle at top, #6b1d3b, #3b0d1f);
+.main-container-detalle {
+  padding: 20px;
+  background-color: #f5f5f5;
+  min-height: 100vh;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.detalle-wrapper {
-  max-width: 950px;
-  margin: 40px auto;
-  background: linear-gradient(#fff, #f2ecec);
-  border-radius: 10px;
-  padding: 30px;
-  box-shadow: 0 15px 40px rgba(0,0,0,0.25);
-}
-
-/* Título */
-.titulo {
+/* Botón Volver */
+.btn-regresar-historial {
+  background-color: #bca986; /* Tono arena institucional */
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 5px;
+  gap: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  margin-bottom: 20px;
 }
 
-.estado {
-  font-size: 13px;
-  padding: 4px 10px;
+.card-detalle-principal {
+  background: white;
   border-radius: 12px;
+  padding: 30px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  max-width: 1000px;
+  margin: 0 auto;
 }
 
-.estado.ok {
-  background: #e8f5e9;
-  color: #2e7d32;
-}
-
-.estado.error {
-  background: #fdecea;
-  color: #c62828;
-}
-
-/* Cards */
-.cards {
+/* Encabezado */
+.titulo-estatus {
   display: flex;
+  align-items: center;
   gap: 15px;
+}
+
+.titulo-estatus h2 {
+  margin: 0;
+  color: #333;
+  font-size: 1.8rem;
+}
+
+.badge-estado {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: bold;
+}
+
+.COMPLETADO { background-color: #e8f5e9; color: #2e7d32; }
+.COMPLETADO_CON_ERRORES { background-color: #ffebee; color: #c62828; }
+
+.periodo-texto {
+  color: #666;
+  margin-top: 5px;
+  font-size: 1rem;
+}
+
+/* Rejilla de Estadísticas */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 20px;
   margin: 25px 0;
 }
 
-.card {
-  flex: 1;
-  background: #f7f3f3;
-  border-radius: 14px;
-  padding: 18px;
-  text-align: center;
-  box-shadow: inset 0 0 0 1px #e0dcdc;
-}
-
-.card p {
-  margin: 6px 0;
-  color: #555;
-}
-
-.card strong {
-  font-size: 26px;
-}
-
-.card-error {
-  background: linear-gradient(#ffdede, #ffecec);
-}
-
-/* Info box */
-.info-box {
-  background: #f8f4f4;
-  border-radius: 14px;
-  margin-top: 10px;
-  overflow: hidden;
-}
-
-.info-header {
-  background: linear-gradient(to right, #7a1f3d, #9c2d50);
-  color: #fff;
-  padding: 12px 18px;
-  font-weight: 600;
-}
-
-.info-content {
-  padding: 16px 18px;
-  background-color: #ebe7e7;
-}
-
-.info-content p {
-  
-  margin: 6px 0;
-}
-
-h3{
-  padding: 2%;
-}
-
-/* Log */
-.log {
-  background: #121212;
-  color: #eee;
-  margin: 10px 18px 18px;
-  padding: 12px;
-  border-radius: 10px;
-  max-height: 220px;
-  overflow-y: auto;
-  font-family: monospace;
-  font-size: 13px;
-}
-
-.OK { color: #4caf50; }
-.ERROR { color: #f44336; }
-
-/* Acciones */
-.acciones {
-  display: flex;
-  gap: 15px;
-  margin-top: 20px;
-}
-
-.btn {
-  flex: 1;
-  padding: 12px;
-  border-radius: 12px;
-  border: none;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.retry {
-  background: #f3e5ab;
-}
-
-.open {
-  background: #c8e6c9;
-}
-
-.export {
-  background: #e1bee7;
-}
-
-/* Volver */
-
-.btn-volver {
-  background: #BCA986;
-  border: 1px solid #ccc;
-  margin-left: 0.5%;
-  margin-bottom: 2%;
-  padding: 8px 16px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
-  color: #ffffff;
-}
-
-.btn-volver:hover {
-  background-color: #ffffff;
-  border-color: #ffffff;
-  color: #BCA986;
-}
-
-.mat-icon{
-  padding-top: 4px;
-}
-
-
-/* Contenedor base de las estadísticas (Folios, Archivos, Omitidos, Tamaño) */
-.stat-card {
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
+.stat-item {
+  border: 1px solid #eee;
   padding: 20px;
+  border-radius: 8px;
   text-align: center;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  transition: all 0.3s ease;
+  gap: 10px;
 }
 
-/* Estilo específico para cuando hay archivos omitidos/errores */
-.stat-card.has-errors {
-  background-color: #fef2f2; /* Un fondo rojo muy tenue */
-  border-color: #fecaca;     /* Borde rojizo */
-  box-shadow: 0 4px 6px -1px rgba(220, 38, 38, 0.1);
-}
-
-.stat-card .label {
+.stat-label {
   font-size: 0.75rem;
-  font-weight: 700;
-  color: #6b7280; /* Gris para la etiqueta */
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  color: #888;
+  font-weight: bold;
 }
 
-.stat-card .value {
+.stat-value {
   font-size: 1.5rem;
-  font-weight: 800;
-  color: #1f2937; /* Negro/Gris oscuro para el número */
+  font-weight: bold;
+  color: #333;
 }
 
-.text-danger {
-  color: #691a1a !important; 
-  animation: pulse-red 2s infinite;
+/* Sección Técnica */
+.seccion-tecnica {
+  background-color: #8B0F28; /* Rojo institucional */
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 25px;
 }
 
-@keyframes pulse-red {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-  100% { transform: scale(1); }
+.tecnica-header {
+  color: white;
+  padding: 12px 20px;
+  font-weight: bold;
 }
 
-.detalle-mes{
-  padding-bottom: 5px;
+.tecnica-body {
+  background-color: #f9f9f9;
+  padding: 20px;
+  color: #444;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+/* Consola de Actividad */
+.consola-negra {
+  background-color: #1a1a1a;
+  color: #4caf50;
+  padding: 20px;
+  border-radius: 8px;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.85rem;
+  max-height: 150px;
+  overflow-y: auto;
+  margin-top: 10px;
+}
+
+.log-error { color: #ff5252; }
+.log-ok { color: #4caf50; }
+
+/* Footer de Acciones */
+.footer-acciones {
+  display: flex;
+  gap: 15px;
+  margin-top: 30px;
+}
+
+.btn-reintentar {
+  flex: 1;
+  background-color: #f0e68c; /* Amarillo suave */
+  border: none;
+  padding: 12px;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.btn-abrir-carpeta {
+  flex: 1;
+  background-color: #c8e6c9; /* Verde suave */
+  border: none;
+  padding: 12px;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.filtros-resumen {
+  display: flex;
+  gap: 12px;
+  margin-top: 15px;
+  flex-wrap: wrap;
+}
+
+.badge-filtro, .badge-formato-detalle {
+  background-color: #f8f9fa;
+  border: 1px solid #e0e0e0;
+  padding: 5px 12px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #555;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  text-transform: uppercase;
+}
+
+.badge-formato-detalle {
+  border-left: 3px solid #8B0F28; /* Rojo institucional para formatos */
+}
+
+.badge-filtro mat-icon, .badge-formato-detalle mat-icon {
+  font-size: 14px;
+  width: 14px;
+  height: 14px;
 }

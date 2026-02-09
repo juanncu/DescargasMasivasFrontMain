@@ -27,20 +27,19 @@
 
 /* 2. TARJETA DE FILTROS  */
 .filter-card {
-  background: #ffffff;
+  max-width: 1200px; /* Estaba en un valor menor, lo subimos para ocupar la pantalla */
+  width: 90%; 
+  margin: 0 auto;
+  padding: 40px; /* Más espacio interno para que no se vea apretado */
+  background: white;
   border-radius: 12px;
   box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-  width: 100%;
-  max-width: 900px; /* Se ajusta solo en PC */
-  margin: 0 auto;
-  overflow: hidden;
-  border: 1px solid #e5e7eb;
 }
 
 .filter-header {
   background-color: #8B0F28;
   color: white;
-  padding: 20px 25px;
+  padding: 30px 35px;
 }
 
 .header-icon-title {
@@ -59,12 +58,14 @@
 /* 3. GRILLAS RESPONSIVAS */
 .selection-grid, .date-grid {
   display: grid;
-  /* En PC usa 3 columnas, en móvil se apila solo */
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 20px;
-  margin-bottom: 20px;
+  grid-template-columns: repeat(3, 1fr); /* 3 columnas iguales */
+  gap: 30px; /* Mayor separación entre campos */
+  margin-bottom: 25px;
 }
 
+.full-width {
+  grid-column: span 3;
+}
 .input-field label {
   display: block;
   font-size: 11px;
@@ -80,8 +81,9 @@
   border: 1px solid #d1d5db;
   border-radius: 6px;
   background: #f9fafb;
-  font-size: 14px;
   transition: border-color 0.2s;
+  height: 45px;
+  font-size: 1rem;
 }
 
 .modern-select:focus {
@@ -119,14 +121,16 @@
   background: #8B0F28;
   color: white;
   border: none;
-  padding: 12px 30px;
+  padding: 12px 25px;
   border-radius: 8px;
   font-weight: 700;
   display: flex;
   align-items: center;
+  font-size: 1rem;
   gap: 10px;
   cursor: pointer;
   transition: transform 0.2s, background 0.2s;
+  min-width: 200px;
 }
 
 .btn-buscar-modern:hover {

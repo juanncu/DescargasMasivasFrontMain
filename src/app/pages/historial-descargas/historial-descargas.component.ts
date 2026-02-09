@@ -30,73 +30,48 @@ export class HistorialDescargas implements OnInit {
     this.historial = [
       {
         id: 1,
-        fechaReal: new Date(),
         fechaLabel: 'Hoy',
         delegacion: 'Campeche',
-        archivos: 1500,
-        mes: 'Enero - Febrero',
-        totalPdf: 1500,
-        totalXml: 1500,
-        totalRecibos: 1500,
-        omitidos: 0,
-        anio: 2026,             
-        formatos: 'PDF, XML',   
-        padron: 'Todos',       
-        estadoFiltro: 'Ambos', 
+        mesInicio: 'Enero', // Separado
+        mesFinal: 'Febrero', // Separado
+        anio: 2025, // Año correcto
+        formatos: ['PDF', 'XML'], // Array para *ngFor
+        padron: 'TODOS',
+        estadoFiltro: 'AMBOS',
         rutaRed: 'C:\\Recibos\\Campeche\\Folio_01',
         tamanio: '1.2 GB',
         estado: 'completado',
-        huboErrores: false
+        archivos: 0,
+        huboErrores: false,
+        totalPdf: 0,
+        totalXml: 0,
+        totalRecibos: 0,
+        omitidos: 0
       },
       {
         id: 2,
-        fechaReal: new Date(),
         fechaLabel: 'Ayer',
         delegacion: 'Calkiní',
-        archivos: 1500,
-        mes: 'Febrero - Marzo',
-        totalPdf: 1500,
-        totalXml: 1500,
-        totalRecibos: 1500,
-        omitidos: 0,
-        anio: 2026,            
-        formatos: 'PDF, XML',   
-        padron: 'Todos',        
-        estadoFiltro: 'Ambos', 
+        mesInicio: 'Febrero',
+        mesFinal: 'Marzo',
+        anio: 2025,
+        formatos: ['PDF', 'XML', 'RECIBOS'], // Etiquetas dinámicas
+        padron: 'TODOS',
+        estadoFiltro: 'ACTIVOS',
         rutaRed: 'C:\\Recibos\\Campeche\\Folio_02',
         tamanio: '5 GB',
-        huboErrores: true,
         estado: 'pendiente',
-      },
-      {
-        id: 3,
-        fechaReal: new Date(),
-        fechaLabel: 'Ayer',
-        delegacion: 'Carmen',
-        archivos: 500,
-        mes: 'Marzo - Abril',
-        totalPdf: 1450,
-        totalXml: 1450,
-        totalRecibos: 1500,
-        omitidos: 0,
-        anio: 2026,             
-        formatos: 'PDF, XML',   
-        padron: 'Todos',       
-        estadoFiltro: 'Ambos',  
-        tamanio: '5 GB',
-        huboErrores: true,
-        estado: 'pendiente',
-        rutaRed: 'undefined'
-      },
+        archivos: 0,
+        huboErrores: false,
+        totalPdf: 0,
+        totalXml: 0,
+        totalRecibos: 0,
+        omitidos: 0
+      }
     ];
   }
 
-  verDetalle(descarga: HistorialDescarga) {
-  // Objeto del historial a la variable que usa el HTML
-  this.detalle = descarga; 
-  console.log('Viendo detalle de:', this.detalle);
-  
-  // Ruta para navegar pasando el ID
-  this.router.navigate(['/historial-descargas', descarga.id]);
-}
+  verDetalle(id: number) {
+    this.router.navigate(['/historial-descargas', id]);
+  }
 }

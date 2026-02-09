@@ -10,5 +10,6 @@ export const routes: Routes = [
   { path: 'main', component: DescargaFoliosComponent },
   { path: 'progreso-descarga', component: ProgresoDescargaComponent },
   { path: 'historial-descargas', component: HistorialDescargas },
-  { path: 'historial-descargas/:id', component: DetalleDescarga }
+  { path: 'historial-descargas/:id', component: DetalleDescarga },
+  { path: 'historial-descargas/:id', component: DetalleDescarga },
 ];
