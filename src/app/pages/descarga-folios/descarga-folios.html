@@ -58,6 +58,13 @@
         </div>
       </div>
       <div class="date-grid">
+                <div class="input-field">
+          <label>Año</label>
+          <select [(ngModel)]="anio" class="modern-select">
+            <option *ngFor="let a of aniosDisponibles" [value]="a">{{ a }}</option>
+          </select>
+        </div>
+        
         <div class="input-field">
           <label>Mes Inicio</label>
           <select [(ngModel)]="mesInicio" class="modern-select">
@@ -70,12 +77,7 @@
             <option *ngFor="let m of meses" [value]="m.id">{{ m.nombre }}</option>
           </select>
         </div>
-        <div class="input-field">
-          <label>Año</label>
-          <select [(ngModel)]="anio" class="modern-select">
-            <option *ngFor="let a of aniosDisponibles" [value]="a">{{ a }}</option>
-          </select>
-        </div>
+
       </div>
 
       <div class="input-field full-width">
