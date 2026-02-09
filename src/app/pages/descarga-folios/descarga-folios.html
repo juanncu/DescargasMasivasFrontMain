@@ -108,40 +108,32 @@
     </div>
   </section>
 
-  <div *ngIf="mostrarModalResultados" class="modal-overlay">
-    <div class="modal-content animate-zoom animate-bounce-in results-modal-custom">
-      <div class="modal-header-red">
-        <span class="material-icons">analytics</span>
-        <h2>Resumen de Búsqueda</h2>
-        <button class="close-x" (click)="cerrarModalResultados()">×</button>
+  <div class="modal-overlay" *ngIf="mostrarPopupConfirmacion">
+  <div class="modal-progreso-safin">
+    <div class="modal-header-rojo">
+      <h3>PROCESANDO DOCUMENTOS</h3>
+    </div>
+
+    <div class="modal-body">
+      <p class="txt-delegacion">Delegación: <strong>{{ delegacionSeleccionada }}</strong></p>
+      
+      <div class="progress-section">
+        <mat-progress-bar mode="determinate" [value]="progreso"></mat-progress-bar>
+        <span class="pct-text">{{ progreso }}%</span>
       </div>
 
-      <div class="modal-body-padding">
-        <p class="instruction-text">Se han localizado los siguientes documentos según sus filtros:</p>
-        <div class="modal-stats-grid">
-          <div class="stat-card-mini">
-            <span class="stat-label">Archivos encontrados</span>
-            <span class="stat-value-red">{{ resultados?.archivos }}</span>
-          </div>
-          <div class="stat-card-mini">
-            <span class="stat-label">Tamaño aproximado</span>
-            <span class="stat-value-red">{{ resultados?.tamanio }}</span>
-          </div>
-        </div>
-        <div class="modal-info-footer">
-          <span class="material-icons">timer</span>
-          <span>Tiempo estimado de procesamiento: <strong>5 minutos</strong></span>
+      <p class="status-count">{{ tiempoEstimado }}</p>
+
+      <div class="log-terminal">
+        <div *ngFor="let log of logsDescarga" [ngClass]="log.tipo === 'ERROR' ? 'txt-red' : 'txt-green'">
+          [{{ log.tipo }}] {{ log.mensaje }}
         </div>
       </div>
 
-      <div class="modal-actions-column">
-        <button (click)="confirmarDescarga()" class="btn-buscar-modern">
-          <span class="material-icons">cloud_download</span> CONFIRMAR DESCARGA
-        </button>
-        <button (click)="cerrarModalResultados()" class="btn-link-cancel">
-          Regresar a filtros
-        </button>
+      <div class="modal-footer" *ngIf="progreso === 100">
+        <button (click)="irAlHistorial()" class="btn-primary-safin">FINALIZAR</button>
       </div>
     </div>
   </div>
+</div>
 </main>

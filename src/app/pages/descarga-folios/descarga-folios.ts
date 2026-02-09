@@ -1,274 +1,218 @@
-import { Component, OnInit, inject, ChangeDetectorRef, NgZone } from '@angular/core'; // Importamos NgZone
+import { Component, OnInit, inject, ChangeDetectorRef, NgZone } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
-import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+
 import { DescargaFoliosService } from '../../services/descarga-folios.service';
 import { SelectDescarga } from '../../services/select-descarga';
 import { ApiService } from '../../services/api';
+import * as signalR from '@microsoft/signalr';
 
 @Component({
   selector: 'app-descarga-folios',
   standalone: true,
-  imports: [FormsModule, CommonModule, RouterModule, MatIconModule, MatProgressSpinnerModule],
+  imports: [
+    FormsModule, 
+    CommonModule, 
+    RouterModule, 
+    MatProgressSpinnerModule, 
+    MatIconModule, 
+    MatProgressBarModule
+  ],
   templateUrl: './descarga-folios.html',
   styleUrls: ['./descarga-folios.css'],
   providers: [DescargaFoliosService]
 })
 export class DescargaFoliosComponent implements OnInit {
-
+  // Inyecciones
   private descargaService = inject(DescargaFoliosService);
   private selectDescarga = inject(SelectDescarga);
   private router = inject(Router);
   private apiService = inject(ApiService);
   private cd = inject(ChangeDetectorRef);
-  private zone = inject(NgZone); // Inyectamos NgZone para el progreso en tiempo real
+  private zone = inject(NgZone);
 
-  delegacionSeleccionada = '';
+  // Configuración SignalR y API
+  private hubConnection!: signalR.HubConnection;
+  private API_BASE = "http://localhost:5001"; // IP del equipo de Back
+
+  // Variables de Estado
+  listaDelegaciones: any[] = [];
+  resultados: any = null;
+  cargando = false;
+  mostrarModalResultados = false;
+  mostrarPopupConfirmacion = false;
+  logsDescarga: { tipo: string, mensaje: string }[] = [];
+
+  // Filtros
+  delegacionSeleccionada: any = null;
   mesInicio = '';
   mesFinal = '';
-  anio: number = new Date().getFullYear();
+  anio: number = 2025; // Por defecto según requerimiento
+  estadoSeleccionadoId: string = '3';
+  padronSeleccionadoId: string = '1';
 
-  estadoSeleccionado = 'Ambos';
-  padronSeleccionado = 'Todas';
+  // Formatos
+  formatoPdf = true;
+  formatoXml = true;
+  formatoRecibos = false;
 
-  // -------------------------
-  // LISTAS PARA SELECT (JSON)
-  // -------------------------
-  estados = [
-    {
-      id: '1',
-      nombre: 'ACTIVO',
-      estadoID: '1, 3, 4'
-    },
-    {
-      id: '2',
-      nombre: 'CANCELADO',
-      estadoID: '2'
-    },
-    {
-      id: '3',
-      nombre: 'AMBOS',
-      estadoID: '1, 2, 3, 4'
-    }
-  ];
-
-  padrones = [
-    {
-      id: '1',
-      nombre: 'TODOS',
-      padronID: '1, 3, 4, 5, 6'
-    },
-    {
-      id: '2',
-      nombre: 'PREDIAL',
-      padronID: '2'
-    }
-  ];
-
-  // valores seleccionados del select
-  estadoSeleccionadoId = null;
-  padronSeleccionadoId = null;
-
-  listaDelegaciones: any[] = [];
-  resultados: any = { archivos: 0, tamanio: '0 KB' };
-  cargando = false;
-  mostrarPopupConfirmacion = false;
-  mostrarModalResultados: boolean = false;
-
-  formatoPdf: boolean = true;   // Marcado por defecto
-  formatoXml: boolean = true;   // Marcado por defecto
-  formatoRecibos: boolean = false;
-
-  // Variables de progreso
+  // Progreso
   progreso = 0;
-  tiempoEstimado = 'Calculando...'; // Corregido el nombre
+  tiempoEstimado = 'Esperando inicio...';
 
-  aniosDisponibles: number[] = [2026, 2025];
-
+  // Catálogos
+  aniosDisponibles = [2026, 2025];
   meses = [
     { id: 1, nombre: 'Enero' }, { id: 2, nombre: 'Febrero' }, { id: 3, nombre: 'Marzo' },
     { id: 4, nombre: 'Abril' }, { id: 5, nombre: 'Mayo' }, { id: 6, nombre: 'Junio' },
     { id: 7, nombre: 'Julio' }, { id: 8, nombre: 'Agosto' }, { id: 9, nombre: 'Septiembre' },
     { id: 10, nombre: 'Octubre' }, { id: 11, nombre: 'Noviembre' }, { id: 12, nombre: 'Diciembre' }
   ];
+  estados = [
+    { id: '1', nombre: 'ACTIVO' },
+    { id: '2', nombre: 'CANCELADO' },
+    { id: '3', nombre: 'AMBOS' }
+  ];
+  padrones = [
+    { id: '1', nombre: 'TODOS' },
+    { id: '2', nombre: 'PREDIAL' }
+  ];
 
   ngOnInit() {
     this.cargarMunicipios();
-    this.anio = 2026;
+    this.iniciarConexionSignalR();
+  }
+
+  private iniciarConexionSignalR() {
+    this.hubConnection = new signalR.HubConnectionBuilder()
+      .withUrl(`${this.API_BASE}/progresoHub`)
+      .withAutomaticReconnect()
+      .configureLogging(signalR.LogLevel.Information)
+      .build();
+
+    this.hubConnection.on("ProgresoDescarga", (data: any) => {
+      this.zone.run(() => {
+        // Mapeo de datos del Back al diseño SAFIN
+        this.progreso = data.porcentaje;
+        this.tiempoEstimado = `${data.completados} de ${data.totalArchivos} archivos procesados`;
+
+        this.logsDescarga.push({
+          tipo: data.ok ? 'OK' : 'ERROR',
+          mensaje: `Archivo: ${data.archivo} ${data.ok ? 'descargado' : 'falló'}`
+        });
+
+        this.cd.detectChanges();
+      });
+    });
+
+    this.hubConnection.start()
+      .then(() => console.log("✅ Conectado a SignalR Hub"))
+      .catch(err => console.error("❌ Error de conexión SignalR:", err));
   }
 
   cargarMunicipios() {
-  this.apiService.getMunicipios().subscribe({
-    next: (respuesta: any) => {
-      console.log("Respuesta de API:", respuesta); // Revisa esto en la consola F12
-      
-      if (respuesta && respuesta.municipios) {
-        this.listaDelegaciones = respuesta.municipios;
-      } else if (Array.isArray(respuesta)) {
-        this.listaDelegaciones = respuesta;
-      } else {
-        console.warn("La API no devolvió un formato conocido", respuesta);
-      }
-      
-      // Forzamos la actualización de la vista
-      this.cd.markForCheck(); 
-      this.cd.detectChanges();
-    },
-    error: (err) => console.error("Error cargando municipios:", err)
-  });
-}
+    this.apiService.getMunicipios().subscribe({
+      next: (res: any) => {
+        this.listaDelegaciones = res.municipios || res;
+        this.cd.detectChanges();
+      },
+      error: (err) => console.error("Error cargando municipios:", err)
+    });
+  }
 
   buscar() {
-    // 1. Validaciones previas de UI
     if (!this.formatoPdf && !this.formatoXml && !this.formatoRecibos) {
       alert('Seleccione al menos un formato.');
       return;
     }
 
-    // 2. Limpieza de IDs (Aseguramos que sean números reales)
     const idDelegacion = Number(this.delegacionSeleccionada);
-    const anioSeleccionado = Number(this.anio);
-
-    // PROTECCIÓN: Si idDelegacion es NaN, detenemos la ejecución
-    if (isNaN(idDelegacion) || idDelegacion === 0) {
-      alert('Error: Seleccione una delegación válida.');
-      console.error('Valor de delegación no es válido:', this.delegacionSeleccionada);
+    if (isNaN(idDelegacion)) {
+      alert('Seleccione una delegación válida.');
       return;
     }
 
-    // 3. Formateo de fechas (ini/fin)
-    const mesIniStr = this.mesInicio.toString().padStart(2, '0');
-    const ini = `${anioSeleccionado}-${mesIniStr}-01`;
-
-    const ultimoDia = new Date(anioSeleccionado, Number(this.mesFinal), 0).getDate();
-    const mesFinStr = this.mesFinal.toString().padStart(2, '0');
-    const fin = `${anioSeleccionado}-${mesFinStr}-${ultimoDia}`;
-
-    // 4. Mapeo de formatos
-    const formatosArr = [];
-    if (this.formatoPdf) formatosArr.push('PDF');
-    if (this.formatoXml) formatosArr.push('XML');
-    if (this.formatoRecibos) formatosArr.push('RECIBOS');
-
-    // 5. Objeto de filtros LIMPIO (Sin campos null)
     const filtros = {
       delegacion: idDelegacion,
-      estado: this.estadoSeleccionadoId ? Number(this.estadoSeleccionadoId) : 1,
-      padron: this.padronSeleccionadoId ? Number(this.padronSeleccionadoId) : 1,
-      ini: ini,
-      fin: fin,
-      anio: anioSeleccionado,
-      formatos: formatosArr.join(',')
+      estado: Number(this.estadoSeleccionadoId),
+      padron: Number(this.padronSeleccionadoId),
+      ini: `${this.anio}-${this.mesInicio.toString().padStart(2, '0')}-01`,
+      fin: `${this.anio}-${this.mesFinal.toString().padStart(2, '0')}-28`, // Ajustar último día dinámico si es necesario
+      anio: this.anio,
+      formatos: this.obtenerFormatosStr()
     };
 
     this.cargando = true;
-
-    // 6. Llamada al servicio (Convertimos el ID a string para el parámetro de URL)
-    this.descargaService.buscarFolios(idDelegacion.toString(), '', filtros)
-      .subscribe({
-        next: (res) => {
-          this.resultados = res;
-          this.mostrarModalResultados = true;
-          this.cargando = false;
-        },
-        error: (err) => {
-          console.error('Error al buscar folios:', err);
-          this.cargando = false;
-          alert('Error en el servidor. Verifique los filtros seleccionados.');
-        }
-      });
+    this.descargaService.buscarFolios(idDelegacion.toString(), '', filtros).subscribe({
+      next: (res) => {
+        this.resultados = res;
+        this.mostrarModalResultados = true;
+        this.cargando = false;
+      },
+      error: (err) => {
+        this.cargando = false;
+        alert('Error al buscar folios en el servidor.');
+      }
+    });
   }
 
-  cerrarModalResultados() {
+  async confirmarDescarga() {
     this.mostrarModalResultados = false;
-    this.resultados = null; // Opcional: limpiar búsqueda si cancela
-  }
-
-  confirmarDescarga() {
-    // 1. Cerrar modal de resultados
-    this.mostrarModalResultados = false;
-
-    // 2. Mapeo de nombres para etiquetas legibles
-    const delegacionEncontrada = this.listaDelegaciones.find(
-      d => (d.Id || d.id) == this.delegacionSeleccionada
-    );
-    const nombreDelegacion = delegacionEncontrada ? (delegacionEncontrada.Nombre || delegacionEncontrada.nombre) : 'Desconocida';
-
-    // 3. Obtener etiquetas de formatos como Arreglo para los Badges
-    const listaFormatos = [];
-    if (this.formatoPdf) listaFormatos.push('PDF');
-    if (this.formatoXml) listaFormatos.push('XML');
-    if (this.formatoRecibos) listaFormatos.push('Recibos');
-
-    // 4. Preparar el objeto para el historial
-    const nuevaDescarga = {
-      delegacion: nombreDelegacion,
-      mesInicio: this.obtenerNombreMes(this.mesInicio), 
-      mesFinal: this.obtenerNombreMes(this.mesFinal),   
-      anio: this.anio,
-      archivos: this.resultados?.archivos || 0,
-      tamanio: this.resultados?.tamanio || '0 KB',
-      formatos: listaFormatos, // Ahora es un array para el historial
-      padron: this.padrones.find(p => p.id == this.padronSeleccionadoId)?.nombre || 'General',
-      estadoFiltro: this.estados.find(e => e.id == this.estadoSeleccionadoId)?.nombre || 'Ambos',
-      estatus: 'PENDIENTE', // Usamos estatus para el color del texto
-      fecha_creacion: new Date()
-    };
-
-    // 5. Iniciar Barra de Progreso y WebSocket
+    this.logsDescarga = [];
     this.progreso = 0;
     this.mostrarPopupConfirmacion = true;
 
-    this.descargaService.iniciarDescarga(Number(this.delegacionSeleccionada)).subscribe({
-      next: (evento) => {
-        this.zone.run(() => {
-          if (evento.tipo?.toUpperCase() === 'PROGRESO') {
-            const valor = parseFloat(evento.progreso.toString().replace('%', ''));
-            if (!isNaN(valor)) {
-              this.progreso = Math.min(100, Math.max(0, valor));
-              this.tiempoEstimado = this.calcularTiempoRestante(this.progreso);
-            }
-          }
-        });
-      },
-      error: (err) => console.error('Error en WebSocket:', err)
-    });
+    try {
+      // Endpoint del equipo de Back para disparar el proceso
+      const url = `${this.API_BASE}/pdf?idDescarga=${this.delegacionSeleccionada}`;
+      const response = await fetch(url);
+      
+      if (!response.ok) throw new Error("Error iniciando descarga");
 
-    // 6. Registro oficial en el historial
-    this.apiService.registrarNuevaDescarga(nuevaDescarga).subscribe({
-      next: () => console.log('Registro exitoso en historial'),
-      error: (err) => console.warn('Error en registro:', err)
-    });
+      // Registro en historial paralelo
+      this.registrarEnHistorial();
+
+    } catch (error) {
+      console.error(error);
+      this.mostrarPopupConfirmacion = false;
+      alert("❌ No se pudo iniciar la descarga en el servidor.");
+    }
   }
 
-
-
-
-  modoVistaPrevia() {
-    console.log('Iniciando vista previa (Modo Demo)');
-
-    // 1. Forzamos datos de búsqueda ficticios
-    this.resultados = {
-      archivos: 2450,
-      tamanio: '1.8 GB'
+  private registrarEnHistorial() {
+    const d = this.listaDelegaciones.find(x => (x.delegacionID || x.id) == this.delegacionSeleccionada);
+    const nuevaDescarga = {
+      delegacion: d?.delegacion || 'Desconocida',
+      mesInicio: this.obtenerNombreMes(this.mesInicio),
+      mesFinal: this.obtenerNombreMes(this.mesFinal),
+      anio: this.anio,
+      archivos: this.resultados?.archivos || 0,
+      tamanio: this.resultados?.tamanio || '0 KB',
+      formatos: this.obtenerFormatosStr().split(','),
+      padron: this.padrones.find(p => p.id == this.padronSeleccionadoId)?.nombre || 'General',
+      estadoFiltro: this.estados.find(e => e.id == this.estadoSeleccionadoId)?.nombre || 'Ambos',
+      estado: 'pendiente',
+      fecha_creacion: new Date()
     };
 
-    // 2. Si no hay delegación seleccionada, forzamos una para que el historial no truene
-    if (!this.delegacionSeleccionada) {
-      this.delegacionSeleccionada = '1'; // Campeche por defecto
-    }
-
-    // 3. Abrimos el modal de resumen directamente
-    this.mostrarModalResultados = true;
+    this.apiService.registrarNuevaDescarga(nuevaDescarga).subscribe();
   }
-  // --- FUNCIONES AUXILIARES ---
 
-  calcularTiempoRestante(p: number): string {
-    if (p >= 100) return 'Completado';
-    const segundos = Math.round((100 - p) * 0.6); // Estimación simple
-    return `${segundos} seg. restantes aprox.`;
+  // Auxiliares
+  obtenerFormatosStr(): string {
+    const f = [];
+    if (this.formatoPdf) f.push('PDF');
+    if (this.formatoXml) f.push('XML');
+    if (this.formatoRecibos) f.push('RECIBOS');
+    return f.join(',');
+  }
+
+  obtenerNombreMes(id: any): string {
+    return this.meses.find(m => m.id == id)?.nombre || String(id);
   }
 
   irAlHistorial() {
@@ -279,34 +223,6 @@ export class DescargaFoliosComponent implements OnInit {
   reiniciarFiltros() {
     this.mostrarPopupConfirmacion = false;
     this.resultados = null;
-    this.delegacionSeleccionada = '';
-    this.progreso = 0;
-  }
-
-  obtenerNombreMes(id: any): string {
-    const mes = this.meses.find(m => m.id == id);
-    return mes ? mes.nombre : String(id);
-  }
-
-
-
-  simularProgreso() {
-    this.mostrarPopupConfirmacion = true; // Abrimos el modal
-    this.progreso = 0; // Reiniciamos la barra
-    this.tiempoEstimado = 'Calculando...';
-
-    const intervalo = setInterval(() => {
-      this.zone.run(() => {
-        if (this.progreso < 100) {
-          this.progreso += 10; // Sube de 10 en 10
-          this.tiempoEstimado = this.calcularTiempoRestante(this.progreso);
-        } else {
-          clearInterval(intervalo); // Se detiene al llegar a 100
-          console.log('Simulación completada con éxito');
-        }
-        this.cd.detectChanges(); // Forzamos a que Angular pinte el cambio
-      });
-    }, 500); // Se actualiza cada 500ms
-
+    this.delegacionSeleccionada = null;
   }
 }
