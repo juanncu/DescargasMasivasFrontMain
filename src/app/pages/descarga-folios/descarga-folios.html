@@ -89,13 +89,19 @@
       </div>
 
       <div class="action-footer">
-        <button (click)="modoVistaPrevia()" class="btn-preview">
-          <mat-icon>visibility</mat-icon> VISTA PREVIA
-        </button>
-        <button (click)="buscar()" class="btn-buscar-modern" [disabled]="!delegacionSeleccionada">
-          <mat-icon>search</mat-icon> BUSCAR DOCUMENTOS
-        </button>
-      </div>
+  <button class="btn-preview" [disabled]="true" style="opacity: 0.5; cursor: not-allowed;">
+    <mat-icon>visibility</mat-icon> VISTA PREVIA
+  </button>
+
+  <button 
+    class="btn-buscar-modern" 
+    (click)="buscar()" 
+    [disabled]="!delegacionSeleccionada || !mesInicio || !mesFinal || cargando">
+    <mat-icon *ngIf="!cargando">search</mat-icon>
+    <mat-spinner *ngIf="cargando" diameter="20"></mat-spinner>
+    {{ cargando ? 'BUSCANDO...' : 'BUSCAR DOCUMENTOS' }}
+  </button>
+</div>
 
     </div>
   </section>

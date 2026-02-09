@@ -28,7 +28,7 @@
 /* 2. TARJETA DE FILTROS  */
 .filter-card {
   max-width: 1200px; /* Estaba en un valor menor, lo subimos para ocupar la pantalla */
-  width: 90%; 
+  width: 95%; 
   margin: 0 auto;
   padding: 40px; /* Más espacio interno para que no se vea apretado */
   background: white;
@@ -53,6 +53,7 @@
 
 .filter-body { 
   padding: 25px; 
+  padding-top: 20px;
 }
 
 /* 3. GRILLAS RESPONSIVAS */
@@ -67,12 +68,12 @@
   grid-column: span 3;
 }
 .input-field label {
+  font-weight: 600;
+  color: #444;
+  margin-bottom: 10px;
   display: block;
-  font-size: 11px;
-  font-weight: 700;
-  color: #4b5563;
   text-transform: uppercase;
-  margin-bottom: 6px;
+  font-size: 0.85rem;
 }
 
 .modern-select {
@@ -96,14 +97,15 @@
 .format-options {
   display: flex;
   gap: 20px;
-  padding: 5px 0;
+  align-items: center;
+  height: 45px; 
 }
 
 .check-item {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 13px;
+  gap: 10px;
+  font-size: 25px;
   font-weight: 600;
   cursor: pointer;
 }

@@ -10,7 +10,6 @@ import { HistorialDescarga } from '../../models/historial.descarga.model';
   selector: 'app-historial-descargas',
   standalone: true,
   imports: [
-    RouterLink,
     CommonModule,
     MatIconModule,
     MatButtonModule,
