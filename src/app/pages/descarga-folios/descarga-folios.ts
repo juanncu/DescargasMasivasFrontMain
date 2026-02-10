@@ -16,11 +16,11 @@ import { error } from 'console';
   selector: 'app-descarga-folios',
   standalone: true,
   imports: [
-    FormsModule, 
-    CommonModule, 
-    RouterModule, 
-    MatProgressSpinnerModule, 
-    MatIconModule, 
+    FormsModule,
+    CommonModule,
+    RouterModule,
+    MatProgressSpinnerModule,
+    MatIconModule,
     MatProgressBarModule
   ],
   templateUrl: './descarga-folios.html',
@@ -38,9 +38,9 @@ export class DescargaFoliosComponent implements OnInit {
 
   // Configuración SignalR y API
   private hubConnection!: signalR.HubConnection;
-  private API_BASE = "http://localhost:5001"; // IP del equipo de Back
-  private readonly HUB_URL = "http://localhost:5001/progresoHub";
-private readonly API_URL = "http://localhost:5001/pdf";
+ private readonly IP_BACK = "172.20.23.41";
+  private readonly HUB_URL = `http://${this.IP_BACK}:5001/progresoHub`;
+private readonly API_URL = `http://${this.IP_BACK}:5000/pdf`;
 
   // Variables de Estado
   listaDelegaciones: any[] = [];
@@ -95,98 +95,105 @@ private readonly API_URL = "http://localhost:5001/pdf";
     this.cargarAniosFiscales();
   }
 
- private iniciarConexionSignalR() {
-  this.hubConnection = new signalR.HubConnectionBuilder()
-    .withUrl(this.HUB_URL)
-    .withAutomaticReconnect()
-    .configureLogging(signalR.LogLevel.Information)
-    .build();
+  private iniciarConexionSignalR() {
+    this.hubConnection = new signalR.HubConnectionBuilder()
+      .withUrl(this.HUB_URL)
+      .withAutomaticReconnect()
+      .configureLogging(signalR.LogLevel.Information)
+      .build();
 
-  // Listener: Progreso de Descarga
-  this.hubConnection.on("ProgresoDescarga", (data: any) => {
-    this.zone.run(() => {
-      this.progreso = data.porcentaje;
-      this.tiempoEstimado = `${data.porcentaje}% (${data.completados}/${data.totalArchivos})`;
-      
-      this.logsDescarga.push({
-        tipo: data.ok ? 'OK' : 'ERROR',
-        mensaje: `Archivo: ${data.archivo} ${data.ok ? 'descargado' : 'falló'}`
+    // Listener: Progreso de Descarga
+    this.hubConnection.on("ProgresoDescarga", (data: any) => {
+      this.zone.run(() => {
+        this.progreso = data.porcentaje;
+        this.tiempoEstimado = `${data.porcentaje}% (${data.completados}/${data.totalArchivos})`;
+
+        this.logsDescarga.push({
+          tipo: data.ok ? 'OK' : 'ERROR',
+          mensaje: `Archivo: ${data.archivo} ${data.ok ? 'descargado' : 'falló'}`
+        });
       });
     });
-  });
 
-  // Listener: Estado General
-  this.hubConnection.on("Estado", (msg: string) => {
-    this.zone.run(() => {
-      this.logsDescarga.push({ tipo: 'ESTADO', mensaje: msg });
+    // Listener: Estado General
+    this.hubConnection.on("Estado", (msg: string) => {
+      this.zone.run(() => {
+        this.logsDescarga.push({ tipo: 'ESTADO', mensaje: msg });
+      });
     });
-  });
 
-  this.hubConnection.start().catch(err => console.error("Error SignalR:", err));
-}
-
-// Métodos de Control vinculados a los botones del backend
-pausar() { this.hubConnection.invoke("Pausar"); }
-reanudar() { this.hubConnection.invoke("Reanudar"); }
-cancelar() { 
-  this.hubConnection.invoke("Cancelar");
-  this.mostrarPopupConfirmacion = false;
-}
-
-async confirmarDescarga() {
-  this.mostrarModalResultados = false;
-  this.mostrarPopupConfirmacion = true;
-  this.progreso = 0;
-  this.logsDescarga = [];
-
-  try {
-    const response = await fetch(`${this.API_URL}?idDescarga=${this.delegacionSeleccionada}`);
-    if (!response.ok) throw new Error("Error al iniciar descarga");
-  } catch (error) {
-    alert("No se pudo conectar con el servidor.");
+    this.hubConnection.start().catch(err => console.error("Error SignalR:", err));
   }
-}
 
-    
+  // Métodos de Control vinculados a los botones del backend
+  pausar() { this.hubConnection.invoke("Pausar"); }
+  reanudar() { this.hubConnection.invoke("Reanudar"); }
+  cancelar() {
+    this.hubConnection.invoke("Cancelar");
+    this.mostrarPopupConfirmacion = false;
+  }
 
-    // En descarga-folios.component.ts
+  async confirmarDescarga() {
+    this.mostrarModalResultados = false; // Cerramos el resumen
+    this.mostrarPopupConfirmacion = true; // Abrimos el progreso
+    this.progreso = 0;
+    this.logsDescarga = [];
 
-probarModalProgreso() {
-  // 1. Preparamos el estado inicial del modal
-  this.mostrarPopupConfirmacion = true;
-  this.progreso = 0;
-  this.logsDescarga = [];
-  this.tiempoEstimado = 'Iniciando simulación...';
+    try {
+      // URL que te dio el equipo de Back
+      const url = `http://172.20.23.41:5000/ObtenerTotalDeArchivos?delegacion=${this.delegacionSeleccionada}&estado=${this.estadoSeleccionadoId}...`;
 
-  // 2. Simulamos la llegada de mensajes del servidor
-  const intervalo = setInterval(() => {
-    this.zone.run(() => {
-      if (this.progreso < 100) {
-        this.progreso += 10;
-        this.tiempoEstimado = `Procesando... ${this.progreso / 10} de 10 archivos`;
-        
-        // Añadimos un log simulado
-        const esError = this.progreso === 50; // Simulamos un error a la mitad
-        this.logsDescarga.push({
-          tipo: esError ? 'ERROR' : 'OK',
-          mensaje: `Folio ${12340 + this.progreso} - Archivo generado con éxito`
-        });
+      // Al disparar este fetch, el backend empieza a emitir eventos al Hub
+      const response = await fetch(url);
+      if (!response.ok) throw new Error("Servidor no pudo iniciar el proceso");
 
-        // Si hay error, añadimos un mensaje extra en rojo
-        if (esError) {
+    } catch (error) {
+      console.error("Error al iniciar:", error);
+      this.mostrarPopupConfirmacion = false;
+      alert("Error crítico al conectar con el motor de descargas.");
+    }
+  }
+
+
+
+  // En descarga-folios.component.ts
+
+  probarModalProgreso() {
+    // 1. Preparamos el estado inicial del modal
+    this.mostrarPopupConfirmacion = true;
+    this.progreso = 0;
+    this.logsDescarga = [];
+    this.tiempoEstimado = 'Iniciando simulación...';
+
+    // 2. Simulamos la llegada de mensajes del servidor
+    const intervalo = setInterval(() => {
+      this.zone.run(() => {
+        if (this.progreso < 100) {
+          this.progreso += 10;
+          this.tiempoEstimado = `Procesando... ${this.progreso / 10} de 10 archivos`;
+
+          // Añadimos un log simulado
+          const esError = this.progreso === 50; // Simulamos un error a la mitad
           this.logsDescarga.push({
-            tipo: 'ERROR',
-            mensaje: `Folio 12375 - Error en conexión de red`
+            tipo: esError ? 'ERROR' : 'OK',
+            mensaje: `Folio ${12340 + this.progreso} - Archivo generado con éxito`
           });
+
+          // Si hay error, añadimos un mensaje extra en rojo
+          if (esError) {
+            this.logsDescarga.push({
+              tipo: 'ERROR',
+              mensaje: `Folio 12375 - Error en conexión de red`
+            });
+          }
+        } else {
+          this.tiempoEstimado = '¡Descarga simulada completada!';
+          clearInterval(intervalo);
         }
-      } else {
-        this.tiempoEstimado = '¡Descarga simulada completada!';
-        clearInterval(intervalo);
-      }
-      this.cd.detectChanges();
-    });
-  }, 800); // Se actualiza cada 0.8 segundos
-}
+        this.cd.detectChanges();
+      });
+    }, 800); // Se actualiza cada 0.8 segundos
+  }
 
 
   cargarMunicipios() {
@@ -200,95 +207,87 @@ probarModalProgreso() {
   }
 
 
-cargarAniosFiscales() {
-  this.apiService.getAniosFiscales().subscribe({
-    next: (res: any[]) => {
-      
-      // Objetos del backend { aFiscal: number }
-      this.aniosDisponibles = res.map(x => x.aFiscal);
+  cargarAniosFiscales() {
+    this.apiService.getAniosFiscales().subscribe({
+      next: (res: any[]) => {
 
-      // Selecciona automáticamente el año más reciente
-      this.anio = Math.max(...this.aniosDisponibles);
+        // Objetos del backend { aFiscal: number }
+        this.aniosDisponibles = res.map(x => x.aFiscal);
 
-      this.cd.detectChanges();
-    },
-    error: (err) => {
-      console.error(' Error al cargar años fiscales', err);
-    }
-  });
-}
+        // Selecciona automáticamente el año más reciente
+        this.anio = Math.max(...this.aniosDisponibles);
+
+        this.cd.detectChanges();
+      },
+      error: (err) => {
+        console.error(' Error al cargar años fiscales', err);
+      }
+    });
+  }
   buscar() {
+    this.cargando = true;
 
-    this.resultados = { archivos: 2450, tamanio: '1.8 GB' }; // Datos demo
-  this.mostrarModalResultados = true; 
-  this.cargando = false;
-  console.log("Abriendo Modal de Resumen");
-
-    if (!this.formatoPdf && !this.formatoXml && !this.formatoRecibos) {
-      alert('Seleccione al menos un formato.');
-      return;
-    }
-
-    const idDelegacion = Number(this.delegacionSeleccionada);
-    if (isNaN(idDelegacion)) {
-      alert('Seleccione una delegación válida.');
-      return;
-    }
-
+    // Construimos los filtros basados en lo que seleccionaste en la pantalla
     const filtros = {
-      delegacion: idDelegacion,
-      estado: Number(this.estadoSeleccionadoId),
       padron: Number(this.padronSeleccionadoId),
-      ini: `${this.anio}-${this.mesInicio.toString().padStart(2, '0')}-01`,
-      fin: `${this.anio}-${this.mesFinal.toString().padStart(2, '0')}-28`, // Ajustar último día dinámico si es necesario
+      estado: Number(this.estadoSeleccionadoId),
+      delegacion: Number(this.delegacionSeleccionada),
       anio: this.anio,
-      formatos: this.obtenerFormatosStr()
+      ini: this.mesInicio,
+      fin: this.mesFinal,
+      // Formatea a fecha real: Año-Mes-Día
+
+      // ini: `${this.anio}-${this.mesInicio.toString().padStart(2, '0')}-01`,
+      // fin: `${this.anio}-${this.mesFinal.toString().padStart(2, '0')}-28`, 
+
+      //formatos: this.obtenerFormatosStr()
     };
 
-    this.cargando = true;
-    this.descargaService.buscarFolios(idDelegacion.toString(), '', filtros).subscribe({
+    // Llamada al servicio que creaste
+    this.descargaService.buscarFolios(this.delegacionSeleccionada, '', filtros).subscribe({
       next: (res) => {
-        this.resultados = res;
+        this.resultados = res; // Recibe { archivos: X, tamanio: 'Y' } del back
         this.mostrarModalResultados = true;
         this.cargando = false;
       },
       error: (err) => {
+        console.error('Error en búsqueda real:', err);
         this.cargando = false;
-        alert('Error al buscar folios en el servidor.');
+        alert('No se encontraron archivos con esos filtros o el servidor no responde.');
       }
     });
   }
 
   // 3. Lógica de la barra y consola negra
-iniciarSimulacionProgreso() {
-  this.progreso = 0;
-  this.logsDescarga = [];
-  this.tiempoEstimado = 'Iniciando transferencia segura...';
+  iniciarSimulacionProgreso() {
+    this.progreso = 0;
+    this.logsDescarga = [];
+    this.tiempoEstimado = 'Iniciando transferencia segura...';
 
-  const intervalo = setInterval(() => {
-    this.zone.run(() => {
-      if (this.progreso < 100) {
-        this.progreso += 10;
-        this.tiempoEstimado = `Procesando: ${this.progreso / 10} de 10 archivos`;
-        
-        // Logs verdes estilo terminal
-        this.logsDescarga.push({
-          tipo: 'OK',
-          mensaje: `Folio ${12340 + (this.progreso/10)} - Archivo validado y descargado`
-        });
-      } else {
-        this.tiempoEstimado = '¡Descarga completada!';
-        clearInterval(intervalo);
-      }
-      this.cd.detectChanges();
-    });
-  }, 600);
-}
+    const intervalo = setInterval(() => {
+      this.zone.run(() => {
+        if (this.progreso < 100) {
+          this.progreso += 10;
+          this.tiempoEstimado = `Procesando: ${this.progreso / 10} de 10 archivos`;
 
-obtenerNombreDelegacion(): string {
-  const d = this.listaDelegaciones.find(x => (x.delegacionID || x.id) == this.delegacionSeleccionada);
-  return d ? d.delegacion : 'No seleccionada';
-}
+          // Logs verdes estilo terminal
+          this.logsDescarga.push({
+            tipo: 'OK',
+            mensaje: `Folio ${12340 + (this.progreso / 10)} - Archivo validado y descargado`
+          });
+        } else {
+          this.tiempoEstimado = '¡Descarga completada!';
+          clearInterval(intervalo);
+        }
+        this.cd.detectChanges();
+      });
+    }, 600);
+  }
+
+  obtenerNombreDelegacion(): string {
+    const d = this.listaDelegaciones.find(x => (x.delegacionID || x.id) == this.delegacionSeleccionada);
+    return d ? d.delegacion : 'No seleccionada';
+  }
 
   private registrarEnHistorial() {
     const d = this.listaDelegaciones.find(x => (x.delegacionID || x.id) == this.delegacionSeleccionada);
@@ -311,11 +310,11 @@ obtenerNombreDelegacion(): string {
 
   // descarga-folios.component.ts
 
-cerrarModalResultados() {
-  this.mostrarModalResultados = false;
-  // Opcionalmente puedes limpiar los resultados previos
-  this.resultados = null; 
-}
+  cerrarModalResultados() {
+    this.mostrarModalResultados = false;
+    // Opcionalmente puedes limpiar los resultados previos
+    this.resultados = null;
+  }
 
   // Auxiliares
   obtenerFormatosStr(): string {
@@ -343,43 +342,43 @@ cerrarModalResultados() {
 
 
   // Función que se dispara cuando cambia el Mes Inicio
-// En descarga-folios.component.ts
+  // En descarga-folios.component.ts
 
-onMesInicioChange() {
-  const hoy = new Date();
-  const anioActual = hoy.getFullYear();
-  const mesActual = hoy.getMonth() + 1; // getMonth() es 0-11
-  const inicioId = Number(this.mesInicio);
-  const anioSeleccionado = Number(this.anio);
+  onMesInicioChange() {
+    const hoy = new Date();
+    const anioActual = hoy.getFullYear();
+    const mesActual = hoy.getMonth() + 1; // getMonth() es 0-11
+    const inicioId = Number(this.mesInicio);
+    const anioSeleccionado = Number(this.anio);
 
-  // 1. Filtrar meses finales basados en el inicio y el tiempo real
-  this.mesesFinalesDisponibles = this.meses.filter(m => {
-    const esMayorOIgualAlInicio = m.id >= inicioId;
-    
-    // Si es el año actual (2026), no puede ser mayor al mes actual
-    if (anioSeleccionado === anioActual) {
-      return esMayorOIgualAlInicio && m.id <= mesActual;
+    // 1. Filtrar meses finales basados en el inicio y el tiempo real
+    this.mesesFinalesDisponibles = this.meses.filter(m => {
+      const esMayorOIgualAlInicio = m.id >= inicioId;
+
+      // Si es el año actual (2026), no puede ser mayor al mes actual
+      if (anioSeleccionado === anioActual) {
+        return esMayorOIgualAlInicio && m.id <= mesActual;
+      }
+
+      // Si es un año pasado (2025), puede elegir cualquier mes posterior al inicio
+      return esMayorOIgualAlInicio;
+    });
+
+    // 2. Resetear mes final si queda fuera de rango
+    if (this.mesFinal && !this.mesesFinalesDisponibles.find(m => m.id == this.mesFinal)) {
+      this.mesFinal = '';
     }
-    
-    // Si es un año pasado (2025), puede elegir cualquier mes posterior al inicio
-    return esMayorOIgualAlInicio;
-  });
-
-  // 2. Resetear mes final si queda fuera de rango
-  if (this.mesFinal && !this.mesesFinalesDisponibles.find(m => m.id == this.mesFinal)) {
-    this.mesFinal = '';
   }
-}
 
-// También debemos filtrar el primer selector (Mes Inicio) según el año
-get mesesInicioDisponibles() {
-  const hoy = new Date();
-  const anioActual = hoy.getFullYear();
-  const mesActual = hoy.getMonth() + 1;
+  // También debemos filtrar el primer selector (Mes Inicio) según el año
+  get mesesInicioDisponibles() {
+    const hoy = new Date();
+    const anioActual = hoy.getFullYear();
+    const mesActual = hoy.getMonth() + 1;
 
-  if (Number(this.anio) === anioActual) {
-    return this.meses.filter(m => m.id <= mesActual);
+    if (Number(this.anio) === anioActual) {
+      return this.meses.filter(m => m.id <= mesActual);
+    }
+    return this.meses;
   }
-  return this.meses;
-}
 }

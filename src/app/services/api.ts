@@ -41,7 +41,7 @@ export class ApiService {
     // se verá en consola exactamente qué se envía
     console.log('📡 Enviando a API:', params.toString());
 
-    return this.http.get(`${this.apiUrl}/ObtenerTotalDeArchivos/`, { params });
+    return this.http.get(`${this.apiUrl}/ObtenerTotalDeArchivos`, { params });
   }
 
   getMunicipios(): Observable<any[]> {
