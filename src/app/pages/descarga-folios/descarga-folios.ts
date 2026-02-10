@@ -38,6 +38,8 @@ export class DescargaFoliosComponent implements OnInit {
   // Configuración SignalR y API
   private hubConnection!: signalR.HubConnection;
   private API_BASE = "http://localhost:5001"; // IP del equipo de Back
+  private readonly HUB_URL = "http://localhost:5001/progresoHub";
+private readonly API_URL = "http://localhost:5001/pdf";
 
   // Variables de Estado
   listaDelegaciones: any[] = [];
@@ -89,32 +91,99 @@ export class DescargaFoliosComponent implements OnInit {
     this.iniciarConexionSignalR();
   }
 
-  private iniciarConexionSignalR() {
-    this.hubConnection = new signalR.HubConnectionBuilder()
-      .withUrl(`${this.API_BASE}/progresoHub`)
-      .withAutomaticReconnect()
-      .configureLogging(signalR.LogLevel.Information)
-      .build();
+ private iniciarConexionSignalR() {
+  this.hubConnection = new signalR.HubConnectionBuilder()
+    .withUrl(this.HUB_URL)
+    .withAutomaticReconnect()
+    .configureLogging(signalR.LogLevel.Information)
+    .build();
 
-    this.hubConnection.on("ProgresoDescarga", (data: any) => {
-      this.zone.run(() => {
-        // Mapeo de datos del Back al diseño SAFIN
-        this.progreso = data.porcentaje;
-        this.tiempoEstimado = `${data.completados} de ${data.totalArchivos} archivos procesados`;
-
-        this.logsDescarga.push({
-          tipo: data.ok ? 'OK' : 'ERROR',
-          mensaje: `Archivo: ${data.archivo} ${data.ok ? 'descargado' : 'falló'}`
-        });
-
-        this.cd.detectChanges();
+  // Listener: Progreso de Descarga
+  this.hubConnection.on("ProgresoDescarga", (data: any) => {
+    this.zone.run(() => {
+      this.progreso = data.porcentaje;
+      this.tiempoEstimado = `${data.porcentaje}% (${data.completados}/${data.totalArchivos})`;
+      
+      this.logsDescarga.push({
+        tipo: data.ok ? 'OK' : 'ERROR',
+        mensaje: `Archivo: ${data.archivo} ${data.ok ? 'descargado' : 'falló'}`
       });
     });
+  });
 
-    this.hubConnection.start()
-      .then(() => console.log("✅ Conectado a SignalR Hub"))
-      .catch(err => console.error("❌ Error de conexión SignalR:", err));
+  // Listener: Estado General
+  this.hubConnection.on("Estado", (msg: string) => {
+    this.zone.run(() => {
+      this.logsDescarga.push({ tipo: 'ESTADO', mensaje: msg });
+    });
+  });
+
+  this.hubConnection.start().catch(err => console.error("Error SignalR:", err));
+}
+
+// Métodos de Control vinculados a los botones del backend
+pausar() { this.hubConnection.invoke("Pausar"); }
+reanudar() { this.hubConnection.invoke("Reanudar"); }
+cancelar() { 
+  this.hubConnection.invoke("Cancelar");
+  this.mostrarPopupConfirmacion = false;
+}
+
+async confirmarDescarga() {
+  this.mostrarModalResultados = false;
+  this.mostrarPopupConfirmacion = true;
+  this.progreso = 0;
+  this.logsDescarga = [];
+
+  try {
+    const response = await fetch(`${this.API_URL}?idDescarga=${this.delegacionSeleccionada}`);
+    if (!response.ok) throw new Error("Error al iniciar descarga");
+  } catch (error) {
+    alert("No se pudo conectar con el servidor.");
   }
+}
+
+    
+
+    // En descarga-folios.component.ts
+
+probarModalProgreso() {
+  // 1. Preparamos el estado inicial del modal
+  this.mostrarPopupConfirmacion = true;
+  this.progreso = 0;
+  this.logsDescarga = [];
+  this.tiempoEstimado = 'Iniciando simulación...';
+
+  // 2. Simulamos la llegada de mensajes del servidor
+  const intervalo = setInterval(() => {
+    this.zone.run(() => {
+      if (this.progreso < 100) {
+        this.progreso += 10;
+        this.tiempoEstimado = `Procesando... ${this.progreso / 10} de 10 archivos`;
+        
+        // Añadimos un log simulado
+        const esError = this.progreso === 50; // Simulamos un error a la mitad
+        this.logsDescarga.push({
+          tipo: esError ? 'ERROR' : 'OK',
+          mensaje: `Folio ${12340 + this.progreso} - Archivo generado con éxito`
+        });
+
+        // Si hay error, añadimos un mensaje extra en rojo
+        if (esError) {
+          this.logsDescarga.push({
+            tipo: 'ERROR',
+            mensaje: `Folio 12375 - Error en conexión de red`
+          });
+        }
+      } else {
+        this.tiempoEstimado = '¡Descarga simulada completada!';
+        clearInterval(intervalo);
+      }
+      this.cd.detectChanges();
+    });
+  }, 800); // Se actualiza cada 0.8 segundos
+}
+
 
   cargarMunicipios() {
     this.apiService.getMunicipios().subscribe({
@@ -127,6 +196,12 @@ export class DescargaFoliosComponent implements OnInit {
   }
 
   buscar() {
+
+    this.resultados = { archivos: 2450, tamanio: '1.8 GB' }; // Datos demo
+  this.mostrarModalResultados = true; 
+  this.cargando = false;
+  console.log("Abriendo Modal de Resumen");
+
     if (!this.formatoPdf && !this.formatoXml && !this.formatoRecibos) {
       alert('Seleccione al menos un formato.');
       return;
@@ -162,28 +237,36 @@ export class DescargaFoliosComponent implements OnInit {
     });
   }
 
-  async confirmarDescarga() {
-    this.mostrarModalResultados = false;
-    this.logsDescarga = [];
-    this.progreso = 0;
-    this.mostrarPopupConfirmacion = true;
+  // 3. Lógica de la barra y consola negra
+iniciarSimulacionProgreso() {
+  this.progreso = 0;
+  this.logsDescarga = [];
+  this.tiempoEstimado = 'Iniciando transferencia segura...';
 
-    try {
-      // Endpoint del equipo de Back para disparar el proceso
-      const url = `${this.API_BASE}/pdf?idDescarga=${this.delegacionSeleccionada}`;
-      const response = await fetch(url);
-      
-      if (!response.ok) throw new Error("Error iniciando descarga");
+  const intervalo = setInterval(() => {
+    this.zone.run(() => {
+      if (this.progreso < 100) {
+        this.progreso += 10;
+        this.tiempoEstimado = `Procesando: ${this.progreso / 10} de 10 archivos`;
+        
+        // Logs verdes estilo terminal
+        this.logsDescarga.push({
+          tipo: 'OK',
+          mensaje: `Folio ${12340 + (this.progreso/10)} - Archivo validado y descargado`
+        });
+      } else {
+        this.tiempoEstimado = '¡Descarga completada!';
+        clearInterval(intervalo);
+      }
+      this.cd.detectChanges();
+    });
+  }, 600);
+}
 
-      // Registro en historial paralelo
-      this.registrarEnHistorial();
-
-    } catch (error) {
-      console.error(error);
-      this.mostrarPopupConfirmacion = false;
-      alert("❌ No se pudo iniciar la descarga en el servidor.");
-    }
-  }
+obtenerNombreDelegacion(): string {
+  const d = this.listaDelegaciones.find(x => (x.delegacionID || x.id) == this.delegacionSeleccionada);
+  return d ? d.delegacion : 'No seleccionada';
+}
 
   private registrarEnHistorial() {
     const d = this.listaDelegaciones.find(x => (x.delegacionID || x.id) == this.delegacionSeleccionada);
@@ -203,6 +286,14 @@ export class DescargaFoliosComponent implements OnInit {
 
     this.apiService.registrarNuevaDescarga(nuevaDescarga).subscribe();
   }
+
+  // descarga-folios.component.ts
+
+cerrarModalResultados() {
+  this.mostrarModalResultados = false;
+  // Opcionalmente puedes limpiar los resultados previos
+  this.resultados = null; 
+}
 
   // Auxiliares
   obtenerFormatosStr(): string {

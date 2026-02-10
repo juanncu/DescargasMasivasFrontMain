@@ -1,16 +1,29 @@
+/* ==========================================================================
+   VARIABLES Y RESET
+   ========================================================================== */
 :root {
   --rojo-gob: #8B0F28;
-  --rojo-hover: #9F2241;
+  --rojo-hover: #700d21;
+  --arena-gob: #bca986;
   --gris-fondo: #f4f5f7;
+  --gris-suave: #f9fafb;
+  --gris-borde: #d1d5db;
   --blanco: #ffffff;
+  --negro-consola: #1a1a1a;
+  --verde-ok: #00ff00;
+  --rojo-error: #ff4d4d;
+  --shadow-standard: 0 10px 25px rgba(0,0,0,0.05);
+  --shadow-modal: 0 20px 40px rgba(0,0,0,0.3);
 }
 
-/* 1. CONTENEDOR PRINCIPAL */
+/* ==========================================================================
+   CONTENEDOR PRINCIPAL
+   ========================================================================== */
 .main-container {
   width: 100%;
-  background-color: #f4f5f7;
+  background-color:#f4f5f7;
   min-height: 100vh;
- padding: 60px 20px; /* Reducido para que quepa mejor en móviles */
+  padding: 60px 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -18,27 +31,29 @@
 
 .main-title {
   text-align: center;
-  font-size: 24px;
+  font-size: 1.5rem;
   font-weight: 700;
   margin-bottom: 25px;
   color: #1a1a1a;
   text-transform: uppercase;
 }
 
-/* 2. TARJETA DE FILTROS  */
+/* ==========================================================================
+   TARJETA DE FILTROS
+   ========================================================================== */
 .filter-card {
-  max-width: 1250px !important; /* Estaba en un valor menor, lo subimos para ocupar la pantalla */
-  width: 95%; 
+  max-width: 1250px;
+  width: 95%;
   margin: 20px auto;
-  padding: 45px; /* Más espacio interno para que no se vea apretado */
-  background: white;
+  background: #ffffff;
   border-radius: 12px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+  box-shadow: var(--shadow-standard);
+  overflow: hidden; /* Para que el header respete el border-radius */
 }
 
 .filter-header {
   background-color: #8B0F28;
-  color: white;
+  color: #ffffff;
   padding: 30px 35px;
 }
 
@@ -48,25 +63,21 @@
   gap: 12px;
 }
 
-.filter-header h2 { margin: 0; font-size: 18px; }
-.filter-header p { margin: 4px 0 0; font-size: 12px; opacity: 0.9; }
+.filter-header h2 { margin: 0; font-size: 1.1rem; }
+.filter-header p { margin: 4px 0 0; font-size: 0.75rem; opacity: 0.9; }
 
-.filter-body { 
-  padding: 25px; 
-  padding-top: 20px;
-}
+.filter-body { padding: 45px; }
 
-/* 3. GRILLAS RESPONSIVAS */
+/* GRILLAS */
 .selection-grid, .date-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr); /* 3 columnas iguales */
-  gap: 35px; /* Mayor separación entre campos */
+  grid-template-columns: repeat(3, 1fr);
+  gap: 35px;
   margin-bottom: 25px;
 }
 
-.full-width {
-  grid-column: span 3;
-}
+.full-width { grid-column: span 3; }
+
 .input-field label {
   font-weight: 600;
   color: #444;
@@ -82,182 +93,121 @@
   border: 1px solid #d1d5db;
   border-radius: 6px;
   background: #f9fafb;
-  transition: border-color 0.2s;
   height: 45px;
   font-size: 1rem;
+  transition: all 0.2s;
 }
 
 .modern-select:focus {
-  border-color: #8B0F28;
+  border-color:#8B0F28;
   outline: none;
-  background: white;
+  background: #ffffff
 }
 
-/* 4. SECCIÓN DE FORMATOS (CHECKBOXES) */
+/* FORMATOS */
 .format-options {
   display: flex;
   gap: 20px;
   align-items: center;
-  height: 45px; 
+  height: 45px;
 }
 
 .check-item {
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 25px;
+  font-size: 0.9rem; /* Corregido de 25px a algo legible */
   font-weight: 600;
   cursor: pointer;
 }
 
-/* 5. BOTÓN DE ACCIÓN */
-.action-footer {
+/* ==========================================================================
+   SISTEMA DE MODALES (OVERLAY Y ESTRUCTURA)
+   ========================================================================== */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  background: rgba(0, 0, 0, 0.75);
   display: flex;
-  justify-content: flex-end;
-  border-top: 1px solid #f3f4f6;
-  padding: 20px 25px;
-  background-color: #ffffff;
-}
-
-.btn-buscar-modern {
-  background: #8B0F28;
-  color: white;
-  border: none;
-  padding: 12px 25px;
-  border-radius: 8px;
-  font-weight: 700;
-  display: flex;
+  justify-content: center;
   align-items: center;
-  font-size: 1rem;
-  gap: 10px;
-  cursor: pointer;
-  transition: transform 0.2s, background 0.2s;
-  min-width: 200px;
+  z-index: 9999;
+  backdrop-filter: blur(3px);
 }
 
-.btn-buscar-modern:hover {
-  background: #801a34;
-  transform: translateY(-1px);
-}
-
-/* 6. MEDIA QUERIES ESPECÍFICOS PARA IPHONE */
-@media (max-width: 768px) {
-  .main-container {
-    padding: 10px; /* Menos espacio desperdiciado */
-  }
-
-  .main-title {
-    font-size: 18px;
-    margin-bottom: 15px;
-    width: 100%;
-  text-align: center;
-  }
-
-  .filter-body {
-    padding: 15px;
-  }
-
-  .selection-grid, .date-grid {
-    grid-template-columns: 1fr !important; /* Fuerza una sola columna */
-  }
-
-  .action-footer {
-    justify-content: center; /* Centra el botón en móviles */
-  }
-
-  .btn-buscar-modern {
-    width: 100%; /* Botón grande para el pulgar */
-    justify-content: center;
-  }
-}
-
-/* 1. Contenedor de la Etiqueta y el Icono */
-.label-with-info {
-  display: flex;
-  align-items: center;
-  gap: 8px; /* Espacio entre el texto y el icono */
-  margin-bottom: 8px;
-}
-
-/* 2. El Icono de Información (Material Icon) */
-.info-icon-wrapper {
-  position: relative; /* Base para que el tooltip se posicione respecto al icono */
-  display: inline-flex;
-  align-items: center;
-}
-
-.info-icon {
-  font-size: 16px !important;
-  color: #8B0F28; /* Rojo institucional */
-  cursor: help;
-  opacity: 0.8;
-  transition: opacity 0.2s;
-}
-
-.info-icon:hover {
-  opacity: 1;
-}
-
-/* 3. La Caja del Tooltip (Oculta por defecto) */
-.tooltip-box {
-  visibility: hidden;
-  position: absolute;
-  bottom: 150%; /* Lo posiciona arriba del icono */
-  left: 50%;
-  transform: translateX(-50%); /* Lo centra horizontalmente */
-  background-color: #333333; /* Fondo oscuro profesional */
-  color: #ffffff;
-  padding: 8px 12px;
-  border-radius: 6px;
-  font-size: 11px;
-  z-index: 1000;
-  opacity: 0;
-  transition: opacity 0.3s, transform 0.3s;
-  pointer-events: none; /* Evita que el mouse interactúe con el cuadro */
-  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-  line-height: 1.4;
-  text-align: center;
-  width: max-content; /* Se ajusta al ancho del texto automáticamente */
-  max-width: 250px;   /* Evita que se estire demasiado en textos largos */
-}
-
-/* 4. Flecha del Tooltip (Triangulito) */
-.tooltip-box::after {
-  content: "";
-  position: absolute;
-  top: 100%; /* Sale del fondo de la caja */
-  left: 50%;
-  margin-left: -5px;
-  border-width: 5px;
-  border-style: solid;
-  border-color: #333333 transparent transparent transparent;
-}
-
-/* 5. Activación al hacer Hover */
-.info-icon-wrapper:hover .tooltip-box {
-  visibility: visible;
-  opacity: 1;
-  transform: translateX(-50%) translateY(-5px); /* Efecto de elevación suave */
-}
-
-
-.modal-progreso-safin {
-  background: white;
-  width: 600px;
-  border-radius: 8px;
+/* Estilo Base del Modal */
+.modal-resumen-gob, .modal-progreso-safin {
+  background: #ffffff;
+  width: 95%;
+  max-width: 600px;
+  border-radius: 15px;
   overflow: hidden;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+  box-shadow: var(--shadow-modal);
+  animation: fadeInDown 0.3s ease-out;
 }
 
-.modal-header-rojo {
-  background: #8B0F28; /* Rojo institucional */
-  color: white;
-  padding: 15px;
+/* Cabeceras de Modal */
+.modal-header-gob, .modal-header-rojo {
+  background-color: #8B0F28;
+  color: #ffffff;
+  padding: 20px 30px;
+  border-bottom: 4px solid #bca986;
   text-align: center;
 }
 
+.modal-body-gob, .modal-body-premium { padding: 30px 40px; }
+
+/* Rejilla de Datos del Resumen */
+.stats-grid, .stats-resumen-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 25px;
+}
+
+.stat-card, .resumen-card {
+  background: #f9fafb;
+  border: 1px solid #e1e8f0;
+  padding: 20px;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.stat-label, .resumen-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #9ca3af;
+  margin-bottom: 8px;
+  letter-spacing: 1px;
+}
+
+.stat-value, .resumen-value {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #111827;
+}
+
+/* Caja de Detalles (Punteada) */
+.details-box-dotted, .detalles-box-gob {
+  background-color: #fffcf5;
+  border: 1.5px dashed #bca986;
+  padding: 15px 20px;
+  border-radius: 10px;
+  color: #4a5568;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9rem;
+}
+
+/* ==========================================================================
+   CONSOLA / LOG TERMINAL
+   ========================================================================== */
 .log-terminal {
-  background: #1a1a1a; /* Fondo negro de consola */
+  background: #1a1a1a;
+  color: #00ff00;
   height: 200px;
   overflow-y: auto;
   padding: 15px;
@@ -265,18 +215,138 @@
   font-size: 12px;
   margin-top: 20px;
   border-radius: 4px;
-  text-align: left;
 }
 
-.txt-green { color: #00ff00; }
-.txt-red { color: #ff4d4d; }
+.txt-green { color:  #00ff00; }
+.txt-red { color:  #ff4d4d; }
+.txt-blue { color: #2196f3; font-weight: bold; }
 
-.btn-primary-safin {
-  background: #bca986; /* Color arena */
-  color: white;
+/* ==========================================================================
+   BOTONES
+   ========================================================================== */
+.modal-footer-gob, .action-footer {
+  background-color: #ffffff;
+  padding: 25px 40px;
+  display: flex;
+  gap: 20px;
+}
+
+.btn-buscar-modern, .btn-confirm-gob {
+  background: #8B0F28;
+  color: #ffffff;
   border: none;
-  padding: 10px 25px;
-  border-radius: 4px;
+  padding: 12px 25px;
+  border-radius: 8px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
   cursor: pointer;
-  font-weight: bold;
+  transition: all 0.2s;
 }
+
+.btn-buscar-modern:hover, .btn-confirm-gob:hover {
+  background: #700d21;
+  transform: translateY(-1px);
+}
+
+.btn-cancel-gob, .btn-control {
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  color: #4b5563;
+  padding: 12px;
+  border-radius: 8px;
+  flex: 1;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* ==========================================================================
+   TOOLTIPS E ICONOS
+   ========================================================================== */
+.label-with-info { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.info-icon-wrapper { position: relative; display: inline-flex; }
+.info-icon { font-size: 16px !important; color: #8B0F28; cursor: help; }
+
+.tooltip-box {
+  visibility: hidden;
+  position: absolute;
+  bottom: 150%; left: 50%;
+  transform: translateX(-50%);
+  background-color: #333;
+  color: #ffffff;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 11px;
+  opacity: 0;
+  transition: all 0.3s;
+  width: max-content;
+  max-width: 250px;
+}
+
+.info-icon-wrapper:hover .tooltip-box {
+  visibility: visible;
+  opacity: 1;
+  transform: translateX(-50%) translateY(-5px);
+}
+
+/* ==========================================================================
+   RESPONSIVO
+   ========================================================================== */
+@media (max-width: 768px) {
+  .selection-grid, .date-grid, .stats-grid { grid-template-columns: 1fr; }
+  .full-width { grid-column: span 1; }
+  .filter-body { padding: 20px; }
+  .modal-footer-gob { flex-direction: column; }
+}
+
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Botones de Control en el Modal */
+.controles-descarga {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.btn-control {
+  background: white;
+  border: 1px solid var(--gris-borde);
+  padding: 8px 15px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-control:hover { background: var(--gris-suave); }
+
+.btn-cancelar-gob {
+  background: #fff0f0;
+  color: #d32f2f;
+  border: 1px solid #ffcdd2;
+  padding: 8px 15px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* Colores de Consola */
+.txt-blue { color: #3182ce; font-weight: bold; }
+.pct-text-premium {
+  display: block;
+  text-align: center;
+  margin-top: 10px;
+  font-weight: 800;
+  color: var(--rojo-gob);
+  font-size: 1.1rem;
+}
+
+.progress-container { margin-bottom: 25px; }
