@@ -5,12 +5,12 @@
   --blanco: #ffffff;
 }
 
-/* 1. CONTENEDOR PRINCIPAL */
+/* CONTENEDOR PRINCIPAL */
 .main-container {
   width: 100%;
   background-color: #f4f5f7;
-  min-height: 100vh;
- padding: 60px 20px; /* Reducido para que quepa mejor en móviles */
+
+  padding: 60px 20px; 
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -25,12 +25,11 @@
   text-transform: uppercase;
 }
 
-/* 2. TARJETA DE FILTROS  */
+/* FILTROS */
 .filter-card {
-  max-width: 1250px !important; /* Estaba en un valor menor, lo subimos para ocupar la pantalla */
   width: 95%; 
   margin: 20px auto;
-  padding: 45px; /* Más espacio interno para que no se vea apretado */
+  padding: 45px; 
   background: white;
   border-radius: 12px;
   box-shadow: 0 10px 25px rgba(0,0,0,0.05);
@@ -40,6 +39,7 @@
   background-color: #8B0F28;
   color: white;
   padding: 30px 35px;
+  border-radius: 1%;
 }
 
 .header-icon-title {

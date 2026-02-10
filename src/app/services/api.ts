@@ -24,20 +24,21 @@ export class ApiService {
     let params = new HttpParams();
 
     if (filtros) {
-      // Recorremos todas las llaves que traiga el objeto filtros
+      // Recorremos todo para que traiga el objeto filtros
       Object.keys(filtros).forEach(key => {
         const valor = filtros[key];
 
-        // VALIDACIÓN CRÍTICA:
+        // VALIDACIÓN:
         // Si el valor es 0, LO DEJA PASAR.
         // Solo ignora si es null, undefined o texto vacío.
         if (valor !== null && valor !== undefined && valor !== '') {
           params = params.append(key, valor.toString());
         }
+        
       });
     }
 
-    // Para depuración: se verá en consola exactamente qué se envía
+    // se verá en consola exactamente qué se envía
     console.log('📡 Enviando a API:', params.toString());
 
     return this.http.get(`${this.apiUrl}/ObtenerTotalDeArchivos/`, { params });
@@ -47,7 +48,15 @@ export class ApiService {
     return this.http.get<any[]>(`${this.apiUrl}/ObtenerDelegaciones`);
   }
 
+
   iniciarProcesoDescarga(delegacionId: number) {
     return this.http.post(`${this.apiUrl}/descargas/iniciar`, { delegacion: delegacionId });
+  
   }
+
+    getAniosFiscales(): Observable<number[]> {
+          return this.http.get<number[]>(`${this.apiUrl}/ObtenerAniosFiscales`);
+  }
+
 }
+
