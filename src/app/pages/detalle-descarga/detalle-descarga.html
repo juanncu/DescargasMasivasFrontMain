@@ -6,6 +6,8 @@
   </div>
 
   <section class="card-detalle-principal">
+
+
     <div class="encabezado-info">
       <div class="titulo-estatus">
         <h2>{{ detalle?.delegacion }}</h2>
@@ -17,6 +19,7 @@
     </div>
 
     <div class="stats-grid">
+      
       <div class="stat-item">
         <span class="stat-label">PDFS</span>
         <span class="stat-value">{{ detalle?.stats.pdfs }}</span>
@@ -42,6 +45,7 @@
         <p><strong>Inicio de descarga:</strong> {{ detalle?.tecnico.inicio }}</p>
         <p><strong>Fin de descarga:</strong> {{ detalle?.tecnico.fin }}</p>
         <p><strong>Tiempo:</strong> {{ detalle?.tecnico.tiempo }}</p>
+        <p> <strong>Filtros Seleccionados: </strong> </p>
            <div class="filtros-resumen">
   <span class="badge-filtro">
     <mat-icon>folder</mat-icon> Padrón: {{ detalle?.filtrosAplicados.padron }}

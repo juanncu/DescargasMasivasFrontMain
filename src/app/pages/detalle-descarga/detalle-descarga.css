@@ -183,3 +183,10 @@
   width: 14px;
   height: 14px;
 }
+
+.titulo-detalles {
+  color: #534e4e;
+  margin-bottom: 20px;
+  font-size: 1.5rem;
+  text-transform: uppercase;
+}
