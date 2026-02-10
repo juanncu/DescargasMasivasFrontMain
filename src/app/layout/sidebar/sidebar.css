@@ -99,13 +99,13 @@
 
 .footer-item:hover { color: #8B0F28; }
 
-/* --- 5. RESPONSIVIDAD (iPhone / Tablets) --- */
+/* --- RESPONSIVIDAD */
 .close-sidebar-btn {
   display: none; /* Oculto en PC */
-  background: none;
   border: none;
   color: #5f6368;
   cursor: pointer;
+  padding-bottom: 5%;
 }
 
 @media (max-width: 768px) {

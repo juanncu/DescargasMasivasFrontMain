@@ -12,7 +12,7 @@ describe('DescargaFoliosComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      // 2. Importamos el componente (es Standalone) y los módulos de prueba
+      
       imports: [
         DescargaFoliosComponent, 
         MatIconModule,

@@ -6,7 +6,7 @@
 
 .titulo-historial {
   text-align: center;
-  color: #bca986; /* Color arena institucional */
+  color: #bca986; 
   font-size: 1.1rem;
   font-weight: bold;
   text-transform: uppercase;
@@ -39,7 +39,7 @@
   color: #333;
 }
 
-/* Etiquetas de Filtros (Badges) */
+/* Etiquetas de Filtros*/
 .filtros-tags {
   display: flex;
   gap: 8px;
@@ -91,7 +91,7 @@
   color: #444;
 }
 
-/* Estados Dinámicos */
+/* Estados  */
 .estado-badge {
   font-size: 11px;
   font-weight: 800;
@@ -112,7 +112,7 @@
 }
 
 .btn-view:hover {
-  color: #8B0F28; /* Rojo institucional al pasar el mouse */
+  color: #8B0F28; 
 }
 
 
@@ -138,9 +138,9 @@
   border: 1px solid #dee2e6;
 }
 
-.tag-formato { border-left: 3px solid #8B0F28; } /* Rojo Institucional */
-.tag-padron { border-left: 3px solid #bca986; }  /* Dorado/Arena */
-.tag-estado { border-left: 3px solid #6c757d; }  /* Gris */
+.tag-formato { border-left: 3px solid #8B0F28; } 
+.tag-padron { border-left: 3px solid #bca986; }  
+.tag-estado { border-left: 3px solid #6c757d; }  
 
 .tag-formato mat-icon, .tag-padron mat-icon, .tag-estado mat-icon {
   font-size: 12px;

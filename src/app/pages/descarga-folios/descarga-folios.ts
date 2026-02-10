@@ -10,6 +10,7 @@ import { DescargaFoliosService } from '../../services/descarga-folios.service';
 import { SelectDescarga } from '../../services/select-descarga';
 import { ApiService } from '../../services/api';
 import * as signalR from '@microsoft/signalr';
+import { error } from 'console';
 
 @Component({
   selector: 'app-descarga-folios',
@@ -67,7 +68,7 @@ private readonly API_URL = "http://localhost:5001/pdf";
   tiempoEstimado = 'Esperando inicio...';
 
   // Catálogos
-  aniosDisponibles = [2026, 2025];
+  aniosDisponibles: number[] = [];
   meses = [
     { id: 1, nombre: 'Enero' }, { id: 2, nombre: 'Febrero' }, { id: 3, nombre: 'Marzo' },
     { id: 4, nombre: 'Abril' }, { id: 5, nombre: 'Mayo' }, { id: 6, nombre: 'Junio' },
@@ -86,9 +87,12 @@ private readonly API_URL = "http://localhost:5001/pdf";
 
   mesesFinalesDisponibles: any[] = [];
 
+
+
   ngOnInit() {
     this.cargarMunicipios();
     this.iniciarConexionSignalR();
+    this.cargarAniosFiscales();
   }
 
  private iniciarConexionSignalR() {
@@ -195,6 +199,24 @@ probarModalProgreso() {
     });
   }
 
+
+cargarAniosFiscales() {
+  this.apiService.getAniosFiscales().subscribe({
+    next: (res: any[]) => {
+      
+      // Objetos del backend { aFiscal: number }
+      this.aniosDisponibles = res.map(x => x.aFiscal);
+
+      // Selecciona automáticamente el año más reciente
+      this.anio = Math.max(...this.aniosDisponibles);
+
+      this.cd.detectChanges();
+    },
+    error: (err) => {
+      console.error(' Error al cargar años fiscales', err);
+    }
+  });
+}
   buscar() {
 
     this.resultados = { archivos: 2450, tamanio: '1.8 GB' }; // Datos demo
