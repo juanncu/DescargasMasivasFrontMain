@@ -134,26 +134,26 @@ private readonly API_URL = `http://${this.IP_BACK}:5000/pdf`;
   }
 
   async confirmarDescarga() {
-    this.mostrarModalResultados = false; // Cerramos el resumen
-    this.mostrarPopupConfirmacion = true; // Abrimos el progreso
-    this.progreso = 0;
-    this.logsDescarga = [];
+  this.mostrarModalResultados = false;
+  this.mostrarPopupConfirmacion = true;
+  this.progreso = 0;
+  this.logsDescarga = [];
 
-    try {
-      // URL que te dio el equipo de Back
-      const url = `http://172.20.23.41:5000/ObtenerTotalDeArchivos?delegacion=${this.delegacionSeleccionada}&estado=${this.estadoSeleccionadoId}...`;
+  const fIni = `${this.anio}-${this.mesInicio.toString().padStart(2, '0')}-01`;
+  const fFin = `${this.anio}-${this.mesFinal.toString().padStart(2, '0')}-28`;
 
-      // Al disparar este fetch, el backend empieza a emitir eventos al Hub
-      const response = await fetch(url);
-      if (!response.ok) throw new Error("Servidor no pudo iniciar el proceso");
-
-    } catch (error) {
-      console.error("Error al iniciar:", error);
-      this.mostrarPopupConfirmacion = false;
-      alert("Error crítico al conectar con el motor de descargas.");
-    }
+  try {
+    // Usamos la IP correcta 172.20.23.41 y los parámetros corregidos
+    const url = `http://172.20.23.41:5000/ObtenerTotalDeArchivos?delegacion=${this.delegacionSeleccionada}&estado=${this.estadoSeleccionadoId}&padron=${this.padronSeleccionadoId}&ini=${fIni}&fin=${fFin}&anio=${this.anio}&formatos=${this.obtenerFormatosStr()}`;
+    
+    const response = await fetch(url);
+    if (!response.ok) throw new Error("Servidor no pudo iniciar");
+  } catch (error) {
+    console.error("Error al iniciar descarga:", error);
+    this.mostrarPopupConfirmacion = false;
+    alert("Error de conexión con el motor de descarga.");
   }
-
+}
 
 
   // En descarga-folios.component.ts
@@ -225,39 +225,36 @@ private readonly API_URL = `http://${this.IP_BACK}:5000/pdf`;
     });
   }
   buscar() {
-    this.cargando = true;
+  this.cargando = true;
 
-    // Construimos los filtros basados en lo que seleccionaste en la pantalla
-    const filtros = {
-      padron: Number(this.padronSeleccionadoId),
-      estado: Number(this.estadoSeleccionadoId),
-      delegacion: Number(this.delegacionSeleccionada),
-      anio: this.anio,
-      ini: this.mesInicio,
-      fin: this.mesFinal,
-      // Formatea a fecha real: Año-Mes-Día
+  // Creamos el formato YYYY-MM-DD que el backend espera
+  const fechaInicio = `${this.anio}-${this.mesInicio.toString().padStart(2, '0')}-01`;
+  const fechaFin = `${this.anio}-${this.mesFinal.toString().padStart(2, '0')}-28`; // Usamos 28 para evitar errores de días del mes
 
-      // ini: `${this.anio}-${this.mesInicio.toString().padStart(2, '0')}-01`,
-      // fin: `${this.anio}-${this.mesFinal.toString().padStart(2, '0')}-28`, 
+  const filtros = {
+    padron: Number(this.padronSeleccionadoId),
+    estado: Number(this.estadoSeleccionadoId),
+    delegacion: Number(this.delegacionSeleccionada),
+    anio: this.anio,
+    ini: fechaInicio, // Enviamos fecha real, no solo el ID del mes
+    fin: fechaFin
+  };
 
-      //formatos: this.obtenerFormatosStr()
-    };
+  console.log("Enviando a API con fechas corregidas:", filtros);
 
-    // Llamada al servicio que creaste
-    this.descargaService.buscarFolios(this.delegacionSeleccionada, '', filtros).subscribe({
-      next: (res) => {
-        this.resultados = res; // Recibe { archivos: X, tamanio: 'Y' } del back
-        this.mostrarModalResultados = true;
-        this.cargando = false;
-      },
-      error: (err) => {
-        console.error('Error en búsqueda real:', err);
-        this.cargando = false;
-        alert('No se encontraron archivos con esos filtros o el servidor no responde.');
-      }
-    });
-  }
-
+  this.descargaService.buscarFolios(this.delegacionSeleccionada, '', filtros).subscribe({
+    next: (res) => {
+      this.resultados = res;
+      this.mostrarModalResultados = true;
+      this.cargando = false;
+    },
+    error: (err) => {
+      console.error('Error en búsqueda real:', err);
+      this.cargando = false;
+      alert('Error en el servidor. Verifica los rangos de fechas.');
+    }
+  });
+}
   // 3. Lógica de la barra y consola negra
   iniciarSimulacionProgreso() {
     this.progreso = 0;
