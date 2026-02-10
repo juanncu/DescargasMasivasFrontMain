@@ -58,23 +58,26 @@
         </div>
       </div>
       <div class="date-grid">
-                <div class="input-field">
-          <label>Año</label>
-          <select [(ngModel)]="anio" class="modern-select">
+        <div class="input-field">
+          <label>AÑO</label>
+          <select [(ngModel)]="anio" (change)="onMesInicioChange()" class="modern-select">
             <option *ngFor="let a of aniosDisponibles" [value]="a">{{ a }}</option>
           </select>
         </div>
-        
+
         <div class="input-field">
-          <label>Mes Inicio</label>
-          <select [(ngModel)]="mesInicio" class="modern-select">
-            <option *ngFor="let m of meses" [value]="m.id">{{ m.nombre }}</option>
+          <label>MES INICIO</label>
+          <select [(ngModel)]="mesInicio" (change)="onMesInicioChange()" class="modern-select">
+            <option value="" disabled>Seleccione inicio</option>
+            <option *ngFor="let m of mesesInicioDisponibles" [value]="m.id">{{ m.nombre }}</option>
           </select>
         </div>
+
         <div class="input-field">
-          <label>Mes Final</label>
-          <select [(ngModel)]="mesFinal" class="modern-select">
-            <option *ngFor="let m of meses" [value]="m.id">{{ m.nombre }}</option>
+          <label>MES FINAL</label>
+          <select [(ngModel)]="mesFinal" class="modern-select" [disabled]="!mesInicio">
+            <option value="" disabled>Seleccione fin</option>
+            <option *ngFor="let m of mesesFinalesDisponibles" [value]="m.id">{{ m.nombre }}</option>
           </select>
         </div>
 
@@ -83,57 +86,55 @@
       <div class="input-field full-width">
         <label>Delegación</label>
         <select [(ngModel)]="delegacionSeleccionada" class="modern-select">
-  <option [ngValue]="null" disabled>Seleccione una delegación</option>
-  <option *ngFor="let d of listaDelegaciones" [ngValue]="d.delegacionID">
-    {{ d.delegacion }}
-  </option>
-</select>
+          <option [ngValue]="null" disabled>Seleccione una delegación</option>
+          <option *ngFor="let d of listaDelegaciones" [ngValue]="d.delegacionID">
+            {{ d.delegacion }}
+          </option>
+        </select>
       </div>
 
       <div class="action-footer">
-  <button class="btn-preview" [disabled]="true" style="opacity: 0.5; cursor: not-allowed;">
-    <mat-icon>visibility</mat-icon> VISTA PREVIA
-  </button>
+        <button class="btn-preview" [disabled]="true" style="opacity: 0.5; cursor: not-allowed;">
+          <mat-icon>visibility</mat-icon> VISTA PREVIA
+        </button>
 
-  <button 
-    class="btn-buscar-modern" 
-    (click)="buscar()" 
-    [disabled]="!delegacionSeleccionada || !mesInicio || !mesFinal || cargando">
-    <mat-icon *ngIf="!cargando">search</mat-icon>
-    <mat-spinner *ngIf="cargando" diameter="20"></mat-spinner>
-    {{ cargando ? 'BUSCANDO...' : 'BUSCAR DOCUMENTOS' }}
-  </button>
-</div>
+        <button class="btn-buscar-modern" (click)="buscar()"
+          [disabled]="!delegacionSeleccionada || !mesInicio || !mesFinal || cargando">
+          <mat-icon *ngIf="!cargando">search</mat-icon>
+          <mat-spinner *ngIf="cargando" diameter="20"></mat-spinner>
+          {{ cargando ? 'BUSCANDO...' : 'BUSCAR DOCUMENTOS' }}
+        </button>
+      </div>
 
     </div>
   </section>
 
   <div class="modal-overlay" *ngIf="mostrarPopupConfirmacion">
-  <div class="modal-progreso-safin">
-    <div class="modal-header-rojo">
-      <h3>PROCESANDO DOCUMENTOS</h3>
-    </div>
-
-    <div class="modal-body">
-      <p class="txt-delegacion">Delegación: <strong>{{ delegacionSeleccionada }}</strong></p>
-      
-      <div class="progress-section">
-        <mat-progress-bar mode="determinate" [value]="progreso"></mat-progress-bar>
-        <span class="pct-text">{{ progreso }}%</span>
+    <div class="modal-progreso-safin">
+      <div class="modal-header-rojo">
+        <h3>PROCESANDO DOCUMENTOS</h3>
       </div>
 
-      <p class="status-count">{{ tiempoEstimado }}</p>
+      <div class="modal-body">
+        <p class="txt-delegacion">Delegación: <strong>{{ delegacionSeleccionada }}</strong></p>
 
-      <div class="log-terminal">
-        <div *ngFor="let log of logsDescarga" [ngClass]="log.tipo === 'ERROR' ? 'txt-red' : 'txt-green'">
-          [{{ log.tipo }}] {{ log.mensaje }}
+        <div class="progress-section">
+          <mat-progress-bar mode="determinate" [value]="progreso"></mat-progress-bar>
+          <span class="pct-text">{{ progreso }}%</span>
         </div>
-      </div>
 
-      <div class="modal-footer" *ngIf="progreso === 100">
-        <button (click)="irAlHistorial()" class="btn-primary-safin">FINALIZAR</button>
+        <p class="status-count">{{ tiempoEstimado }}</p>
+
+        <div class="log-terminal">
+          <div *ngFor="let log of logsDescarga" [ngClass]="log.tipo === 'ERROR' ? 'txt-red' : 'txt-green'">
+            [{{ log.tipo }}] {{ log.mensaje }}
+          </div>
+        </div>
+
+        <div class="modal-footer" *ngIf="progreso === 100">
+          <button (click)="irAlHistorial()" class="btn-primary-safin">FINALIZAR</button>
+        </div>
       </div>
     </div>
   </div>
-</div>
 </main>

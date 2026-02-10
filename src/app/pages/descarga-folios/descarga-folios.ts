@@ -82,6 +82,8 @@ export class DescargaFoliosComponent implements OnInit {
     { id: '2', nombre: 'PREDIAL' }
   ];
 
+  mesesFinalesDisponibles: any[] = [];
+
   ngOnInit() {
     this.cargarMunicipios();
     this.iniciarConexionSignalR();
@@ -225,4 +227,46 @@ export class DescargaFoliosComponent implements OnInit {
     this.resultados = null;
     this.delegacionSeleccionada = null;
   }
+
+
+  // Función que se dispara cuando cambia el Mes Inicio
+// En descarga-folios.component.ts
+
+onMesInicioChange() {
+  const hoy = new Date();
+  const anioActual = hoy.getFullYear();
+  const mesActual = hoy.getMonth() + 1; // getMonth() es 0-11
+  const inicioId = Number(this.mesInicio);
+  const anioSeleccionado = Number(this.anio);
+
+  // 1. Filtrar meses finales basados en el inicio y el tiempo real
+  this.mesesFinalesDisponibles = this.meses.filter(m => {
+    const esMayorOIgualAlInicio = m.id >= inicioId;
+    
+    // Si es el año actual (2026), no puede ser mayor al mes actual
+    if (anioSeleccionado === anioActual) {
+      return esMayorOIgualAlInicio && m.id <= mesActual;
+    }
+    
+    // Si es un año pasado (2025), puede elegir cualquier mes posterior al inicio
+    return esMayorOIgualAlInicio;
+  });
+
+  // 2. Resetear mes final si queda fuera de rango
+  if (this.mesFinal && !this.mesesFinalesDisponibles.find(m => m.id == this.mesFinal)) {
+    this.mesFinal = '';
+  }
+}
+
+// También debemos filtrar el primer selector (Mes Inicio) según el año
+get mesesInicioDisponibles() {
+  const hoy = new Date();
+  const anioActual = hoy.getFullYear();
+  const mesActual = hoy.getMonth() + 1;
+
+  if (Number(this.anio) === anioActual) {
+    return this.meses.filter(m => m.id <= mesActual);
+  }
+  return this.meses;
+}
 }
