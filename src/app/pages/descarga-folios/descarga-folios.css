@@ -359,4 +359,49 @@
   max-width: 1250px !important; /* Cuadro grande como solicitaste */
   margin: 0 auto;
   border-top: 5px solid #8B0F28; /* Línea de color institucional superior */
+/* CONTENEDOR BASE */
+.error-toast {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 14px 22px;
+  border-radius: 8px;
+  color: white;
+  font-weight: 500;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+  z-index: 9999;
+  animation: fadeInUp 0.3s ease;
+  min-width: 320px;
+  text-align: center;
+}
+}
+/* COLORES ERROR */
+
+.error-front {
+  background: linear-gradient(135deg, #ff9800, #f57c00);
+}
+
+.error-back {
+  background: linear-gradient(135deg, #f44336, #c62828);
+}
+
+.error-conn {
+  background: linear-gradient(135deg, #9c27b0, #6a1b9a);
+}
+
+.error-unknown {
+  background: linear-gradient(135deg, #607d8b, #37474f);
+}
+
+/* Animación */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 30px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
 }

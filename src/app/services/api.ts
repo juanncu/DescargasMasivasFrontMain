@@ -67,4 +67,3 @@ export class ApiService {
     return this.http.get<any[]>(`http://172.20.23.41:5000/ObtenerPadrones`);
   }
 }
-

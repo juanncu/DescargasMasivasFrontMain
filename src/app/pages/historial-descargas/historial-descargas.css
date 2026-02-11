@@ -152,3 +152,53 @@
   color: #222;
   margin-right: 10px;
 }
+
+/* ===============================
+   RESPONSIVE - MOBILE / TABLET
+   NO rompe estilos existentes
+   =============================== */
+@media (max-width: 900px) {
+
+  .item-card {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 15px;
+  }
+
+  .info-status {
+    width: 100%;
+    min-width: unset;
+    justify-content: space-between;
+  }
+
+  .ruta-red {
+    text-align: left;
+    font-size: 10px;
+    word-break: break-all;
+  }
+}
+
+@media (max-width: 600px) {
+
+  .item-card {
+    padding: 16px;
+  }
+
+  .info-status {
+    flex-direction: row;
+    gap: 12px;
+  }
+
+  .tamanio-text {
+    font-size: 0.85rem;
+  }
+
+  .estado-badge {
+    font-size: 10px;
+    padding: 4px 10px;
+  }
+
+  .btn-view {
+    font-size: 14px;
+  }
+}

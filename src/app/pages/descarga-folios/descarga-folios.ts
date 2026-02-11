@@ -80,6 +80,7 @@ tiempoAproxResumen: string = 'Calculando...';
   mesesFinalesDisponibles: any[] = [];
 
   ngOnInit() {
+    
     this.cargarMunicipios();
     this.iniciarConexionSignalR();
     this.cargarAniosFiscales();
@@ -238,7 +239,10 @@ buscar() {
         this.listaDelegaciones = res.municipios || res;
         this.cd.detectChanges();
       },
-      error: (err) => console.error("Error cargando municipios:", err)
+      error: (lanzarError) => {
+        console.error("Error cargando municipios:", lanzarError);
+        this.lanzarError('Error al cargar municipios', 'BACKEND');
+      }
     });
   }
 
@@ -249,7 +253,10 @@ buscar() {
         this.anio = Math.max(...this.aniosDisponibles);
         this.cd.detectChanges();
       },
-      error: (err) => console.error(' Error al cargar años fiscales', err)
+      error: (err) => {
+        console.error(' Error al cargar años fiscales', err);
+        this.lanzarError('Error al cargar años fiscales', 'BACKEND');
+      }
     });
   }
 
@@ -259,6 +266,8 @@ buscar() {
     const d = this.listaDelegaciones.find(x => (x.delegacionID || x.id) == this.delegacionSeleccionada);
     return d ? d.delegacion : 'No seleccionada';
   }
+
+
 
   cerrarModalResultados() {
     this.mostrarModalResultados = false;
@@ -327,4 +336,30 @@ buscar() {
     }
     return this.meses;
   }
+
+
+// Estado global de errores
+
+errorUI: {
+  mensaje: string;
+  origen: 'FRONTEND' | 'BACKEND' | 'CONEXION' | 'DESCONOCIDO';
+} = {
+  mensaje: '',
+  origen: 'DESCONOCIDO'
+};
+
+private lanzarError(
+  mensaje: string,
+  origen: 'FRONTEND' | 'BACKEND' | 'CONEXION' | 'DESCONOCIDO'
+): void {
+
+  this.errorUI = { mensaje, origen };
+
+  setTimeout((): void => {
+    this.errorUI = { mensaje: '', origen: 'DESCONOCIDO' };
+    this.cd.detectChanges();
+  }, 5000);
+}
+
+
 }

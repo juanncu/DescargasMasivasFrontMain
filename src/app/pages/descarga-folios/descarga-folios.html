@@ -1,5 +1,6 @@
 <main class="main-container">
-  <div class="main-title">DESCARGA MASIVA DE FOLIOS</div>
+  <div class="main-title">DESCARGA MASIVA DE FOLIOS
+  </div>
 
   <section class="filter-card">
     <div class="filter-header">
@@ -19,12 +20,7 @@
             <div class="info-icon-wrapper" *ngIf="estadoSeleccionadoId">
               <mat-icon class="info-icon">info</mat-icon>
               <span class="tooltip-box">
-                {{
-                estadoSeleccionadoId === '1' ? 'Cobrado, Conciliado, Conciliado Parcial' :
-                estadoSeleccionadoId === '2' ? 'Folios Cancelados' :
-                estadoSeleccionadoId === '3' ? 'Cobrado, Cancelado, Conciliado, Conciliado Parcial' :
-                'Seleccione un estado para ver la descripción'
-                }}
+                {{ descripcionEstadoRecibo }}
               </span>
             </div>
           </div>
@@ -148,7 +144,6 @@
       </button>
     </div>
   </div>
-</div>
 
 <div class="modal-overlay" *ngIf="mostrarPopupConfirmacion">
   <div class="modal-progreso-safin">
@@ -182,4 +177,24 @@
       </div>
     </div>
   </div>
+
+
+
+ <!-- TOAST / TOOLTIP GLOBAL DE ERROR -->
+<div 
+  class="error-toast"
+  *ngIf="errorUI.mensaje"
+  [ngClass]="{
+    'error-front': errorUI.origen === 'FRONTEND',
+    'error-back': errorUI.origen === 'BACKEND',
+    'error-conn': errorUI.origen === 'CONEXION',
+    'error-unknown': errorUI.origen === 'DESCONOCIDO'
+  }"
+>
+  <strong>{{ errorUI.origen }}</strong> — {{ errorUI.mensaje }}
+</div>
+
+</div>
+
+
 </div>
