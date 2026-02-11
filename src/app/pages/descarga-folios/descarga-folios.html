@@ -21,7 +21,6 @@
 
     <div class="filter-body">
       <div class="selection-grid">
-
         <div class="input-field">
           <div class="label-with-info">
             <label>Estado de Recibo</label>
@@ -38,7 +37,7 @@
             </div>
           </div>
           <select [(ngModel)]="estadoSeleccionadoId" class="modern-select">
-            <option [ngValue]="null">Seleccione estado</option>
+           <option value="" disabled selected>Seleccione estado</option>
             <option *ngFor="let e of estados" [ngValue]="e.id">{{ e.nombre }}</option>
           </select>
         </div>
@@ -52,7 +51,7 @@
             </div>
           </div>
           <select [(ngModel)]="padronSeleccionadoId" class="modern-select">
-            <option [ngValue]="null">Seleccione padrón</option>
+           <option value="" disabled selected>Seleccione padrón</option>
             <option *ngFor="let p of padrones" [ngValue]="p.id">{{ p.nombre }}</option>
           </select>
         </div>
@@ -66,6 +65,7 @@
           </div>
         </div>
       </div>
+
       <div class="date-grid">
         <div class="input-field">
           <label>AÑO</label>
@@ -89,7 +89,6 @@
             <option *ngFor="let m of mesesFinalesDisponibles" [value]="m.id">{{ m.nombre }}</option>
           </select>
         </div>
-
       </div>
 
       <div class="input-field full-width">
@@ -103,6 +102,9 @@
       </div>
 
       <div class="action-footer">
+        <button class="btn-vista-previa" (click)="probarModalProgreso()">
+          <mat-icon>visibility</mat-icon> VISTA PREVIA
+        </button>
 
         <button class="btn-buscar-modern" (click)="buscar()"
           [disabled]="!delegacionSeleccionada || !mesInicio || !mesFinal || cargando">
@@ -111,9 +113,8 @@
           {{ cargando ? 'BUSCANDO...' : 'BUSCAR DOCUMENTOS' }}
         </button>
       </div>
-
-
-  <button class="btn-buscar-modern" (click)="buscar()">BUSCAR DOCUMENTOS</button>
+    </div> </section>
+</main>
 
 <div class="modal-overlay" *ngIf="mostrarModalResultados">
   <div class="modal-resumen-gob">
@@ -126,17 +127,25 @@
     <div class="modal-body-gob">
       <p class="summary-text">Se han localizado los siguientes documentos según tus filtros:</p>
 
-      <div class="stats-grid">
-        <div class="stat-card">
-          <span class="stat-label">ARCHIVOS ENCONTRADOS</span>
+      <div class="stats-grid" style="grid-template-columns: 1fr 1fr 1fr;">
+        <div class="stat-card" style="border-left: 3px solid #bca986;">
+          <span class="stat-label">ARCHIVOS</span>
           <span class="stat-value">{{ resultados?.archivos | number }}</span>
         </div>
-        <div class="stat-card">
-          <span class="stat-label">TAMAÑO ESTIMADO</span>
+        <div class="stat-card" style="border-left: 3px solid #bca986;">
+          <span class="stat-label">TAMAÑO</span>
           <span class="stat-value">{{ resultados?.tamanio }}</span>
         </div>
+        <div class="stat-card" style="border-left: 3px solid #bca986;">
+          <span class="stat-label">TIEMPO ESTIMADO</span>
+          <span class="stat-value" style="color: #8B0F28;">{{ tiempoAproxResumen }}</span>
+        </div>
       </div>
-
+      
+      <div class="details-box-dotted">
+        <strong>Periodo seleccionado:</strong>
+        <span>{{ obtenerNombreMes(mesInicio) }} - {{ obtenerNombreMes(mesFinal) }} {{ anio }}</span>
+      </div>
     </div>
 
     <div class="modal-footer-gob">
@@ -153,7 +162,7 @@
 <div class="modal-overlay" *ngIf="mostrarPopupConfirmacion">
   <div class="modal-progreso-safin">
     <div class="modal-header-rojo">
-      <h3>📥 PROCESO DE DESCARGA ACTIVO</h3>
+      <h3 style="margin:0; color:white;">📥 PROCESO DE DESCARGA ACTIVO</h3>
     </div>
 
     <div class="modal-body-premium">
@@ -176,12 +185,10 @@
       </div>
 
       <div class="modal-footer-gob" *ngIf="progreso === 100">
-        <button (click)="irAlHistorial()" class="btn-confirm-gob">FINALIZAR Y VER HISTORIAL</button>
+        <button (click)="irAlHistorial()" class="btn-confirm-gob" style="width: 100%;">
+          FINALIZAR Y VER HISTORIAL
+        </button>
       </div>
     </div>
   </div>
 </div>
-
-    </div>
-  </section>
-</main>
