@@ -59,6 +59,7 @@ tiempoAproxResumen: string = 'Calculando...';
   anio: number = 2025;
   estadoSeleccionadoId: string = '';
   padronSeleccionadoId: string = '';
+  
 
   // Formatos
   formatoPdf = false;
@@ -73,15 +74,8 @@ tiempoAproxResumen: string = 'Calculando...';
     { id: 7, nombre: 'Julio' }, { id: 8, nombre: 'Agosto' }, { id: 9, nombre: 'Septiembre' },
     { id: 10, nombre: 'Octubre' }, { id: 11, nombre: 'Noviembre' }, { id: 12, nombre: 'Diciembre' }
   ];
-  estados = [
-    { id: '1', nombre: 'ACTIVO' },
-    { id: '2', nombre: 'CANCELADO' },
-    { id: '3', nombre: 'AMBOS' }
-  ];
-  padrones = [
-    { id: '1', nombre: 'TODOS' },
-    { id: '2', nombre: 'PREDIAL' }
-  ];
+  estados: any[] = [];
+  padrones: any[] = [];
 
   mesesFinalesDisponibles: any[] = [];
 
@@ -89,8 +83,59 @@ tiempoAproxResumen: string = 'Calculando...';
     this.cargarMunicipios();
     this.iniciarConexionSignalR();
     this.cargarAniosFiscales();
+    this.cargarCatalogosBackend();
   }
 
+  cargarCatalogosBackend() {
+    // Cargar Estados
+    this.apiService.getEstadosRecibo().subscribe({
+      next: (res) => {
+        this.estados = res;
+        this.cd.detectChanges();
+      },
+      error: (err) => console.error("Error cargando estados:", err)
+    });
+
+    // Cargar Padrones
+    this.apiService.getPadrones().subscribe({
+      next: (res) => {
+        this.padrones = res;
+        this.cd.detectChanges();
+      },
+      error: (err) => console.error("Error cargando padrones:", err)
+    });
+  }
+
+  // 3. Ajustamos la función buscar para usar los valores REALES del objeto
+buscar() {
+  this.cargando = true;
+
+  // Construimos el objeto filtros usando únicamente los IDs numéricos
+  const filtros = {
+    padron: Number(this.padronSeleccionadoId),     // Envía el ID (ej: 1)
+    estado: Number(this.estadoSeleccionadoId),     // Envía el ID (ej: 1)
+    delegacion: Number(this.delegacionSeleccionada),
+    anio: Number(this.anio),
+    ini: Number(this.mesInicio),                   // El backend usará este Int32 como mes
+    fin: Number(this.mesFinal),                     // El backend usará este Int32 como mes
+    formatos: this.obtenerFormatosStr()
+  };
+
+  console.log("Enviando parámetros como Int32:", filtros);
+
+  this.descargaService.buscarFolios(this.delegacionSeleccionada, '', filtros).subscribe({
+    next: (res) => {
+      this.resultados = res; // Recibe { archivos: 2450, tamanio: '1.8 GB', ... }
+      this.mostrarModalResultados = true;
+      this.cargando = false;
+      this.cd.detectChanges();
+    },
+    error: (err) => {
+      console.error('Error en la petición:', err);
+      this.cargando = false;
+    }
+  });
+}
   private iniciarConexionSignalR() {
   this.hubConnection = new signalR.HubConnectionBuilder()
     .withUrl(this.HUB_URL)
@@ -208,36 +253,6 @@ tiempoAproxResumen: string = 'Calculando...';
     });
   }
 
-  buscar() {
-    this.cargando = true;
-    const fIni = `${this.anio}-${this.mesInicio.toString().padStart(2, '0')}-01`;
-    const fFin = `${this.anio}-${this.mesFinal.toString().padStart(2, '0')}-28`;
-
-    const filtros = {
-      padron: Number(this.padronSeleccionadoId),
-      estado: Number(this.estadoSeleccionadoId),
-      delegacion: Number(this.delegacionSeleccionada),
-      anio: this.anio,
-      ini: fIni,
-      fin: fFin,
-      formatos: this.obtenerFormatosStr()
-    };
-
-    this.descargaService.buscarFolios(this.delegacionSeleccionada, '', filtros).subscribe({
-      next: (res) => {
-        this.resultados = res;
-        this.mostrarModalResultados = true;
-        this.cargando = false;
-        this.cd.detectChanges();
-        this.tiempoAproxResumen = res.tiempoEstimado || '2 min aprox.';
-      },
-      error: (err) => {
-        console.error('Error en búsqueda real:', err);
-        this.cargando = false;
-        alert('Error en el servidor. Verifica los rangos de fechas.');
-      }
-    });
-  }
 
   // Auxiliares
   obtenerNombreDelegacion(): string {

@@ -13,6 +13,7 @@
     <div class="filter-body">
       <div class="selection-grid">
         <div class="input-field">
+
           <div class="label-with-info">
             <label>Estado de Recibo</label>
             <div class="info-icon-wrapper" *ngIf="estadoSeleccionadoId">
@@ -27,8 +28,10 @@
               </span>
             </div>
           </div>
+
+
           <select [(ngModel)]="estadoSeleccionadoId" class="modern-select">
-           <option value="" disabled selected>Seleccione estado</option>
+            <option value="" disabled selected>Seleccione estado</option>
             <option *ngFor="let e of estados" [ngValue]="e.id">{{ e.nombre }}</option>
           </select>
         </div>
@@ -42,7 +45,7 @@
             </div>
           </div>
           <select [(ngModel)]="padronSeleccionadoId" class="modern-select">
-           <option value="" disabled selected>Seleccione padrón</option>
+            <option value="" disabled selected>Seleccione padrón</option>
             <option *ngFor="let p of padrones" [ngValue]="p.id">{{ p.nombre }}</option>
           </select>
         </div>
@@ -93,18 +96,15 @@
       </div>
 
       <div class="action-footer">
-        <button class="btn-vista-previa" (click)="probarModalProgreso()">
-          <mat-icon>visibility</mat-icon> VISTA PREVIA
-        </button>
-
         <button class="btn-buscar-modern" (click)="buscar()"
-          [disabled]="!delegacionSeleccionada || !mesInicio || !mesFinal || cargando">
+          [disabled]="!delegacionSeleccionada || !mesInicio || !mesFinal || !anio || cargando">
           <mat-icon *ngIf="!cargando">search</mat-icon>
           <mat-spinner *ngIf="cargando" diameter="20"></mat-spinner>
           {{ cargando ? 'BUSCANDO...' : 'BUSCAR DOCUMENTOS' }}
         </button>
       </div>
-    </div> </section>
+    </div>
+  </section>
 </main>
 
 <div class="modal-overlay" *ngIf="mostrarModalResultados">
@@ -132,7 +132,7 @@
           <span class="stat-value" style="color: #8B0F28;">{{ tiempoAproxResumen }}</span>
         </div>
       </div>
-      
+
       <div class="details-box-dotted">
         <strong>Periodo seleccionado:</strong>
         <span>{{ obtenerNombreMes(mesInicio) }} - {{ obtenerNombreMes(mesFinal) }} {{ anio }}</span>
@@ -169,8 +169,8 @@
       </div>
 
       <div class="log-terminal" #scrollMe [scrollTop]="scrollMe.scrollHeight">
-        <div *ngFor="let log of logsDescarga" 
-             [ngClass]="{'txt-green': log.tipo === 'OK', 'txt-red': log.tipo === 'ERROR', 'txt-blue': log.tipo === 'ESTADO'}">
+        <div *ngFor="let log of logsDescarga"
+          [ngClass]="{'txt-green': log.tipo === 'OK', 'txt-red': log.tipo === 'ERROR', 'txt-blue': log.tipo === 'ESTADO'}">
           <span *ngIf="log.tipo !== 'ESTADO'">[{{ log.tipo }}]</span> {{ log.mensaje }}
         </div>
       </div>

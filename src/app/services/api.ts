@@ -8,8 +8,8 @@ import { FiltrosCFDI } from '../models/registro-descarga.model';
 })
 export class ApiService {
   private http = inject(HttpClient);
-  
-  private apiUrl = 'http://172.20.23.41:5000'; 
+
+  private apiUrl = 'http://172.20.23.41:5000';
 
   registrarNuevaDescarga(datos: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/cfdis/registrar`, datos);
@@ -34,7 +34,7 @@ export class ApiService {
         if (valor !== null && valor !== undefined && valor !== '') {
           params = params.append(key, valor.toString());
         }
-        
+
       });
     }
 
@@ -51,12 +51,20 @@ export class ApiService {
 
   iniciarProcesoDescarga(delegacionId: number) {
     return this.http.post(`${this.apiUrl}/descargas/iniciar`, { delegacion: delegacionId });
-  
+
   }
 
-    getAniosFiscales(): Observable<number[]> {
-          return this.http.get<number[]>(`${this.apiUrl}/ObtenerAniosFiscales`);
+  getAniosFiscales(): Observable<number[]> {
+    return this.http.get<number[]>(`${this.apiUrl}/ObtenerAniosFiscales`);
   }
 
+  getEstadosRecibo() {
+    return this.http.get<any[]>(`http://172.20.23.41:5000/ObtenerEstadosDeRecibos`);
+  }
+
+  getPadrones() {
+    // Ajusta la URL según te indique el backend, usualmente es similar:
+    return this.http.get<any[]>(`http://172.20.23.41:5000/ObtenerPadrones`);
+  }
 }
 
