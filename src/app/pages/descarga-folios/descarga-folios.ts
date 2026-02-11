@@ -86,9 +86,15 @@ tiempoAproxResumen: string = 'Calculando...';
   mesesFinalesDisponibles: any[] = [];
 
   ngOnInit() {
+    
     this.cargarMunicipios();
     this.iniciarConexionSignalR();
     this.cargarAniosFiscales();
+    this.cargarEstadosRecibo();
+
+    
+    this.lanzarError('Esta es una demo visual. La conexión real con el backend está deshabilitada para mostrar la interfaz.', 'FRONTEND');
+
   }
 
   private iniciarConexionSignalR() {
@@ -193,8 +199,8 @@ tiempoAproxResumen: string = 'Calculando...';
         this.listaDelegaciones = res.municipios || res;
         this.cd.detectChanges();
       },
-      error: (err) => {
-        console.error("Error cargando municipios:", err);
+      error: (lanzarError) => {
+        console.error("Error cargando municipios:", lanzarError);
         this.lanzarError('Error al cargar municipios', 'BACKEND');
       }
     });
@@ -249,6 +255,29 @@ tiempoAproxResumen: string = 'Calculando...';
   obtenerNombreDelegacion(): string {
     const d = this.listaDelegaciones.find(x => (x.delegacionID || x.id) == this.delegacionSeleccionada);
     return d ? d.delegacion : 'No seleccionada';
+  }
+
+  // cargar de estados del recibo
+  estadosRecibo: any[] = [];
+
+  cargarEstadosRecibo() {
+    this.apiService.getObtenerEstadosDeRecibos().subscribe({
+      next: (res) => {
+        console.log('Estados de recibo cargados:', res);
+        this.estadosRecibo = res;
+      },
+      error: (err) => {
+        console.error('Error al cargar estados de recibo:', err); 
+        this.lanzarError('Error al cargar estados de recibo', 'BACKEND');
+      }
+    });
+  }
+
+
+  // oBTENER DESCRIPCIÓN DE ESTADO DE RECIBO
+  get descripcionEstadoRecibo(): string {
+    const estado = this.estadosRecibo.find(e => e.id == this.estadoSeleccionadoId);
+    return estado ? estado.descripcion : 'No seleccionado';
   }
 
   cerrarModalResultados() {
@@ -321,6 +350,7 @@ tiempoAproxResumen: string = 'Calculando...';
 
 
 // Estado global de errores
+
 errorUI: {
   mensaje: string;
   origen: 'FRONTEND' | 'BACKEND' | 'CONEXION' | 'DESCONOCIDO';

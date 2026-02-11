@@ -58,5 +58,9 @@ export class ApiService {
           return this.http.get<number[]>(`${this.apiUrl}/ObtenerAniosFiscales`);
   }
 
+  getObtenerEstadosDeRecibos(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/ObtenerEstadosDeRecibos`);
+  }
+
 }
 
