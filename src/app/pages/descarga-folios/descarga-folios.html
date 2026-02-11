@@ -1,5 +1,14 @@
 <main class="main-container">
-  <div class="main-title">DESCARGA MASIVA DE FOLIOS</div>
+  <div class="main-title">DESCARGA MASIVA DE FOLIOS
+
+    <div class="error-tooltip" *ngIf="errorUI.mensaje">
+  <mat-icon>warning</mat-icon>
+  <div class="error-content">
+    <strong>Error ({{ errorUI.origen }}):</strong>
+    <span>{{ errorUI.mensaje }}</span>
+  </div>
+</div>
+  </div>
 
   <section class="filter-card">
     <div class="filter-header">

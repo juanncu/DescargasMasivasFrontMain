@@ -155,31 +155,28 @@ private readonly API_URL = `http://${this.IP_BACK}:5000/pdf`;
   }
 }
 
-
-  // En descarga-folios.component.ts
-
   probarModalProgreso() {
-    // 1. Preparamos el estado inicial del modal
+    // Estado inicial del modal
     this.mostrarPopupConfirmacion = true;
     this.progreso = 0;
     this.logsDescarga = [];
     this.tiempoEstimado = 'Iniciando simulación...';
 
-    // 2. Simulamos la llegada de mensajes del servidor
+    // llegada de mensajes del servidor
     const intervalo = setInterval(() => {
       this.zone.run(() => {
         if (this.progreso < 100) {
           this.progreso += 10;
           this.tiempoEstimado = `Procesando... ${this.progreso / 10} de 10 archivos`;
 
-          // Añadimos un log simulado
-          const esError = this.progreso === 50; // Simulamos un error a la mitad
+          //  log simulado
+          const esError = this.progreso === 50; // error a la mitad
           this.logsDescarga.push({
             tipo: esError ? 'ERROR' : 'OK',
             mensaje: `Folio ${12340 + this.progreso} - Archivo generado con éxito`
           });
 
-          // Si hay error, añadimos un mensaje extra en rojo
+          // Si hay error
           if (esError) {
             this.logsDescarga.push({
               tipo: 'ERROR',
@@ -202,7 +199,10 @@ private readonly API_URL = `http://${this.IP_BACK}:5000/pdf`;
         this.listaDelegaciones = res.municipios || res;
         this.cd.detectChanges();
       },
-      error: (err) => console.error("Error cargando municipios:", err)
+      error: (err) => {
+        console.error("Error cargando municipios:", err);
+        this.lanzarError('Error al cargar municipios', 'BACKEND');
+      }
     });
   }
 
@@ -221,13 +221,14 @@ private readonly API_URL = `http://${this.IP_BACK}:5000/pdf`;
       },
       error: (err) => {
         console.error(' Error al cargar años fiscales', err);
+        this.lanzarError('Error al cargar años fiscales', 'BACKEND');
       }
     });
   }
   buscar() {
   this.cargando = true;
 
-  // Creamos el formato YYYY-MM-DD que el backend espera
+  // formato YYYY-MM-DD que el backend espera
   const fechaInicio = `${this.anio}-${this.mesInicio.toString().padStart(2, '0')}-01`;
   const fechaFin = `${this.anio}-${this.mesFinal.toString().padStart(2, '0')}-28`; // Usamos 28 para evitar errores de días del mes
 
@@ -236,7 +237,7 @@ private readonly API_URL = `http://${this.IP_BACK}:5000/pdf`;
     estado: Number(this.estadoSeleccionadoId),
     delegacion: Number(this.delegacionSeleccionada),
     anio: this.anio,
-    ini: fechaInicio, // Enviamos fecha real, no solo el ID del mes
+    ini: fechaInicio, 
     fin: fechaFin
   };
 
@@ -339,7 +340,6 @@ private readonly API_URL = `http://${this.IP_BACK}:5000/pdf`;
 
 
   // Función que se dispara cuando cambia el Mes Inicio
-  // En descarga-folios.component.ts
 
   onMesInicioChange() {
     const hoy = new Date();
@@ -348,7 +348,7 @@ private readonly API_URL = `http://${this.IP_BACK}:5000/pdf`;
     const inicioId = Number(this.mesInicio);
     const anioSeleccionado = Number(this.anio);
 
-    // 1. Filtrar meses finales basados en el inicio y el tiempo real
+    // filtrar meses finales 
     this.mesesFinalesDisponibles = this.meses.filter(m => {
       const esMayorOIgualAlInicio = m.id >= inicioId;
 
@@ -361,13 +361,13 @@ private readonly API_URL = `http://${this.IP_BACK}:5000/pdf`;
       return esMayorOIgualAlInicio;
     });
 
-    // 2. Resetear mes final si queda fuera de rango
+    // Resetea mes final si queda fuera de rango
     if (this.mesFinal && !this.mesesFinalesDisponibles.find(m => m.id == this.mesFinal)) {
       this.mesFinal = '';
     }
   }
 
-  // También debemos filtrar el primer selector (Mes Inicio) según el año
+  // Filtrar el primer mes inicio  según el año
   get mesesInicioDisponibles() {
     const hoy = new Date();
     const anioActual = hoy.getFullYear();
@@ -378,4 +378,29 @@ private readonly API_URL = `http://${this.IP_BACK}:5000/pdf`;
     }
     return this.meses;
   }
+
+
+// Estado global de errores
+errorUI: {
+  mensaje: string;
+  origen: 'FRONTEND' | 'BACKEND' | 'CONEXION' | 'DESCONOCIDO';
+} = {
+  mensaje: '',
+  origen: 'DESCONOCIDO'
+};
+
+private lanzarError(
+  mensaje: string,
+  origen: 'FRONTEND' | 'BACKEND' | 'CONEXION' | 'DESCONOCIDO'
+): void {
+
+  this.errorUI = { mensaje, origen };
+
+  setTimeout((): void => {
+    this.errorUI = { mensaje: '', origen: 'DESCONOCIDO' };
+    this.cd.detectChanges();
+  }, 5000);
+}
+
+
 }
