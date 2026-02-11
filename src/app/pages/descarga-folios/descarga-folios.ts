@@ -262,10 +262,26 @@ tiempoAproxResumen: string = 'Calculando...';
     return this.meses.find(m => m.id == id)?.nombre || String(id);
   }
 
-  irAlHistorial() {
-    this.mostrarPopupConfirmacion = false;
-    this.router.navigate(['/historial-descargas']);
-  }
+ irAlHistorial() {
+  // objeto con toda la información de la interfaz
+  const detalleFinal = {
+    delegacion: this.obtenerNombreDelegacion(),
+    periodo: `${this.obtenerNombreMes(this.mesInicio)} - ${this.obtenerNombreMes(this.mesFinal)} ${this.anio}`,
+    estado: this.estados.find(e => e.id === this.estadoSeleccionadoId)?.nombre,
+    padron: this.padrones.find(p => p.id === this.padronSeleccionadoId)?.nombre,
+    formatos: this.obtenerFormatosStr(),
+    totalArchivos: this.resultados?.archivos,
+    tamanioTotal: this.resultados?.tamanio,
+    tiempoEmpleado: this.tiempoAproxResumen,
+    fechaEjecucion: new Date()
+  };
+
+  // Guardamos en el servicio para que el componente de Historial lo lea
+  this.descargaService.setUltimaDescarga(detalleFinal);
+  
+  this.mostrarPopupConfirmacion = false;
+  this.router.navigate(['/historial-descargas']);
+}
 
   onMesInicioChange() {
     const hoy = new Date();

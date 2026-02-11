@@ -1,9 +1,8 @@
 import { Injectable, inject } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { WebSocketService } from './websocket';
 import { ApiService } from './api';
-// Si no tienes este modelo específico, puedes cambiarlo por 'any' abajo
 import { FiltrosCFDI } from '../models/registro-descarga.model'; 
 
 @Injectable({
@@ -86,4 +85,12 @@ export class DescargaFoliosService {
     const minutos = Math.ceil(segundos / 60);
     return `${minutos} minuto${minutos > 1 ? 's' : ''}`;
   }
+
+  // En descarga-folios.service.ts
+private ultimaDescargaInfo = new BehaviorSubject<any>(null);
+ultimaDescarga$ = this.ultimaDescargaInfo.asObservable();
+
+setUltimaDescarga(data: any) {
+  this.ultimaDescargaInfo.next(data);
+}
 }
