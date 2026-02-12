@@ -26,6 +26,7 @@ import { LOCALE_ID
     { provide: LOCALE_ID, useValue: 'es' }
   ]
 })
+
 export class App implements OnInit, OnDestroy {
   // Inyecciones de dependencia
   private apiService = inject(ApiService);
