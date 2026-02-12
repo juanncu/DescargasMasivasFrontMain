@@ -101,7 +101,7 @@
 
 /* --- RESPONSIVIDAD */
 .close-sidebar-btn {
-  display: none; 
+  display: none; /* Oculto en PC */
   border: none;
   color: #5f6368;
   cursor: pointer;
@@ -110,40 +110,15 @@
 
 @media (max-width: 768px) {
   .sidebar {
-    transform: translateX(-100%); 
+    transform: translateX(-100%); /* Escondido por defecto */
   }
 
   .sidebar.open {
-    transform: translateX(0); 
+    transform: translateX(0); /* Se desliza al abrir */
     box-shadow: 10px 0 30px rgba(0,0,0,0.3);
   }
 
   .close-sidebar-btn {
-    display: block; 
+    display: block; /* Visible solo en móviles */
   }
-}
-
-/* --- RELOJ --- */
-.reloj {
-  margin: 20px 16px;
-  padding: 18px;
-  background: linear-gradient(135deg, #bca986, #a59371);
-  color: white;
-  border-radius: 0px 0px 14px 14px;
-  text-align: center;
-  box-shadow: 0 6px 18px rgba(139, 15, 40, 0.25);
-  margin-top: 0%;
-}
-
-.reloj .fecha {
-  font-size: 13px;
-  text-transform: capitalize;
-  opacity: 0.9;
-}
-
-.reloj .hora {
-  font-size: 26px;
-  font-weight: 700;
-  letter-spacing: 3px;
-  margin-top: 6px;
 }

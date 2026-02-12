@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+
 import { DescargaFoliosService } from '../../services/descarga-folios.service';
 import { SelectDescarga } from '../../services/select-descarga';
 import { ApiService } from '../../services/api';
@@ -85,7 +86,6 @@ descripcionEstadoRecibo: string = 'Seleccione un estado para ver la descripción
     this.iniciarConexionSignalR();
     this.cargarAniosFiscales();
     this.cargarCatalogosBackend();
-   
   }
 
   // Función para actualizar la descripción (llámala en el (change) del select)
@@ -406,6 +406,7 @@ async confirmarDescarga() {
     }
     return this.meses;
   }
+
 
 // Estado global de errores
 
