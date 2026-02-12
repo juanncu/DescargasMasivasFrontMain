@@ -22,8 +22,8 @@
 .main-container {
   width: 100%;
   background-color:#f4f5f7;
+  min-height: 100vh;
   padding: 60px 20px;
-  padding-bottom: 0%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -404,10 +404,4 @@
     opacity: 1;
     transform: translate(-50%, 0);
   }
-}
-
-footer{
-  padding-top: 100px;
-  padding-left: 1350px;
-  color: #d5d8df;
 }

@@ -18,14 +18,14 @@ import { UiService } from './services/ui.services';
 })
 
 export class App implements OnInit, OnDestroy {
-  // Inyecciones de dependencia
+  // 1. Inyecciones de dependencia
   private apiService = inject(ApiService);
   private uiService = inject(UiService);
-  private cd = inject(ChangeDetectorRef); 
+  private cd = inject(ChangeDetectorRef); // <-- Esto quita el error de image_0ac43b.png
   private subFiltros!: Subscription;
   private subSidebar!: Subscription;
 
-  // Propiedades de la clase 
+  // 2. Propiedades de la clase (Deben estar declaradas aquí)
   isSidebarOpen = false;
   datos: any[] = [];
   errorMensaje: string = '';
@@ -50,16 +50,17 @@ export class App implements OnInit, OnDestroy {
   }
 
   consumirApi(filtros: FiltrosCFDI) {
-    // Validamos que la delegación no sea nula para que TypeScript no se queje
+    // 3. Validamos que la delegación no sea nula para que TypeScript no se queje
     if (filtros.delegacion !== null && filtros.delegacion !== undefined) {
       this.cargando = true;
 
+      // Al estar dentro de este IF, TypeScript sabe que es un número seguro
       this.apiService.buscarFolios(filtros.delegacion, filtros).subscribe({
         next: (respuesta: any) => {
           console.log('¡Facturas recibidas!', respuesta);
           this.datos = Array.isArray(respuesta) ? respuesta : [respuesta];
           this.cargando = false;
-          this.cd.detectChanges(); 
+          this.cd.detectChanges(); // Ahora 'cd' ya está inyectado correctamente
         },
         error: (error: any) => {
           console.error('Error:', error);
