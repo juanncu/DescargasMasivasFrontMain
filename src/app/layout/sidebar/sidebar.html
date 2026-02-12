@@ -1,4 +1,14 @@
 <aside class="sidebar" [ngClass]="{'open': isSidebarOpen}">
+
+<div class="reloj">
+  <div class="fecha">
+    {{ horaActual | date:'EEEE d MMMM y' }}
+  </div>
+  <div class="hora">
+    {{ horaActual | date:'HH:mm:ss' }}
+  </div>
+</div>
+
   <div class="sidebar-header">
    <img src="assets/fonts/logoS2.png" alt="Logo">
   </div>
