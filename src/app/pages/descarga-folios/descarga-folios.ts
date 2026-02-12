@@ -77,7 +77,7 @@ tiempoAproxResumen: string = 'Calculando...';
   padrones: any[] = [];
 
   mesesFinalesDisponibles: any[] = [];
-
+  idDescargaActual: string = '';
 descripcionEstadoRecibo: string = 'Seleccione un estado para ver la descripción';
   ngOnInit() {
     
@@ -124,28 +124,37 @@ actualizarDescripcionEstado() {
   // 3. Ajustamos la función buscar para usar los valores REALES del objeto
 buscar() {
   this.cargando = true;
+  
+  // 1. Generamos un ID único para esta sesión de búsqueda
+  const temporalId = `DESC_${Date.now()}`;
 
-  // Construcción de filtros para evitar el Error 500 del Backend
   const filtros = {
-    padron: Number(this.padronSeleccionadoId), // ID numérico del catálogo
-    estado: Number(this.estadoSeleccionadoId), // ID numérico del catálogo
+    padron: Number(this.padronSeleccionadoId),
+    estado: Number(this.estadoSeleccionadoId),
     anio: Number(this.anio),
-    // Usamos día 01 y 28 para asegurar validez en el calendario de C#
-    ini: Number(this.mesInicio),
+    // El backend espera números de mes
+    inicio: Number(this.mesInicio),
     fin: Number(this.mesFinal),
-    formatos: this.obtenerFormatosStr()
+    // Nuevos parámetros para el motor
+    pdf: this.formatoPdf,
+    xml: this.formatoXml,
+    recibo: this.formatoRecibos,
+    idDescarga: temporalId
   };
 
   this.apiService.buscarFolios(this.delegacionSeleccionada ?? 0, filtros).subscribe({
     next: (res) => {
-      this.resultados = res; // Recibe { archivos: 2450, tamanio: '1.8 GB' }
+      // 2. Guardamos el resultado y el ID que el back reconoció
+      this.resultados = res; 
+      this.idDescargaActual = res.idDescarga || res.IdDescarga || temporalId;
+      
       this.mostrarModalResultados = true;
       this.cargando = false;
       this.cd.detectChanges();
     },
     error: (err) => {
       this.cargando = false;
-      console.error("Fallo en búsqueda real:", err);
+      this.lanzarError('Error al consultar el total de archivos', 'BACKEND');
     }
   });
 }
@@ -193,31 +202,74 @@ buscar() {
     this.mostrarPopupConfirmacion = false;
   }
 
- async confirmarDescarga() {
+async confirmarDescarga() {
   this.mostrarModalResultados = false;
   this.mostrarPopupConfirmacion = true;
   this.progreso = 0;
   this.logsDescarga = [];
-  this.tiempoEstimado = 'Iniciando proceso real...';
 
-  const filtros = {
-    padron: Number(this.padronSeleccionadoId),
-    estado: Number(this.estadoSeleccionadoId),
-    anio: Number(this.anio),
-    ini: `${this.mesInicio.toString().padStart(2, '0')}/01/${this.anio}`,
-    fin: `${this.mesFinal.toString().padStart(2, '0')}/28/${this.anio}`,
-    formatos: this.obtenerFormatosStr()
-  };
+  // Usamos el idDescargaActual que guardamos en la búsqueda
+  const urlDescarga = `http://${this.IP_BACK}:5001/FiltroArchivos?idDescarga=${this.idDescargaActual}&pdf=${this.formatoPdf}&xml=${this.formatoXml}&recibo=${this.formatoRecibos}`;
+  
+  try {
+    const resp = await fetch(urlDescarga); // Dispara el motor en el puerto 5001
+    if (!resp.ok) throw new Error("El motor no pudo iniciar");
+    
+    // El SignalR que ya tienes configurado empezará a recibir el progreso automáticamente
+  } catch (err) {
+    console.error("Fallo al iniciar descarga real:", err);
+    this.lanzarError('El servidor de descargas no responde', 'CONEXION');
+  }
+}
 
-  // Llamada limpia al servicio para que inicie el motor en el Back
-  this.apiService.buscarFolios(this.delegacionSeleccionada, filtros).subscribe({
-    next: () => console.log("Motor de descarga iniciado con éxito"),
-    error: (err) => {
-      console.error("Error al disparar el motor:", err);
-      this.logsDescarga.push({ tipo: 'ERROR', mensaje: 'No se pudo conectar con el motor de descarga.' });
-    }
-  });
- }
+  /** Obtiene la lista de archivos del backend y dispara la descarga de los primeros (PDF/XML). */
+  private iniciarDescargaDeArchivos(idDescarga: string) {
+    this.apiService.getListaArchivosDescarga(idDescarga, 1).subscribe({
+      next: (resp: any) => {
+        const lista = resp?.data ?? resp?.Data ?? [];
+        const total = resp?.totalRegistros ?? resp?.TotalRegistros ?? lista.length;
+        this.logsDescarga.push({ tipo: 'INFO', mensaje: `Lista obtenida: ${lista.length} de ${total} archivos. Iniciando descargas...` });
+        this.cd.detectChanges();
+        let formatos = this.obtenerFormatosStr().toUpperCase();
+        if (!formatos) formatos = 'PDF';
+        const maxPrimeraDescarga = 10;
+        const descargarUno = (id: string | number, ext: 'pdf' | 'xml') => {
+          const obs = ext === 'pdf' ? this.apiService.descargarPdf(id) : this.apiService.descargarXml(id);
+          obs.subscribe({
+            next: (blob: Blob) => {
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = `recibo_${id}.${ext}`;
+              a.click();
+              URL.revokeObjectURL(url);
+              this.logsDescarga.push({ tipo: 'OK', mensaje: `${ext.toUpperCase()} recibo ${id} descargado.` });
+              this.cd.detectChanges();
+            },
+            error: () => {
+              this.logsDescarga.push({ tipo: 'ERROR', mensaje: `Error al descargar ${ext.toUpperCase()} ${id}.` });
+              this.cd.detectChanges();
+            }
+          });
+        };
+        for (let i = 0; i < Math.min(lista.length, maxPrimeraDescarga); i++) {
+          const item = lista[i];
+          const id = item?.idFolioRecibo ?? item?.IdFolioRecibo ?? item?.uuid ?? item?.UUID;
+          if (!id) continue;
+          if (formatos.includes('PDF')) descargarUno(id, 'pdf');
+          if (formatos.includes('XML')) descargarUno(id, 'xml');
+        }
+        if (lista.length > maxPrimeraDescarga) {
+          this.logsDescarga.push({ tipo: 'INFO', mensaje: `Descargando primeros ${maxPrimeraDescarga} archivos. Resto: ${lista.length - maxPrimeraDescarga} pendientes.` });
+          this.cd.detectChanges();
+        }
+      },
+      error: (err) => {
+        this.logsDescarga.push({ tipo: 'ERROR', mensaje: 'No se pudo obtener la lista de archivos.' });
+        this.cd.detectChanges();
+      }
+    });
+  }
 
   probarModalProgreso() {
     this.resultados = { archivos: 2450, tamanio: '1.8 GB' };
