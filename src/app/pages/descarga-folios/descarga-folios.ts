@@ -79,6 +79,7 @@ tiempoAproxResumen: string = 'Calculando...';
 
   mesesFinalesDisponibles: any[] = [];
 
+descripcionEstadoRecibo: string = 'Seleccione un estado para ver la descripción';
   ngOnInit() {
     
     this.cargarMunicipios();
@@ -86,6 +87,19 @@ tiempoAproxResumen: string = 'Calculando...';
     this.cargarAniosFiscales();
     this.cargarCatalogosBackend();
   }
+
+  // Función para actualizar la descripción (llámala en el (change) del select)
+actualizarDescripcionEstado() {
+  const estadoEncontrado = this.estados.find(e => e.id === this.estadoSeleccionadoId);
+  
+  if (estadoEncontrado) {
+    // Usamos la propiedad 'descripcion' que viene de la API
+    this.descripcionEstadoRecibo = estadoEncontrado.descripcion;
+  } else {
+    this.descripcionEstadoRecibo = 'Seleccione un estado para ver la descripción';
+  }
+}
+
 
   cargarCatalogosBackend() {
     // Cargar Estados
@@ -111,32 +125,31 @@ tiempoAproxResumen: string = 'Calculando...';
 buscar() {
   this.cargando = true;
 
-  // Construimos el objeto filtros usando únicamente los IDs numéricos
+  // Construcción de filtros para evitar el Error 500 del Backend
   const filtros = {
-    padron: Number(this.padronSeleccionadoId),     // Envía el ID (ej: 1)
-    estado: Number(this.estadoSeleccionadoId),     // Envía el ID (ej: 1)
-    delegacion: Number(this.delegacionSeleccionada),
+    padron: Number(this.padronSeleccionadoId), // ID numérico del catálogo
+    estado: Number(this.estadoSeleccionadoId), // ID numérico del catálogo
     anio: Number(this.anio),
-    ini: Number(this.mesInicio),                   // El backend usará este Int32 como mes
-    fin: Number(this.mesFinal),                     // El backend usará este Int32 como mes
+    // Usamos día 01 y 28 para asegurar validez en el calendario de C#
+    ini: Number(this.mesInicio),
+    fin: Number(this.mesFinal),
     formatos: this.obtenerFormatosStr()
   };
 
-  console.log("Enviando parámetros como Int32:", filtros);
-
-  this.descargaService.buscarFolios(this.delegacionSeleccionada, '', filtros).subscribe({
+  this.apiService.buscarFolios(this.delegacionSeleccionada ?? 0, filtros).subscribe({
     next: (res) => {
-      this.resultados = res; // Recibe { archivos: 2450, tamanio: '1.8 GB', ... }
+      this.resultados = res; // Recibe { archivos: 2450, tamanio: '1.8 GB' }
       this.mostrarModalResultados = true;
       this.cargando = false;
       this.cd.detectChanges();
     },
     error: (err) => {
-      console.error('Error en la petición:', err);
       this.cargando = false;
+      console.error("Fallo en búsqueda real:", err);
     }
   });
 }
+
   private iniciarConexionSignalR() {
   this.hubConnection = new signalR.HubConnectionBuilder()
     .withUrl(this.HUB_URL)
@@ -180,26 +193,31 @@ buscar() {
     this.mostrarPopupConfirmacion = false;
   }
 
-  async confirmarDescarga() {
-    this.mostrarModalResultados = false;
-    this.mostrarPopupConfirmacion = true;
-    this.progreso = 0;
-    this.logsDescarga = [];
-    this.tiempoEstimado = 'Iniciando proceso real...';
+ async confirmarDescarga() {
+  this.mostrarModalResultados = false;
+  this.mostrarPopupConfirmacion = true;
+  this.progreso = 0;
+  this.logsDescarga = [];
+  this.tiempoEstimado = 'Iniciando proceso real...';
 
-    const fIni = `${this.anio}-${this.mesInicio.toString().padStart(2, '0')}-01`;
-    const fFin = `${this.anio}-${this.mesFinal.toString().padStart(2, '0')}-28`;
+  const filtros = {
+    padron: Number(this.padronSeleccionadoId),
+    estado: Number(this.estadoSeleccionadoId),
+    anio: Number(this.anio),
+    ini: `${this.mesInicio.toString().padStart(2, '0')}/01/${this.anio}`,
+    fin: `${this.mesFinal.toString().padStart(2, '0')}/28/${this.anio}`,
+    formatos: this.obtenerFormatosStr()
+  };
 
-    try {
-      const url = `http://172.20.23.41:5000/ObtenerTotalDeArchivos?delegacion=${this.delegacionSeleccionada}&estado=${this.estadoSeleccionadoId}&padron=${this.padronSeleccionadoId}&ini=${fIni}&fin=${fFin}&anio=${this.anio}&formatos=${this.obtenerFormatosStr()}`;
-      const response = await fetch(url);
-      if (!response.ok) throw new Error("Servidor no pudo iniciar");
-    } catch (error) {
-      console.error("Error al iniciar descarga:", error);
-      // Solo iniciamos simulación si la API falla para que puedas ver el diseño
-      this.iniciarSimulacionVisual();
+  // Llamada limpia al servicio para que inicie el motor en el Back
+  this.apiService.buscarFolios(this.delegacionSeleccionada, filtros).subscribe({
+    next: () => console.log("Motor de descarga iniciado con éxito"),
+    error: (err) => {
+      console.error("Error al disparar el motor:", err);
+      this.logsDescarga.push({ tipo: 'ERROR', mensaje: 'No se pudo conectar con el motor de descarga.' });
     }
-  }
+  });
+ }
 
   probarModalProgreso() {
     this.resultados = { archivos: 2450, tamanio: '1.8 GB' };

@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, OnDestroy } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 import { ApiService } from './services/api';
@@ -8,7 +8,7 @@ import { WebSocketService } from './services/websocket';
 import { Header } from './layout/header/header';
 import { FiltrosCFDI } from './models/registro-descarga.model';
 import { SidebarComponent } from "./layout/sidebar/sidebar";
-import { UiService } from './services/ui.services'; // Corregido: sin la 's' final si tu archivo es ui.service.ts
+import { UiService } from './services/ui.services';
 
 @Component({
   selector: 'app-root',
@@ -17,14 +17,18 @@ import { UiService } from './services/ui.services'; // Corregido: sin la 's' fin
   templateUrl: './app.html',
 })
 export class App implements OnInit, OnDestroy {
+  // 1. Inyecciones de dependencia
   private apiService = inject(ApiService);
-  private uiService = inject(UiService); // Inyectamos el servicio de interfaz
+  private uiService = inject(UiService);
+  private cd = inject(ChangeDetectorRef); // <-- Esto quita el error de image_0ac43b.png
   private subFiltros!: Subscription;
   private subSidebar!: Subscription;
 
+  // 2. Propiedades de la clase (Deben estar declaradas aquí)
   isSidebarOpen = false;
   datos: any[] = [];
   errorMensaje: string = '';
+  cargando: boolean = false; 
 
   constructor(
     private wsService: WebSocketService,
@@ -32,42 +36,48 @@ export class App implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    // 1. Escuchar el estado del Sidebar para el Backdrop y Layout
     this.subSidebar = this.uiService.sidebarOpen$.subscribe((status) => {
       this.isSidebarOpen = status;
     });
 
-    // 2. Escuchar filtros para la API
     this.subFiltros = this.selectDescarga.filtros$.subscribe((filtros) => {
-      if (filtros.delegacion !== null) {
+      if (filtros && filtros.delegacion !== null) {
         console.log('Filtros recibidos:', filtros);
         this.consumirApi(filtros);
       }
     });
   }
 
+  consumirApi(filtros: FiltrosCFDI) {
+    // 3. Validamos que la delegación no sea nula para que TypeScript no se queje
+    if (filtros.delegacion !== null && filtros.delegacion !== undefined) {
+      this.cargando = true;
+
+      // Al estar dentro de este IF, TypeScript sabe que es un número seguro
+      this.apiService.buscarFolios(filtros.delegacion, filtros).subscribe({
+        next: (respuesta: any) => {
+          console.log('¡Facturas recibidas!', respuesta);
+          this.datos = Array.isArray(respuesta) ? respuesta : [respuesta];
+          this.cargando = false;
+          this.cd.detectChanges(); // Ahora 'cd' ya está inyectado correctamente
+        },
+        error: (error: any) => {
+          console.error('Error:', error);
+          this.cargando = false;
+          this.errorMensaje = `Error: ${error.status}`;
+          this.cd.detectChanges();
+        }
+      });
+    }
+  }
+
   ngOnDestroy() {
-    // Limpieza de todas las suscripciones para evitar fugas de memoria
     if (this.subFiltros) this.subFiltros.unsubscribe();
     if (this.subSidebar) this.subSidebar.unsubscribe();
     this.wsService.cerrar();
   }
 
-  consumirApi(filtros: FiltrosCFDI) {
-    this.apiService.getCfdisConFiltros(filtros).subscribe({
-      next: (respuesta: any) => {
-        console.log('¡Facturas recibidas!', respuesta);
-        this.datos = Array.isArray(respuesta) ? respuesta : [respuesta];
-      },
-      error: (error: any) => {
-        console.error('Error:', error);
-        this.errorMensaje = `Error: ${error.status} - ${error.statusText}`;
-      },
-    });
-  }
-
-  // Método opcional para cerrar el menú desde el backdrop
   closeMenu() {
-    this.uiService.toggleSidebar(); // O crea un método closeSidebar() en tu servicio
+    this.uiService.toggleSidebar();
   }
 }

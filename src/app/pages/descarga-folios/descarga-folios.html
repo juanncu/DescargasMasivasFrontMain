@@ -14,22 +14,20 @@
     <div class="filter-body">
       <div class="selection-grid">
         <div class="input-field">
+<div class="label-with-info">
+  <label>Estado de Recibo</label>
+  <div class="info-icon-wrapper" *ngIf="estadoSeleccionadoId">
+    <mat-icon class="info-icon">info</mat-icon>
+    <span class="tooltip-box">
+      {{ descripcionEstadoRecibo }}
+    </span>
+  </div>
+</div>
 
-          <div class="label-with-info">
-            <label>Estado de Recibo</label>
-            <div class="info-icon-wrapper" *ngIf="estadoSeleccionadoId">
-              <mat-icon class="info-icon">info</mat-icon>
-              <span class="tooltip-box">
-                {{ descripcionEstadoRecibo }}
-              </span>
-            </div>
-          </div>
-
-
-          <select [(ngModel)]="estadoSeleccionadoId" class="modern-select">
-            <option value="" disabled selected>Seleccione estado</option>
-            <option *ngFor="let e of estados" [ngValue]="e.id">{{ e.nombre }}</option>
-          </select>
+<select [(ngModel)]="estadoSeleccionadoId" (change)="actualizarDescripcionEstado()" class="modern-select">
+  <option value="" disabled selected>Seleccione estado</option>
+  <option *ngFor="let e of estados" [value]="e.id">{{ e.nombre }}</option>
+</select>
         </div>
 
         <div class="input-field">
@@ -130,9 +128,11 @@
       </div>
 
       <div class="details-box-dotted">
-        <strong>Periodo seleccionado:</strong>
-        <span>{{ obtenerNombreMes(mesInicio) }} - {{ obtenerNombreMes(mesFinal) }} {{ anio }}</span>
-      </div>
+  <strong>Periodo seleccionado:</strong>
+  <span>
+    {{ obtenerNombreMes(mesInicio) }} - {{ obtenerNombreMes(mesFinal) }} {{ anio }}
+  </span>
+</div>
     </div>
 
     <div class="modal-footer-gob">

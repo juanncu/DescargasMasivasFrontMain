@@ -17,7 +17,7 @@ export class DescargaFoliosService {
    */
   buscarFolios(delegacion: string, filtro: string, filtros: any): Observable<any> {
     // Llamada real al Backend
-    return this.apiService.getCfdisConFiltros(filtros).pipe(
+   return this.apiService.buscarFolios(filtros.delegacion, filtros).pipe(
       map((data: any) => {
         // Validación por si la data viene nula
         const listaArchivos = Array.isArray(data) ? data : [];
