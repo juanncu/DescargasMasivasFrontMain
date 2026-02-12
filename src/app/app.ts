@@ -9,22 +9,12 @@ import { Header } from './layout/header/header';
 import { FiltrosCFDI } from './models/registro-descarga.model';
 import { SidebarComponent } from "./layout/sidebar/sidebar";
 import { UiService } from './services/ui.services';
-import { registerLocaleData } from '@angular/common';
-import localeEs from '@angular/common/locales/es';
-
-registerLocaleData(localeEs, 'es');
-import { LOCALE_ID
- } from '@angular/core';
-
 
 @Component({
   selector: 'app-root',
   standalone: true,
   imports: [CommonModule, RouterOutlet, Header, SidebarComponent],
   templateUrl: './app.html',
-  providers: [
-    { provide: LOCALE_ID, useValue: 'es' }
-  ]
 })
 
 export class App implements OnInit, OnDestroy {
