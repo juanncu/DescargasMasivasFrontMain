@@ -10,6 +10,7 @@ export class ApiService {
   private http = inject(HttpClient);
   
   private apiUrl = 'http://172.20.23.41:5000'; 
+  private apiUrlFiltros = 'http://172.20.23.41:5001';
 
   registrarNuevaDescarga(datos: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/cfdis/registrar`, datos);
@@ -22,10 +23,52 @@ export class ApiService {
 
   /**
    * Llama al backend ObtenerTotalDeArchivos con filtros normalizados.
-   * Backend espera: inicio y fin como números de mes (1-12), no "ini" ni fechas.
+   * Backend espera: inicio y fin como números de mes (1-12), delegacion, padron, estado, anio.
+   * Respuesta: { idDescaega, total } (o IdDescaega, Total).
    */
-  buscarFolios(delegacion: number, filtros: any): Observable<any> {
-    return this.getCfdisConFiltros(filtros);
+ buscarFolios(delegacion: number, filtros: any): Observable<any> {
+  // Integramos los nuevos parámetros que pide el backend
+  const f = { 
+    ...filtros, 
+    delegacion: Number(delegacion),
+    // Mapeamos los checkboxes del HTML
+    pdf: !!filtros.formatoPdf,       
+    xml: !!filtros.formatoXml,       
+    recibo: !!filtros.formatoRecibos, 
+    idDescarga: filtros.idDescarga || `DESC_${Date.now()}` 
+  };
+
+  // Limpiamos nombres viejos que ya no usa el Swagger
+  delete f.formatoPdf;
+  delete f.formatoXml;
+  delete f.formatoRecibos;
+
+  return this.getCfdisConFiltros(f);
+}
+  /** Lista paginada de archivos de una descarga (backend: Peticiones/ObtenerlistaArchivosDescarga). */
+  getListaArchivosDescarga(idDescarga: string, pagina: number): Observable<any> {
+  const params = new HttpParams()
+    .set('idDescarga', idDescarga)
+    .set('pagina', pagina.toString());
+
+  // CAMBIO: Usamos el puerto 5001 y la ruta /FiltroArchivos
+  return this.http.get(`${this.apiUrlFiltros}/FiltroArchivos`, { params });
+}
+
+  /** Descarga PDF de un recibo por id (backend: DescargarPDF). */
+  descargarPdf(id: string | number): Observable<Blob> {
+    return this.http.get(`${this.apiUrl}/DescargarPDF`, {
+      params: { id: String(id) },
+      responseType: 'blob'
+    });
+  }
+
+  /** Descarga XML de un recibo por id (backend: getReciboFile u equivalente). */
+  descargarXml(id: string | number): Observable<Blob> {
+    return this.http.get(`${this.apiUrl}/getReciboFile`, {
+      params: { RECIBO_ID: String(id) },
+      responseType: 'blob'
+    });
   }
 
   getCfdisConFiltros(filtros: any): Observable<any> {
