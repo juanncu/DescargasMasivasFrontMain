@@ -6,7 +6,7 @@ import { UiService } from '../../services/ui.services';
 
 import { Subscription } from 'rxjs';
 import{ interval } from 'rxjs';
-
+import { ChangeDetectorRef } from '@angular/core';
 
 
 @Component({
@@ -25,7 +25,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
   horaActual: Date = new Date();
   private intervaloHora: any;
 
-  constructor(private router: Router, private uiService: UiService) {}
+  constructor(private router: Router, private uiService: UiService, private cdr: ChangeDetectorRef) {}
 
   // inicia el componente
   ngOnInit(): void {
@@ -34,11 +34,13 @@ export class SidebarComponent implements OnInit, OnDestroy {
     this.sub = this.uiService.sidebarOpen$.subscribe(status => {
       this.isSidebarOpen = status;
     }); 
-    this.intervaloHora = interval(1000).subscribe(() => {
-      this.horaActual = new Date();
-    });
 
     // reloj
+    this.intervaloHora = interval(1000).subscribe(() => {
+      this.horaActual = new Date();
+      this.cdr.detectChanges(); // Forzar detección de cambios
+    });
+    
     this.intervaloHora = setInterval(() => {
       this.horaActual = new Date();
     }, 1000);
