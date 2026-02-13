@@ -10,6 +10,7 @@ import { DescargaFoliosService } from '../../services/descarga-folios.service';
 import { SelectDescarga } from '../../services/select-descarga';
 import { ApiService } from '../../services/api';
 import * as signalR from '@microsoft/signalr';
+import { ErrorHandlerService } from '../../services/error-handler.service';
 
 @Component({
   selector: 'app-descarga-folios',
@@ -34,6 +35,8 @@ export class DescargaFoliosComponent implements OnInit {
   private apiService = inject(ApiService);
   private cd = inject(ChangeDetectorRef);
   private zone = inject(NgZone);
+  private errorHandler = inject(ErrorHandlerService);
+
 
   // Configuración SignalR y API
   private hubConnection!: signalR.HubConnection;
@@ -51,6 +54,9 @@ export class DescargaFoliosComponent implements OnInit {
 tiempoEstimado = 'Esperando inicio...';
 tiempoRestante = 'Calculando...'; // <--- variable para el tiempo de descarga
 tiempoAproxResumen: string = 'Calculando...';
+
+
+errorUI: { origen: string, mensaje: string, visible: boolean } = { origen: '', mensaje: '', visible: false };
 
   // Filtros
   delegacionSeleccionada: any = null;
@@ -81,12 +87,15 @@ tiempoAproxResumen: string = 'Calculando...';
   idDescargaActual: string = '';
 descripcionEstadoRecibo: string = 'Seleccione un estado para ver la descripción';
   ngOnInit() {
+
+    this.lanzarError('ERROR DE PRUEBA1', 'TEST');
     
     this.cargarMunicipios();
     this.iniciarConexionSignalR();
     this.cargarAniosFiscales();
     this.cargarCatalogosBackend();
   }
+
 
   // Función para actualizar la descripción (llámala en el (change) del select)
 actualizarDescripcionEstado() {
@@ -101,6 +110,9 @@ actualizarDescripcionEstado() {
 }
 
 
+
+
+
   cargarCatalogosBackend() {
     // Cargar Estados
     this.apiService.getEstadosRecibo().subscribe({
@@ -108,8 +120,15 @@ actualizarDescripcionEstado() {
         this.estados = res;
         this.cd.detectChanges();
       },
-      error: (err) => console.error("Error cargando estados:", err)
-    });
+      error: (err) => {
+         const errorProcesado = this.errorHandler.procesar(err);
+         this.lanzarError(errorProcesado.mensajeUsuario, errorProcesado.origen);
+         this.cargando = false;
+        
+        
+        console.error("Error cargando estados:", err)
+
+    } });
 
     // Cargar Padrones
     this.apiService.getPadrones().subscribe({
@@ -125,7 +144,6 @@ actualizarDescripcionEstado() {
 buscar() {
   this.cargando = true;
   
-  // 1. Generamos un ID único para esta sesión de búsqueda
   const temporalId = `DESC_${Date.now()}`;
 
   const filtros = {
@@ -215,7 +233,7 @@ async confirmarDescarga() {
     const resp = await fetch(urlDescarga); // Dispara el motor en el puerto 5001
     if (!resp.ok) throw new Error("El motor no pudo iniciar");
     
-    // El SignalR que ya tienes configurado empezará a recibir el progreso automáticamente
+    // El SignalR recibe el progreso automáticamente
   } catch (err) {
     console.error("Fallo al iniciar descarga real:", err);
     this.lanzarError('El servidor de descargas no responde', 'CONEXION');
@@ -407,29 +425,22 @@ async confirmarDescarga() {
     return this.meses;
   }
 
+tipoErrorActual: string = ''; 
+mensajeErrorActual: string = ''; 
 
-// Estado global de errores
+lanzarError( mensaje: string, origen: string) {
+  
+  this.errorUI = {
+    origen,
+    mensaje,
+    visible: true
+  };
 
-errorUI: {
-  mensaje: string;
-  origen: 'FRONTEND' | 'BACKEND' | 'CONEXION' | 'DESCONOCIDO';
-} = {
-  mensaje: '',
-  origen: 'DESCONOCIDO'
-};
+  console.error('ERROR UI', this.errorUI);
+  this.cd.detectChanges();
 
-private lanzarError(
-  mensaje: string,
-  origen: 'FRONTEND' | 'BACKEND' | 'CONEXION' | 'DESCONOCIDO'
-): void {
-
-  this.errorUI = { mensaje, origen };
-
-  setTimeout((): void => {
-    this.errorUI = { mensaje: '', origen: 'DESCONOCIDO' };
-    this.cd.detectChanges();
-  }, 5000);
 }
+
 
 
 }

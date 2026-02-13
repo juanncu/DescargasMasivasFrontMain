@@ -359,49 +359,39 @@
   max-width: 1250px !important; /* Cuadro grande como solicitaste */
   margin: 0 auto;
   border-top: 5px solid #8B0F28; /* Línea de color institucional superior */
+}
 /* CONTENEDOR BASE */
-.error-toast {
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 14px 22px;
-  border-radius: 8px;
-  color: white;
+
+
+/* ===== ERROR UI ===== */
+
+.error-ui {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #ffe5e5;
+  border-left: 5px solid #d32f2f;
+  color: #7a0000;
+  padding: 14px 18px;
+  margin-bottom: 15px;
+  border-radius: 10px;
   font-weight: 500;
-  box-shadow: 0 8px 25px rgba(0,0,0,0.25);
-  z-index: 9999;
-  animation: fadeInUp 0.3s ease;
-  min-width: 320px;
-  text-align: center;
-}
-}
-/* COLORES ERROR */
-
-.error-front {
-  background: linear-gradient(135deg, #ff9800, #f57c00);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  animation: aparecerError 0.3s ease;
 }
 
-.error-back {
-  background: linear-gradient(135deg, #f44336, #c62828);
+.error-ui mat-icon {
+  color: #d32f2f;
+  font-size: 28px;
 }
 
-.error-conn {
-  background: linear-gradient(135deg, #9c27b0, #6a1b9a);
-}
-
-.error-unknown {
-  background: linear-gradient(135deg, #607d8b, #37474f);
-}
-
-/* Animación */
-@keyframes fadeInUp {
+@keyframes aparecerError {
   from {
     opacity: 0;
-    transform: translate(-50%, 30px);
+    transform: translateY(-8px);
   }
   to {
     opacity: 1;
-    transform: translate(-50%, 0);
+    transform: translateY(0);
   }
 }
