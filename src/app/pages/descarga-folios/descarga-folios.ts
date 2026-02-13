@@ -56,7 +56,7 @@ tiempoRestante = 'Calculando...'; // <--- variable para el tiempo de descarga
 tiempoAproxResumen: string = 'Calculando...';
 
 
-errorUI: { origen: string, mensaje: string, visible: boolean } = { origen: '', mensaje: '', visible: false };
+errorUI: { origen: string, mensaje: string, visible: boolean }[] = [];
 
   // Filtros
   delegacionSeleccionada: any = null;
@@ -88,7 +88,7 @@ errorUI: { origen: string, mensaje: string, visible: boolean } = { origen: '', m
 descripcionEstadoRecibo: string = 'Seleccione un estado para ver la descripción';
   ngOnInit() {
 
-    this.lanzarError('ERROR DE PRUEBA1', 'TEST');
+  
     
     this.cargarMunicipios();
     this.iniciarConexionSignalR();
@@ -436,11 +436,14 @@ mensajeErrorActual: string = '';
 
 lanzarError( mensaje: string, origen: string) {
   
-  this.errorUI = {
+  this.errorUI.push({
     origen,
     mensaje,
     visible: true
-  };
+  });
+
+  this.mensajeErrorActual = mensaje;
+  this.tipoErrorActual = origen;
 
   console.error('ERROR UI', this.errorUI);
   this.cd.detectChanges();

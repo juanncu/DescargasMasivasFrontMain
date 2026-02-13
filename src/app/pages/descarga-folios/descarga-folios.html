@@ -1,14 +1,7 @@
 <main class="main-container">
 
 
-  <div class="main-title">DESCARGA MASIVA DE FOLIOS
-
-    <!-- ===== ERROR GLOBAL ===== -->
-<div *ngIf="mensajeErrorActual" class="error-ui">
-  <mat-icon class="error-icon">error_outline</mat-icon>
-  <strong>{{ tipoErrorActual }}</strong>: {{ mensajeErrorActual }} </div>
-    
-  </div>
+  <div class="main-title">DESCARGA MASIVA DE FOLIOS</div>
 
   <section class="filter-card">
     <div class="filter-header">
@@ -107,6 +100,12 @@
       </div>
     </div>
   </section>
+
+    <!-- ===== ERROR GLOBAL ===== -->
+<div *ngIf="mensajeErrorActual" class="error-ui">
+  <mat-icon class="error-icon">error_outline</mat-icon>
+  <strong>{{ tipoErrorActual }}</strong>: {{ mensajeErrorActual }} </div>
+
 </main>
 
 

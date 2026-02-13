@@ -385,6 +385,8 @@
   font-size: 28px;
 }
 
+
+
 @keyframes aparecerError {
   from {
     opacity: 0;
@@ -394,4 +396,9 @@
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+.error-icon{
+  width: 5px;
+  height: 5px;
 }
