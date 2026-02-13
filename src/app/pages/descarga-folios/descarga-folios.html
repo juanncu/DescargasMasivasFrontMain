@@ -1,7 +1,7 @@
 <main class="main-container">
 
-  <div class="main-title">DESCARGA MASIVA DE FOLIOS
-  </div>
+
+  <div class="main-title">DESCARGA MASIVA DE FOLIOS</div>
 
   <section class="filter-card">
     <div class="filter-header">
@@ -100,6 +100,12 @@
       </div>
     </div>
   </section>
+
+    <!-- ===== ERROR GLOBAL ===== -->
+<div *ngIf="mensajeErrorActual" class="error-ui">
+  <mat-icon class="error-icon">error_outline</mat-icon>
+  <strong>{{ tipoErrorActual }}</strong>: {{ mensajeErrorActual }} </div>
+
 </main>
 
 
@@ -182,17 +188,6 @@
 
 
 
-    <!-- TOAST / TOOLTIP GLOBAL DE ERROR -->
-    <div class="error-toast" *ngIf="errorUI.mensaje" [ngClass]="{
-    'error-front': errorUI.origen === 'FRONTEND',
-    'error-back': errorUI.origen === 'BACKEND',
-    'error-conn': errorUI.origen === 'CONEXION',
-    'error-unknown': errorUI.origen === 'DESCONOCIDO'
-  }">
-      <strong>{{ errorUI.origen }}</strong> — {{ errorUI.mensaje }}
-    </div>
-
-  </div>
 
 
 </div>

@@ -10,6 +10,7 @@ import { DescargaFoliosService } from '../../services/descarga-folios.service';
 import { SelectDescarga } from '../../services/select-descarga';
 import { ApiService } from '../../services/api';
 import * as signalR from '@microsoft/signalr';
+import { ErrorHandlerService } from '../../services/error-handler.service';
 
 @Component({
   selector: 'app-descarga-folios',
@@ -34,6 +35,8 @@ export class DescargaFoliosComponent implements OnInit {
   private apiService = inject(ApiService);
   private cd = inject(ChangeDetectorRef);
   private zone = inject(NgZone);
+  private errorHandler = inject(ErrorHandlerService);
+
 
   // Configuración SignalR y API
   private hubConnection!: signalR.HubConnection;
@@ -48,9 +51,12 @@ export class DescargaFoliosComponent implements OnInit {
   mostrarPopupConfirmacion = false;
   logsDescarga: { tipo: string, mensaje: string }[] = [];
   progreso = 0;
-  tiempoEstimado = 'Esperando inicio...';
-  tiempoRestante = 'Calculando...'; // <--- variable para el tiempo de descarga
-  tiempoAproxResumen: string = 'Calculando...';
+tiempoEstimado = 'Esperando inicio...';
+tiempoRestante = 'Calculando...'; // <--- variable para el tiempo de descarga
+tiempoAproxResumen: string = 'Calculando...';
+
+
+errorUI: { origen: string, mensaje: string, visible: boolean }[] = [];
 
   // Filtros
   delegacionSeleccionada: any = null;
@@ -82,11 +88,14 @@ export class DescargaFoliosComponent implements OnInit {
   descripcionEstadoRecibo: string = 'Seleccione un estado para ver la descripción';
   ngOnInit() {
 
+  
+    
     this.cargarMunicipios();
     this.iniciarConexionSignalR();
     this.cargarAniosFiscales();
     this.cargarCatalogosBackend();
   }
+
 
   // Función para actualizar la descripción (llámala en el (change) del select)
   actualizarDescripcionEstado() {
@@ -108,8 +117,15 @@ export class DescargaFoliosComponent implements OnInit {
         this.estados = res;
         this.cd.detectChanges();
       },
-      error: (err) => console.error("Error cargando estados:", err)
-    });
+      error: (err) => {
+         const errorProcesado = this.errorHandler.procesar(err);
+         this.lanzarError(errorProcesado.mensajeUsuario, errorProcesado.origen);
+         this.cargando = false;
+        
+        
+        console.error("Error cargando estados:", err)
+
+    } });
 
     // Cargar Padrones
     this.apiService.getPadrones().subscribe({
@@ -445,29 +461,25 @@ buscar() {
     return this.meses;
   }
 
+tipoErrorActual: string = ''; 
+mensajeErrorActual: string = ''; 
 
-  // Estado global de errores
+lanzarError( mensaje: string, origen: string) {
+  
+  this.errorUI.push({
+    origen,
+    mensaje,
+    visible: true
+  });
 
-  errorUI: {
-    mensaje: string;
-    origen: 'FRONTEND' | 'BACKEND' | 'CONEXION' | 'DESCONOCIDO';
-  } = {
-      mensaje: '',
-      origen: 'DESCONOCIDO'
-    };
+  this.mensajeErrorActual = mensaje;
+  this.tipoErrorActual = origen;
 
-  private lanzarError(
-    mensaje: string,
-    origen: 'FRONTEND' | 'BACKEND' | 'CONEXION' | 'DESCONOCIDO'
-  ): void {
+  console.error('ERROR UI', this.errorUI);
+  this.cd.detectChanges();
 
-    this.errorUI = { mensaje, origen };
+}
 
-    setTimeout((): void => {
-      this.errorUI = { mensaje: '', origen: 'DESCONOCIDO' };
-      this.cd.detectChanges();
-    }, 5000);
-  }
 
 
 }
