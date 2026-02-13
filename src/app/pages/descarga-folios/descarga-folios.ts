@@ -124,18 +124,14 @@ actualizarDescripcionEstado() {
   // 3. Ajustamos la función buscar para usar los valores REALES del objeto
 buscar() {
   this.cargando = true;
-  
-  // 1. Generamos un ID único para esta sesión de búsqueda
   const temporalId = `DESC_${Date.now()}`;
 
   const filtros = {
     padron: Number(this.padronSeleccionadoId),
     estado: Number(this.estadoSeleccionadoId),
     anio: Number(this.anio),
-    // El backend espera números de mes
     inicio: Number(this.mesInicio),
     fin: Number(this.mesFinal),
-    // Nuevos parámetros para el motor
     pdf: this.formatoPdf,
     xml: this.formatoXml,
     recibo: this.formatoRecibos,
@@ -143,21 +139,30 @@ buscar() {
   };
 
   this.apiService.buscarFolios(this.delegacionSeleccionada ?? 0, filtros).subscribe({
-    next: (res) => {
-      // 2. Guardamos el resultado y el ID que el back reconoció
-      this.resultados = res; 
-      this.idDescargaActual = res.idDescarga || res.IdDescarga || temporalId;
+    next: (res: any) => {
+      // Sincronizamos con los nombres de propiedad que envía el Backend
+      // Usualmente vienen como 'totalArchivos' y 'tamanio' o 'total' y 'peso'
+      this.resultados = {
+        archivos: res.totalArchivos || res.total || 0,
+        tamanio: res.tamanio || res.peso || '0 B'
+      };
+
+      this.idDescargaActual = res.idDescarga || temporalId;
       
+      // Una vez que tenemos los resultados, mostramos el modal
       this.mostrarModalResultados = true;
       this.cargando = false;
+      
+      // Forzamos la detección para que el modal no se quede en "Calculando..."
       this.cd.detectChanges();
     },
-    error: (err) => {
+    error: (err: any) => {
       this.cargando = false;
-      this.lanzarError('Error al consultar el total de archivos', 'BACKEND');
+      this.lanzarError('No se pudo calcular el total de archivos', 'BACKEND');
     }
   });
 }
+
 
   private iniciarConexionSignalR() {
   this.hubConnection = new signalR.HubConnectionBuilder()
@@ -357,22 +362,22 @@ async confirmarDescarga() {
   }
 
  irAlHistorial() {
-  // objeto con toda la información de la interfaz
   const detalleFinal = {
     delegacion: this.obtenerNombreDelegacion(),
     periodo: `${this.obtenerNombreMes(this.mesInicio)} - ${this.obtenerNombreMes(this.mesFinal)} ${this.anio}`,
     estado: this.estados.find(e => e.id === this.estadoSeleccionadoId)?.nombre,
     padron: this.padrones.find(p => p.id === this.padronSeleccionadoId)?.nombre,
     formatos: this.obtenerFormatosStr(),
+    
+    // Aquí usamos los datos reales que llegaron al modal
     totalArchivos: this.resultados?.archivos,
     tamanioTotal: this.resultados?.tamanio,
-    tiempoEmpleado: this.tiempoAproxResumen,
+    
+    tiempoEmpleado: this.tiempoRestante,
     fechaEjecucion: new Date()
   };
 
-  // Guardamos en el servicio para que el componente de Historial lo lea
   this.descargaService.setUltimaDescarga(detalleFinal);
-  
   this.mostrarPopupConfirmacion = false;
   this.router.navigate(['/historial-descargas']);
 }

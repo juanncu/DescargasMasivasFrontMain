@@ -15,20 +15,20 @@
     <div class="filter-body">
       <div class="selection-grid">
         <div class="input-field">
-<div class="label-with-info">
-  <label>Estado de Recibo</label>
-  <div class="info-icon-wrapper" *ngIf="estadoSeleccionadoId">
-    <mat-icon class="info-icon">info</mat-icon>
-    <span class="tooltip-box">
-      {{ descripcionEstadoRecibo }}
-    </span>
-  </div>
-</div>
+          <div class="label-with-info">
+            <label>Estado de Recibo</label>
+            <div class="info-icon-wrapper" *ngIf="estadoSeleccionadoId">
+              <mat-icon class="info-icon">info</mat-icon>
+              <span class="tooltip-box">
+                {{ descripcionEstadoRecibo }}
+              </span>
+            </div>
+          </div>
 
-<select [(ngModel)]="estadoSeleccionadoId" (change)="actualizarDescripcionEstado()" class="modern-select">
-  <option value="" disabled selected>Seleccione estado</option>
-  <option *ngFor="let e of estados" [value]="e.id">{{ e.nombre }}</option>
-</select>
+          <select [(ngModel)]="estadoSeleccionadoId" (change)="actualizarDescripcionEstado()" class="modern-select">
+            <option value="" disabled selected>Seleccione estado</option>
+            <option *ngFor="let e of estados" [value]="e.id">{{ e.nombre }}</option>
+          </select>
         </div>
 
         <div class="input-field">
@@ -130,11 +130,11 @@
       </div>
 
       <div class="details-box-dotted">
-  <strong>Periodo seleccionado:</strong>
-  <span>
-    {{ obtenerNombreMes(mesInicio) }} - {{ obtenerNombreMes(mesFinal) }} {{ anio }}
-  </span>
-</div>
+        <strong>Periodo seleccionado:</strong>
+        <span>
+          {{ obtenerNombreMes(mesInicio) }} - {{ obtenerNombreMes(mesFinal) }} {{ anio }}
+        </span>
+      </div>
     </div>
 
     <div class="modal-footer-gob">
@@ -147,56 +147,52 @@
     </div>
   </div>
 
-<div class="modal-overlay" *ngIf="mostrarPopupConfirmacion">
-  <div class="modal-progreso-safin">
-    <div class="modal-header-rojo">
-      <h3 style="margin:0; color:white;">📥 PROCESO DE DESCARGA ACTIVO</h3>
-    </div>
-
-    <div class="modal-body-premium">
-      <div class="progress-container">
-        <mat-progress-bar mode="determinate" [value]="progreso"></mat-progress-bar>
-        <span class="pct-text-premium">{{ tiempoEstimado }}</span>
+  <div class="modal-overlay" *ngIf="mostrarPopupConfirmacion">
+    <div class="modal-progreso-safin">
+      <div class="modal-header-rojo">
+        <h3 style="margin:0; color:white;">📥 PROCESO DE DESCARGA ACTIVO</h3>
       </div>
 
-      <div class="controles-descarga">
-        <button (click)="pausar()" class="btn-control">⏸ PAUSAR</button>
-        <button (click)="reanudar()" class="btn-control">▶ REANUDAR</button>
-        <button (click)="cancelar()" class="btn-cancelar-gob">❌ CANCELAR</button>
-      </div>
+      <div class="modal-body-premium">
+        <div class="progress-container">
+          <mat-progress-bar mode="determinate" [value]="progreso"></mat-progress-bar>
+          <span class="pct-text-premium">{{ tiempoEstimado }}</span>
+        </div>
 
-      <div class="log-terminal" #scrollMe [scrollTop]="scrollMe.scrollHeight">
-        <div *ngFor="let log of logsDescarga"
-          [ngClass]="{'txt-green': log.tipo === 'OK', 'txt-red': log.tipo === 'ERROR', 'txt-blue': log.tipo === 'ESTADO'}">
-          <span *ngIf="log.tipo !== 'ESTADO'">[{{ log.tipo }}]</span> {{ log.mensaje }}
+        <div class="controles-descarga">
+          <button (click)="pausar()" class="btn-control">⏸ PAUSAR</button>
+          <button (click)="reanudar()" class="btn-control">▶ REANUDAR</button>
+          <button (click)="cancelar()" class="btn-cancelar-gob">❌ CANCELAR</button>
+        </div>
+
+        <div class="log-terminal" #scrollMe [scrollTop]="scrollMe.scrollHeight">
+          <div *ngFor="let log of logsDescarga"
+            [ngClass]="{'txt-green': log.tipo === 'OK', 'txt-red': log.tipo === 'ERROR', 'txt-blue': log.tipo === 'ESTADO'}">
+            <span *ngIf="log.tipo !== 'ESTADO'">[{{ log.tipo }}]</span> {{ log.mensaje }}
+          </div>
+        </div>
+
+        <div class="modal-footer-gob" *ngIf="progreso === 100">
+          <button (click)="irAlHistorial()" class="btn-confirm-gob" style="width: 100%;">
+            FINALIZAR Y VER HISTORIAL
+          </button>
         </div>
       </div>
-
-      <div class="modal-footer-gob" *ngIf="progreso === 100">
-        <button (click)="irAlHistorial()" class="btn-confirm-gob" style="width: 100%;">
-          FINALIZAR Y VER HISTORIAL
-        </button>
-      </div>
     </div>
-  </div>
 
 
 
- <!-- TOAST / TOOLTIP GLOBAL DE ERROR -->
-<div 
-  class="error-toast"
-  *ngIf="errorUI.mensaje"
-  [ngClass]="{
+    <!-- TOAST / TOOLTIP GLOBAL DE ERROR -->
+    <div class="error-toast" *ngIf="errorUI.mensaje" [ngClass]="{
     'error-front': errorUI.origen === 'FRONTEND',
     'error-back': errorUI.origen === 'BACKEND',
     'error-conn': errorUI.origen === 'CONEXION',
     'error-unknown': errorUI.origen === 'DESCONOCIDO'
-  }"
->
-  <strong>{{ errorUI.origen }}</strong> — {{ errorUI.mensaje }}
-</div>
+  }">
+      <strong>{{ errorUI.origen }}</strong> — {{ errorUI.mensaje }}
+    </div>
 
-</div>
+  </div>
 
 
 </div>
