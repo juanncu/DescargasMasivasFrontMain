@@ -19,14 +19,15 @@ export class ApiService {
 buscarFolios(delegacion: number, filtros: any): Observable<any> {
   let params = new HttpParams()
     .set('delegacion', delegacion.toString())
-    .set('pdf', filtros.pdf.toString())     // Nuevo parámetro booleano
-    .set('xml', filtros.xml.toString())     // Nuevo parámetro booleano
-    .set('recibo', filtros.recibo.toString()) // Nuevo parámetro booleano
-    .set('idDescarga', filtros.idDescarga); // Nuevo parámetro string
+    // Forzamos conversión a string de los booleanos
+    .set('pdf', (!!filtros.pdf).toString())
+    .set('xml', (!!filtros.xml).toString())
+    .set('recibo', (!!filtros.recibo).toString())
+    .set('idDescarga', filtros.idDescarga || '');
 
-  // Agregamos el resto de filtros (anio, inicio, fin)
+  // Agregamos el resto de filtros (anio, inicio, fin, padron, estado)
   Object.keys(filtros).forEach(key => {
-    if (!['pdf', 'xml', 'recibo', 'idDescarga'].includes(key)) {
+    if (!['pdf', 'xml', 'recibo', 'idDescarga', 'delegacion'].includes(key)) {
       const valor = filtros[key];
       if (valor !== null && valor !== undefined && valor !== '') {
         params = params.append(key, valor.toString());
@@ -36,7 +37,6 @@ buscarFolios(delegacion: number, filtros: any): Observable<any> {
 
   return this.http.get(`${this.apiUrl}/ObtenerTotalDeArchivos`, { params });
 }
-
 // Método para iniciar el proceso de descarga masiva
 iniciarProcesoDescarga(delegacionId: number): Observable<any> {
   return this.http.post(`${this.apiUrl}/descargas/iniciar`, { delegacion: delegacionId });

@@ -48,9 +48,9 @@ export class DescargaFoliosComponent implements OnInit {
   mostrarPopupConfirmacion = false;
   logsDescarga: { tipo: string, mensaje: string }[] = [];
   progreso = 0;
-tiempoEstimado = 'Esperando inicio...';
-tiempoRestante = 'Calculando...'; // <--- variable para el tiempo de descarga
-tiempoAproxResumen: string = 'Calculando...';
+  tiempoEstimado = 'Esperando inicio...';
+  tiempoRestante = 'Calculando...'; // <--- variable para el tiempo de descarga
+  tiempoAproxResumen: string = 'Calculando...';
 
   // Filtros
   delegacionSeleccionada: any = null;
@@ -59,7 +59,7 @@ tiempoAproxResumen: string = 'Calculando...';
   anio: number = 2025;
   estadoSeleccionadoId: string = '';
   padronSeleccionadoId: string = '';
-  
+
 
   // Formatos
   formatoPdf = false;
@@ -79,9 +79,9 @@ tiempoAproxResumen: string = 'Calculando...';
 
   mesesFinalesDisponibles: any[] = [];
   idDescargaActual: string = '';
-descripcionEstadoRecibo: string = 'Seleccione un estado para ver la descripción';
+  descripcionEstadoRecibo: string = 'Seleccione un estado para ver la descripción';
   ngOnInit() {
-    
+
     this.cargarMunicipios();
     this.iniciarConexionSignalR();
     this.cargarAniosFiscales();
@@ -89,16 +89,16 @@ descripcionEstadoRecibo: string = 'Seleccione un estado para ver la descripción
   }
 
   // Función para actualizar la descripción (llámala en el (change) del select)
-actualizarDescripcionEstado() {
-  const estadoEncontrado = this.estados.find(e => e.id === this.estadoSeleccionadoId);
-  
-  if (estadoEncontrado) {
-    // Usamos la propiedad 'descripcion' que viene de la API
-    this.descripcionEstadoRecibo = estadoEncontrado.descripcion;
-  } else {
-    this.descripcionEstadoRecibo = 'Seleccione un estado para ver la descripción';
+  actualizarDescripcionEstado() {
+    const estadoEncontrado = this.estados.find(e => e.id === this.estadoSeleccionadoId);
+
+    if (estadoEncontrado) {
+      // Usamos la propiedad 'descripcion' que viene de la API
+      this.descripcionEstadoRecibo = estadoEncontrado.descripcion;
+    } else {
+      this.descripcionEstadoRecibo = 'Seleccione un estado para ver la descripción';
+    }
   }
-}
 
 
   cargarCatalogosBackend() {
@@ -126,78 +126,111 @@ buscar() {
   this.cargando = true;
   const temporalId = `DESC_${Date.now()}`;
 
+  // 1. Mapeamos los nombres para que coincidan con lo que el ApiService busca
   const filtros = {
     padron: Number(this.padronSeleccionadoId),
     estado: Number(this.estadoSeleccionadoId),
+    delegacion: Number(this.delegacionSeleccionada),
     anio: Number(this.anio),
     inicio: Number(this.mesInicio),
     fin: Number(this.mesFinal),
-    pdf: this.formatoPdf,
-    xml: this.formatoXml,
-    recibo: this.formatoRecibos,
+    pdf: this.formatoPdf,       // Se envía como 'pdf'
+    xml: this.formatoXml,       // Se envía como 'xml'
+    recibo: this.formatoRecibos, // Se envía como 'recibo'
     idDescarga: temporalId
   };
 
-  this.apiService.buscarFolios(this.delegacionSeleccionada ?? 0, filtros).subscribe({
+  this.apiService.buscarFolios(this.delegacionSeleccionada, filtros).subscribe({
     next: (res: any) => {
-      // Sincronizamos con los nombres de propiedad que envía el Backend
-      // Usualmente vienen como 'totalArchivos' y 'tamanio' o 'total' y 'peso'
+      // 2. Mapeo usando los nombres EXACTOS que devuelve tu API
       this.resultados = {
-        archivos: res.totalArchivos || res.total || 0,
-        tamanio: res.tamanio || res.peso || '0 B'
+        archivos: res.total || 0,
+        tamanio: res.pesoFormateado || '0 B'
       };
-
+        console.log('Respuesta de búsqueda:', this.resultados);
       this.idDescargaActual = res.idDescarga || temporalId;
-      
-      // Una vez que tenemos los resultados, mostramos el modal
+
+      // 3. Calculamos el tiempo solo si totalBytes tiene valor
+      if (res.totalBytes) {
+        this.calcularTiempoEstimado(res.totalBytes);
+      } else {
+        this.tiempoAproxResumen = '0 seg';
+      }
+
       this.mostrarModalResultados = true;
       this.cargando = false;
       
-      // Forzamos la detección para que el modal no se quede en "Calculando..."
+      // 4. FORZAMOS la detección de cambios para pintar el modal
       this.cd.detectChanges();
     },
     error: (err: any) => {
       this.cargando = false;
-      this.lanzarError('No se pudo calcular el total de archivos', 'BACKEND');
+      console.error("Error en búsqueda:", err);
     }
   });
 }
+  // Convierte bytes a formato legible (KB, MB, GB)
+  formatearBytes(bytes: number): string {
+    if (bytes === 0) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  }
 
+  // Calcula el tiempo según una velocidad promedio (ej. 5 MB/s)
+ calcularTiempoEstimado(totalBytes: number) {
+  if (!totalBytes || totalBytes === 0) {
+    this.tiempoAproxResumen = '0 seg';
+    return;
+  }
+
+  const velocidadPromedioMBps = 5; // Velocidad estimada de descarga
+  const totalMB = totalBytes / (1024 * 1024);
+  const segundos = Math.ceil(totalMB / velocidadPromedioMBps);
+
+  if (segundos < 60) {
+    this.tiempoAproxResumen = `${segundos} seg`;
+  } else {
+    const minutos = Math.ceil(segundos / 60);
+    this.tiempoAproxResumen = `${minutos} min aprox.`;
+  }
+}
 
   private iniciarConexionSignalR() {
-  this.hubConnection = new signalR.HubConnectionBuilder()
-    .withUrl(this.HUB_URL)
-    .withAutomaticReconnect()
-    .configureLogging(signalR.LogLevel.Information)
-    .build();
+    this.hubConnection = new signalR.HubConnectionBuilder()
+      .withUrl(this.HUB_URL)
+      .withAutomaticReconnect()
+      .configureLogging(signalR.LogLevel.Information)
+      .build();
 
-  this.hubConnection.on("ProgresoDescarga", (data: any) => {
-    this.zone.run(() => {
-      this.progreso = data.porcentaje;
-      this.tiempoEstimado = `${data.porcentaje}% (${data.completados}/${data.totalArchivos})`;
-      
-  
-      // Dejamos mapeado el campo que enviará el backend para el tiempo restante
-      this.tiempoRestante = data.tiempoRestante || 'Calculando...'; 
+    this.hubConnection.on("ProgresoDescarga", (data: any) => {
+      this.zone.run(() => {
+        this.progreso = data.porcentaje;
+        this.tiempoEstimado = `${data.porcentaje}% (${data.completados}/${data.totalArchivos})`;
 
-      this.logsDescarga.push({
-        tipo: data.ok ? 'OK' : 'ERROR',
-        mensaje: `Archivo: ${data.archivo} ${data.ok ? 'descargado' : 'falló'}`
+
+        // Dejamos mapeado el campo que enviará el backend para el tiempo restante
+        this.tiempoRestante = data.tiempoRestante || 'Calculando...';
+
+        this.logsDescarga.push({
+          tipo: data.ok ? 'OK' : 'ERROR',
+          mensaje: `Archivo: ${data.archivo} ${data.ok ? 'descargado' : 'falló'}`
+        });
+
+        this.cd.detectChanges();
       });
-      
-      this.cd.detectChanges();
     });
-  });
 
-  this.hubConnection.on("Estado", (msg: string) => {
-    this.zone.run(() => {
-      this.logsDescarga.push({ tipo: 'ESTADO', mensaje: msg });
-      this.cd.detectChanges();
+    this.hubConnection.on("Estado", (msg: string) => {
+      this.zone.run(() => {
+        this.logsDescarga.push({ tipo: 'ESTADO', mensaje: msg });
+        this.cd.detectChanges();
+      });
     });
-  });
 
-  this.hubConnection.start().catch(err => console.error("Error SignalR:", err));
-}
+    this.hubConnection.start().catch(err => console.error("Error SignalR:", err));
+  }
 
   // Métodos de Control
   pausar() { this.hubConnection.invoke("Pausar"); }
@@ -207,25 +240,25 @@ buscar() {
     this.mostrarPopupConfirmacion = false;
   }
 
-async confirmarDescarga() {
-  this.mostrarModalResultados = false;
-  this.mostrarPopupConfirmacion = true;
-  this.progreso = 0;
-  this.logsDescarga = [];
+  async confirmarDescarga() {
+    this.mostrarModalResultados = false;
+    this.mostrarPopupConfirmacion = true;
+    this.progreso = 0;
+    this.logsDescarga = [];
 
-  // Usamos el idDescargaActual que guardamos en la búsqueda
-  const urlDescarga = `http://${this.IP_BACK}:5001/FiltroArchivos?idDescarga=${this.idDescargaActual}&pdf=${this.formatoPdf}&xml=${this.formatoXml}&recibo=${this.formatoRecibos}`;
-  
-  try {
-    const resp = await fetch(urlDescarga); // Dispara el motor en el puerto 5001
-    if (!resp.ok) throw new Error("El motor no pudo iniciar");
-    
-    // El SignalR que ya tienes configurado empezará a recibir el progreso automáticamente
-  } catch (err) {
-    console.error("Fallo al iniciar descarga real:", err);
-    this.lanzarError('El servidor de descargas no responde', 'CONEXION');
+    // Usamos el idDescargaActual que guardamos en la búsqueda
+    const urlDescarga = `http://${this.IP_BACK}:5001/FiltroArchivos?idDescarga=${this.idDescargaActual}&pdf=${this.formatoPdf}&xml=${this.formatoXml}&recibo=${this.formatoRecibos}`;
+
+    try {
+      const resp = await fetch(urlDescarga); // Dispara el motor en el puerto 5001
+      if (!resp.ok) throw new Error("El motor no pudo iniciar");
+
+      // El SignalR que ya tienes configurado empezará a recibir el progreso automáticamente
+    } catch (err) {
+      console.error("Fallo al iniciar descarga real:", err);
+      this.lanzarError('El servidor de descargas no responde', 'CONEXION');
+    }
   }
-}
 
   /** Obtiene la lista de archivos del backend y dispara la descarga de los primeros (PDF/XML). */
   private iniciarDescargaDeArchivos(idDescarga: string) {
@@ -361,26 +394,26 @@ async confirmarDescarga() {
     return this.meses.find(m => m.id == id)?.nombre || String(id);
   }
 
- irAlHistorial() {
-  const detalleFinal = {
-    delegacion: this.obtenerNombreDelegacion(),
-    periodo: `${this.obtenerNombreMes(this.mesInicio)} - ${this.obtenerNombreMes(this.mesFinal)} ${this.anio}`,
-    estado: this.estados.find(e => e.id === this.estadoSeleccionadoId)?.nombre,
-    padron: this.padrones.find(p => p.id === this.padronSeleccionadoId)?.nombre,
-    formatos: this.obtenerFormatosStr(),
-    
-    // Aquí usamos los datos reales que llegaron al modal
-    totalArchivos: this.resultados?.archivos,
-    tamanioTotal: this.resultados?.tamanio,
-    
-    tiempoEmpleado: this.tiempoRestante,
-    fechaEjecucion: new Date()
-  };
+  irAlHistorial() {
+    const detalleFinal = {
+      delegacion: this.obtenerNombreDelegacion(),
+      periodo: `${this.obtenerNombreMes(this.mesInicio)} - ${this.obtenerNombreMes(this.mesFinal)} ${this.anio}`,
+      estado: this.estados.find(e => e.id === this.estadoSeleccionadoId)?.nombre,
+      padron: this.padrones.find(p => p.id === this.padronSeleccionadoId)?.nombre,
+      formatos: this.obtenerFormatosStr(),
 
-  this.descargaService.setUltimaDescarga(detalleFinal);
-  this.mostrarPopupConfirmacion = false;
-  this.router.navigate(['/historial-descargas']);
-}
+      // Aquí usamos los datos reales que llegaron al modal
+      totalArchivos: this.resultados?.archivos,
+      tamanioTotal: this.resultados?.tamanio,
+
+      tiempoEmpleado: this.tiempoRestante,
+      fechaEjecucion: new Date()
+    };
+
+    this.descargaService.setUltimaDescarga(detalleFinal);
+    this.mostrarPopupConfirmacion = false;
+    this.router.navigate(['/historial-descargas']);
+  }
 
   onMesInicioChange() {
     const hoy = new Date();
@@ -413,28 +446,28 @@ async confirmarDescarga() {
   }
 
 
-// Estado global de errores
+  // Estado global de errores
 
-errorUI: {
-  mensaje: string;
-  origen: 'FRONTEND' | 'BACKEND' | 'CONEXION' | 'DESCONOCIDO';
-} = {
-  mensaje: '',
-  origen: 'DESCONOCIDO'
-};
+  errorUI: {
+    mensaje: string;
+    origen: 'FRONTEND' | 'BACKEND' | 'CONEXION' | 'DESCONOCIDO';
+  } = {
+      mensaje: '',
+      origen: 'DESCONOCIDO'
+    };
 
-private lanzarError(
-  mensaje: string,
-  origen: 'FRONTEND' | 'BACKEND' | 'CONEXION' | 'DESCONOCIDO'
-): void {
+  private lanzarError(
+    mensaje: string,
+    origen: 'FRONTEND' | 'BACKEND' | 'CONEXION' | 'DESCONOCIDO'
+  ): void {
 
-  this.errorUI = { mensaje, origen };
+    this.errorUI = { mensaje, origen };
 
-  setTimeout((): void => {
-    this.errorUI = { mensaje: '', origen: 'DESCONOCIDO' };
-    this.cd.detectChanges();
-  }, 5000);
-}
+    setTimeout((): void => {
+      this.errorUI = { mensaje: '', origen: 'DESCONOCIDO' };
+      this.cd.detectChanges();
+    }, 5000);
+  }
 
 
 }

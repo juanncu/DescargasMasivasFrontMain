@@ -59,7 +59,7 @@
         <div class="input-field">
           <label>AÑO</label>
           <select [(ngModel)]="anio" (change)="onMesInicioChange()" class="modern-select">
-            <option *ngFor="let a of aniosDisponibles" [value]="a">{{ a }}</option>
+            <option *ngFor="let p of padrones" [value]="p.id">{{ p.nombre }}</option>
           </select>
         </div>
 
