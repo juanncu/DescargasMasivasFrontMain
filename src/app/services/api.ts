@@ -14,20 +14,33 @@ export class ApiService {
   /** * SOLUCIÓN AL ERROR TS2339: 
    * Asegúrate de que el nombre sea EXACTAMENTE buscarFolios y que reciba 2 argumentos.
    */
-  buscarFolios(delegacion: number, filtros: any): Observable<any> {
-    let params = new HttpParams().set('delegacion', delegacion.toString());
+  // En tu ApiService
+// Actualizamos para recibir los parámetros booleanos y el id de descarga
+buscarFolios(delegacion: number, filtros: any): Observable<any> {
+  let params = new HttpParams()
+    .set('delegacion', delegacion.toString())
+    .set('pdf', filtros.pdf.toString())     // Nuevo parámetro booleano
+    .set('xml', filtros.xml.toString())     // Nuevo parámetro booleano
+    .set('recibo', filtros.recibo.toString()) // Nuevo parámetro booleano
+    .set('idDescarga', filtros.idDescarga); // Nuevo parámetro string
 
-    if (filtros) {
-      Object.keys(filtros).forEach(key => {
-        const valor = filtros[key];
-        if (valor !== null && valor !== undefined && valor !== '') {
-          params = params.append(key, valor.toString());
-        }
-      });
+  // Agregamos el resto de filtros (anio, inicio, fin)
+  Object.keys(filtros).forEach(key => {
+    if (!['pdf', 'xml', 'recibo', 'idDescarga'].includes(key)) {
+      const valor = filtros[key];
+      if (valor !== null && valor !== undefined && valor !== '') {
+        params = params.append(key, valor.toString());
+      }
     }
-    // EL RETURN ES OBLIGATORIO para que no salga el error de 'type void'
-    return this.http.get(`${this.apiUrl}/ObtenerTotalDeArchivos`, { params });
-  }
+  });
+
+  return this.http.get(`${this.apiUrl}/ObtenerTotalDeArchivos`, { params });
+}
+
+// Método para iniciar el proceso de descarga masiva
+iniciarProcesoDescarga(delegacionId: number): Observable<any> {
+  return this.http.post(`${this.apiUrl}/descargas/iniciar`, { delegacion: delegacionId });
+}
 
   /** * SOLUCIÓN AL ERROR TS2339 en getListaArchivosDescarga
    */
@@ -39,11 +52,6 @@ export class ApiService {
     return this.http.get(`${this.apiUrlFiltros}/FiltroArchivos`, { params });
   }
 
-  /** * SOLUCIÓN AL ERROR TS2339 en iniciarProcesoDescarga
-   */
-  iniciarProcesoDescarga(delegacionId: number): Observable<any> {
-    return this.http.post(`${this.apiUrl}/descargas/iniciar`, { delegacion: delegacionId });
-  }
 
   // --- Implementación de Descargas Reales ---
   descargarPdf(id: string | number): Observable<Blob> {
