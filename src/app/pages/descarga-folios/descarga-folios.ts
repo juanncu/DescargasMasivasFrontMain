@@ -371,19 +371,20 @@ buscar() {
   }
 
   cargarAniosFiscales() {
-    this.apiService.getAniosFiscales().subscribe({
-      next: (res: any[]) => {
-        this.aniosDisponibles = res.map(x => x.aFiscal);
+  this.apiService.getAniosFiscales().subscribe({
+    next: (res: any[]) => {
+      // Extraemos el valor numérico (aFiscal)
+      this.aniosDisponibles = res.map(x => Number(x.aFiscal)); 
+      
+      // Si el año actual no está en la lista, seleccionamos el más reciente
+      if (!this.aniosDisponibles.includes(this.anio)) {
         this.anio = Math.max(...this.aniosDisponibles);
-        this.cd.detectChanges();
-      },
-      error: (err) => {
-        console.error(' Error al cargar años fiscales', err);
-        this.lanzarError('Error al cargar años fiscales', 'BACKEND');
       }
-    });
-  }
-
+      
+      this.cd.detectChanges(); // Forzamos el refresco visual
+    }
+  });
+}
 
   // Auxiliares
   obtenerNombreDelegacion(): string {

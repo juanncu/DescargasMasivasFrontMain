@@ -59,7 +59,7 @@
         <div class="input-field">
           <label>AÑO</label>
           <select [(ngModel)]="anio" (change)="onMesInicioChange()" class="modern-select">
-            <option *ngFor="let p of padrones" [value]="p.id">{{ p.nombre }}</option>
+            <option *ngFor="let a of aniosDisponibles" [ngValue]="a">{{ a }}</option>
           </select>
         </div>
 
@@ -101,10 +101,11 @@
     </div>
   </section>
 
-    <!-- ===== ERROR GLOBAL ===== -->
-<div *ngIf="mensajeErrorActual" class="error-ui">
-  <mat-icon class="error-icon">error_outline</mat-icon>
-  <strong>{{ tipoErrorActual }}</strong>: {{ mensajeErrorActual }} </div>
+  <!-- ===== ERROR GLOBAL ===== -->
+  <div *ngIf="mensajeErrorActual" class="error-ui">
+    <mat-icon class="error-icon">error_outline</mat-icon>
+    <strong>{{ tipoErrorActual }}</strong>: {{ mensajeErrorActual }}
+  </div>
 
 </main>
 
@@ -190,4 +191,4 @@
 
 
 
-</div>
+  </div>
