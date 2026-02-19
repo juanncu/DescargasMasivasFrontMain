@@ -98,7 +98,7 @@ export class DescargaFoliosComponent implements OnInit {
   }
 
 
-  // Función para actualizar la descripción (llámala en el (change) del select)
+  // Función para actualizar la descripción (se llama en el (change) del select)
   actualizarDescripcionEstado() {
     const estadoEncontrado = this.estados.find(e => e.id === this.estadoSeleccionadoId);
 
@@ -139,8 +139,9 @@ export class DescargaFoliosComponent implements OnInit {
     });
   }
 
-  // 3. Ajustamos la función buscar para usar los valores REALES del objeto
+  // Función buscar para usar los valores REALES del objeto
  // En descarga-folios.component.ts
+
 buscar() {
   this.cargando = true;
   const temporalId = `DESC_${Date.now()}`;
@@ -212,8 +213,8 @@ buscar() {
   private iniciarConexionSignalR() {
   this.hubConnection = new signalR.HubConnectionBuilder()
     .withUrl(this.HUB_URL, {
-      skipNegotiation: true, // Salta la negociación HTTP
-      transport: signalR.HttpTransportType.WebSockets // Forzamos WebSockets
+      skipNegotiation: true,
+      transport: signalR.HttpTransportType.WebSockets 
     })
     .withAutomaticReconnect()
     .build();
@@ -236,7 +237,7 @@ buscar() {
   this.mostrarModalResultados = false;
   this.mostrarPopupConfirmacion = true; 
   
-  // 2. Limpiamos estados anteriores
+  // Limpiamos estados anteriores
   this.progreso = 0;
   this.logsDescarga = [];
   this.descargaEnCurso = true; 
@@ -244,7 +245,7 @@ buscar() {
   
   this.cd.detectChanges();
 
-  // 3. Preparamos la URL
+  // Se prepara la URL
   const urlDescarga = `http://${this.IP_BACK}:5001/FiltroArchivos?` + 
     `idDescarga=${this.idDescargaActual}&` +
     `pdf=${!!this.formatoPdf}&` +
@@ -257,7 +258,7 @@ buscar() {
     
     if (!resp.ok) throw new Error(`Status: ${resp.status}`);
     
-    // El modal ya está visible, ahora SignalR lo llenará de datos
+    // Modal visible, ahora SignalR lo llenará de datos
   } catch (err) {
     console.error("Error al iniciar motor:", err);
     this.descargaEnCurso = false;
@@ -342,7 +343,7 @@ buscar() {
           this.anio = Math.max(...this.aniosDisponibles);
         }
 
-        this.cd.detectChanges(); // Forzamos el refresco visual
+        this.cd.detectChanges(); 
       }
     });
   }
@@ -380,7 +381,7 @@ buscar() {
       padron: this.padrones.find(p => p.id === this.padronSeleccionadoId)?.nombre,
       formatos: this.obtenerFormatosStr(),
 
-      // Aquí usamos los datos reales que llegaron al modal
+      // Datos que llegaro al modal de resultados
       totalArchivos: this.resultados?.archivos,
       tamanioTotal: this.resultados?.tamanio,
 

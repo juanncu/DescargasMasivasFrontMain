@@ -15,7 +15,7 @@ export class ErrorHandlerService {
             } if (error?.error?.tipo === 'DATABASE') {
                 return {
                     origen: 'DATABASE',
-                    mensajeUsuario: 'Error en la base de datos' };
+                    mensajeUsuario: 'Error al conectarse con la base de datos' };
             } 
 
          if (error instanceof HttpErrorResponse) {
