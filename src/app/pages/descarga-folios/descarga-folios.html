@@ -7,7 +7,7 @@
     <div class="filter-header">
       <div class="header-icon-title">
         <span class="material-icons">filter_alt</span>
-        <h2>Filtros de Búsqueda</h2>
+          <h2>Filtros de Búsqueda</h2>
       </div>
       <p>Seleccione los criterios para generar la descarga</p>
     </div>
@@ -16,7 +16,7 @@
       <div class="selection-grid">
         <div class="input-field">
           <div class="label-with-info">
-            <label>Estado de Recibo</label>
+          <label>Estado de Recibo</label>
             <div class="info-icon-wrapper" *ngIf="estadoSeleccionadoId">
               <mat-icon class="info-icon">info</mat-icon>
               <span class="tooltip-box">
@@ -34,7 +34,7 @@
 
         <div class="input-field">
           <div class="label-with-info">
-            <label>Padrón</label>
+          <label>Padrón</label>
             <div class="info-icon-wrapper" *ngIf="padronSeleccionadoId === '1'">
               <mat-icon class="info-icon">info</mat-icon>
               <span class="tooltip-box">Contrato Vehicular, Obligaciones, Crédito, Infracciones, Alcohol</span>
@@ -85,15 +85,15 @@
         </div>
       </div>
 
-      <div class="input-field full-width">
-        <label>Delegación</label>
+        <div class="input-field full-width">
+          <label>Delegación</label>
         <select [(ngModel)]="delegacionSeleccionada" [disabled]="descargaEnCurso" class="modern-select">
           <option [ngValue]="null" disabled>Seleccione una delegación</option>
           <option *ngFor="let d of listaDelegaciones" [ngValue]="d.delegacionID">
             {{ d.delegacion }}
-          </option>
-        </select>
-      </div>
+            </option>
+          </select>
+        </div>
 
       <div class="action-footer">
         <button class="btn-buscar-modern" (click)="buscar()"
@@ -120,26 +120,26 @@
 </main>
 
 
-<div class="modal-overlay" *ngIf="mostrarModalResultados">
+  <div class="modal-overlay" *ngIf="mostrarModalResultados">
   <div class="modal-resumen-gob">
-    <div class="modal-header-gob">
+      <div class="modal-header-gob">
       <div class="logo-container">
         <img src="assets/logo1.png" alt="Logo Gob" class="logo-gob">
       </div>
     </div>
 
-    <div class="modal-body-gob">
+      <div class="modal-body-gob">
       <p class="summary-text">Se han localizado los siguientes documentos según tus filtros:</p>
 
       <div class="stats-grid" style="grid-template-columns: 1fr 1fr 1fr;">
         <div class="stat-card" style="border-left: 3px solid #bca986;">
-          <span class="stat-label">ARCHIVOS</span>
-          <span class="stat-value">{{ resultados?.archivos | number }}</span>
-        </div>
+            <span class="stat-label">ARCHIVOS</span>
+            <span class="stat-value">{{ resultados?.archivos | number }}</span>
+          </div>
         <div class="stat-card" style="border-left: 3px solid #bca986;">
           <span class="stat-label">TAMAÑO</span>
-          <span class="stat-value">{{ resultados?.tamanio }}</span>
-        </div>
+            <span class="stat-value">{{ resultados?.tamanio }}</span>
+          </div>
         <div class="stat-card" style="border-left: 3px solid #bca986;">
           <span class="stat-label">TIEMPO ESTIMADO</span>
           <span class="stat-value" style="color: #8B0F28;">{{ tiempoAproxResumen }}</span>
@@ -173,7 +173,7 @@
       </div>
 
       <div class="modal-body-gob">
-
+        
         <div class="aviso-conexion-inicial" *ngIf="cargandoMotor">
           <mat-spinner diameter="20"></mat-spinner>
           <p><strong>Conectando con el motor de descarga...</strong></p>
