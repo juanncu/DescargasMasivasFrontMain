@@ -1,66 +1,40 @@
 <main class="main-container">
-  <div class="main-title" style="color: #ab9470">DESCARGA MASIVA DE FOLIOS</div>
 
 
-    <div class="info-filtros">
-      <div class="filter-row">
-        <div class="filter-label">Estado de cuenta:</div>
-        <div class="select-wrapper">
-          <select [(ngModel)]="estadoSeleccionadoId" class="custom-select">
-            <option [ngValue]="null">Seleccione estado</option>
-            <option *ngFor="let e of estados" [ngValue]="e.id">{{ e.nombre }}</option>
-          </select>
+  <div class="main-title">DESCARGA MASIVA DE FOLIOS</div>
 
-          <div *ngIf="estadoSeleccionadoId === '3'" class="tooltip-padron">
-            COBRADO, CANCELADO, CONCILIADO, CONCILIADO PARCIAL
-          </div>
-          <div *ngIf="estadoSeleccionadoId === '1'" class="tooltip-padron">
-            COBRADO, CONCILIADO, <br> CONCILIADO PARCIAL
-          </div>
-        </div>
+  <section class="filter-card">
+    <div class="filter-header">
+      <div class="header-icon-title">
+        <span class="material-icons">filter_alt</span>
+          <h2>Filtros de Búsqueda</h2>
       </div>
+      <p>Seleccione los criterios para generar la descarga</p>
+    </div>
 
-      <div class="filter-row">
-        <div class="filter-label">Padrón:</div>
-        <div class="select-wrapper">
-          <select [(ngModel)]="padronSeleccionadoId" class="custom-select">
-            <option [ngValue]="null">Seleccione padrón</option>
-            <option *ngFor="let p of padrones" [ngValue]="p.id">{{ p.nombre }}</option>
-          </select>
-
-          <div *ngIf="padronSeleccionadoId === '1'" class="tooltip-padron" id="padron-tool">
-            Contrato Vehicular, Contrato Obligaciones, Contrato Crédito,
-            Contrato Infracciones, Contrato Alcohol
+    <div class="filter-body">
+      <div class="selection-grid">
+        <div class="input-field">
+          <div class="label-with-info">
+          <label>Estado de Recibo</label>
+            <div class="info-icon-wrapper" *ngIf="estadoSeleccionadoId">
+              <mat-icon class="info-icon">info</mat-icon>
+              <span class="tooltip-box">
+                {{ descripcionEstadoRecibo }}
+              </span>
+            </div>
           </div>
-        </div>
-      </div>
 
-      <div class="filter-row">
-        <div class="filter-label">Formato:</div>
-        <div class="options-group">
-          <label class="checkbox-borde">
-            <input type="checkbox" [(ngModel)]="formatoPdf" name="pdf"> PDF
-          </label>
-          <label class="checkbox-borde">
-            <input type="checkbox" [(ngModel)]="formatoXml" name="xml"> XML
-          </label>
-          <label class="checkbox-borde">
-            <input type="checkbox" [(ngModel)]="formatoRecibos" name="recibos"> Recibos
-          </label>
-        </div>
-      </div>
-
-      <div class="grid-meses">
-        <div class="input-group">
-          <label>Mes de Inicio:</label>
-          <select [(ngModel)]="mesInicio" class="custom-select">
-            <option *ngFor="let m of meses" [value]="m.id">{{ m.nombre }}</option>
+          <select [(ngModel)]="estadoSeleccionadoId" [disabled]="descargaEnCurso"
+            (change)="actualizarDescripcionEstado()" class="modern-select">
+            <option value="" disabled selected>Seleccione estado</option>
+            <option *ngFor="let e of estados" [value]="e.id">{{ e.nombre }}</option>
           </select>
         </div>
 
         <div class="input-field">
           <div class="label-with-info">
-            <label>Padrón</label>
+          <label>Padrón</label>
             <div class="info-icon-wrapper" *ngIf="padronSeleccionadoId === '1'">
               <mat-icon class="info-icon">info</mat-icon>
               <span class="tooltip-box">Contrato Vehicular, Obligaciones, Crédito, Infracciones, Alcohol</span>
@@ -72,80 +46,123 @@
           </select>
         </div>
 
-      <div class="input-group">
-        <label>Año:</label>
-        <select [(ngModel)]="anio" class="custom-select small-input">
-          <option *ngFor="let a of aniosDisponibles" [value]="a">{{ a }}</option>
-        </select>
-      </div>
-
-      <div class="input-group">
-        <label class="large-label">Seleccione una Delegación:</label>
-        <select [(ngModel)]="delegacionSeleccionada" class="custom-select">
-          <option *ngFor="let item of listaDelegaciones" [value]="item.delegacionID">
-            {{ item.delegacion }}
-          </option>
-        </select>
-      </div>
-
-      <div class="button-container">
-        <button (click)="buscar()" class="btn-buscar">BUSCAR</button>
-      </div>
-    </div>
-  </section>
-
-  <section *ngIf="resultados" class="resultados-container">
-    <div class="info-header">Resultados de la búsqueda</div>
-    <div class="info-filtros">
-      <div class="resultados-grid">
-        <span class="resultados-color font-bold">Archivos encontrados: {{ resultados.archivos }}</span>
-        <span class="resultados-color-3 font-bold">Tamaño aprox: {{ resultados.tamanio }}</span>
-      </div>
-    </div>
-  </section>
-
-  <div *ngIf="resultados" class="button-container animate-zoom" 
-       style="flex-direction: column; gap: 15px; margin-top: 30px;">
-    <button (click)="confirmarDescarga()" class="btn-confirmar">CONFIRMAR DESCARGA</button>
-    <button (click)="simularProgreso()" class="btn-test-simulador">🧪 PROBAR BARRA (Simulación local)</button>
-  </div>
-
-  <div *ngIf="mostrarPopupConfirmacion" class="modal-overlay">
-    <div *ngIf="progreso >= 100" class="confetti-wrapper">
-       </div>
-
-    <div class="modal-content animate-zoom">
-      <div class="modal-icon-circle" [style.background-color]="progreso >= 100 ? '#dcfce7' : '#f0f9ff'">
-        <span [style.color]="progreso >= 100 ? '#16a34a' : '#0369a1'" class="modal-check">
-          {{ progreso >= 100 ? '✓' : '⬇' }}
-        </span>
-      </div>
-
-      <h2 class="modal-title italic">
-        {{ progreso >= 100 ? '¡Listo para descargar!' : '¡Descarga en proceso!' }}
-      </h2>
-      <p class="modal-text">Los archivos se están procesando para su descarga.</p>
-
-      <div class="progress-section">
-        <div class="progress-bg">
-          <div class="progress-fill" [style.width.%]="progreso">
-            <div class="shimmer-effect"></div>
+        <div class="input-field">
+          <label>Formato</label>
+          <div class="format-options">
+            <label class="check-item"><input type="checkbox" [(ngModel)]="formatoPdf" [disabled]="descargaEnCurso">
+              PDF</label>
+            <label class="check-item"><input type="checkbox" [(ngModel)]="formatoXml" [disabled]="descargaEnCurso">
+              XML</label>
+            <label class="check-item"><input type="checkbox" [(ngModel)]="formatoRecibos" [disabled]="descargaEnCurso">
+              Recibos</label>
           </div>
         </div>
-        <div class="progress-labels">
-          <span>{{ progreso }}% COMPLETADO</span>
-          <span style="color: #b91c1c">⏱ {{ tiempoEstimado }}</span>
+      </div>
+
+      <div class="date-grid">
+        <div class="input-field">
+          <label>AÑO</label>
+          <select [(ngModel)]="anio" (change)="onMesInicioChange()" [disabled]="descargaEnCurso" class="modern-select">
+            <option *ngFor="let a of aniosDisponibles" [ngValue]="a">{{ a }}</option>
+          </select>
+        </div>
+
+        <div class="input-field">
+          <label>MES INICIO</label>
+          <select [(ngModel)]="mesInicio" (change)="onMesInicioChange()" [disabled]="descargaEnCurso"
+            class="modern-select">
+            <option value="" disabled>Seleccione inicio</option>
+            <option *ngFor="let m of mesesInicioDisponibles" [value]="m.id">{{ m.nombre }}</option>
+          </select>
+        </div>
+
+        <div class="input-field">
+          <label>MES FINAL</label>
+          <select [(ngModel)]="mesFinal" class="modern-select" [disabled]="descargaEnCurso || !mesInicio">
+            <option value="" disabled>Seleccione fin</option>
+            <option *ngFor="let m of mesesFinalesDisponibles" [value]="m.id">{{ m.nombre }}</option>
+          </select>
         </div>
       </div>
 
-      <div class="modal-actions">
-        <button (click)="irAlHistorial()" [disabled]="progreso < 100" class="btn-modal-red"
-                [ngClass]="{'btn-disabled': progreso < 100}">
-          VER DESCARGAS
+        <div class="input-field full-width">
+          <label>Delegación</label>
+        <select [(ngModel)]="delegacionSeleccionada" [disabled]="descargaEnCurso" class="modern-select">
+          <option [ngValue]="null" disabled>Seleccione una delegación</option>
+          <option *ngFor="let d of listaDelegaciones" [ngValue]="d.delegacionID">
+            {{ d.delegacion }}
+            </option>
+          </select>
+        </div>
+
+      <div class="action-footer">
+        <button class="btn-buscar-modern" (click)="buscar()"
+          [disabled]="!delegacionSeleccionada || !mesInicio || !mesFinal || !anio || cargando || descargaEnCurso">
+          <mat-icon *ngIf="!cargando && !descargaEnCurso">search</mat-icon>
+          <mat-spinner *ngIf="cargando || descargaEnCurso" diameter="20"></mat-spinner>
+          {{ descargaEnCurso ? 'DESCARGA EN PROCESO' : (cargando ? 'BUSCANDO...' : 'BUSCAR DOCUMENTOS') }}
         </button>
-        <button (click)="reiniciarFiltros()" class="btn-modal-dark">HACER OTRA DESCARGA</button>
-        <button (click)="mostrarPopupConfirmacion = false" class="btn-modal-close">Cerrar ventana</button>
       </div>
+    </div>
+  </section>
+
+  <!-- ===== ERROR GLOBAL ===== -->
+  <div *ngIf="mensajeErrorActual" class="error-ui">
+    <mat-icon class="error-icon">error_outline</mat-icon>
+    <strong>{{ mensajeErrorActual }}</strong>: 
+  </div>
+
+    <div> 
+    <p class="copy">&copy; SAFIN 2026. All rights reserved
+    </p>
+  </div>
+
+</main>
+
+
+  <div class="modal-overlay" *ngIf="mostrarModalResultados">
+  <div class="modal-resumen-gob">
+      <div class="modal-header-gob">
+      <div class="logo-container">
+        <img src="assets/logo1.png" alt="Logo Gob" class="logo-gob">
+      </div>
+    </div>
+
+      <div class="modal-body-gob">
+      <p class="summary-text">Se han localizado los siguientes documentos según tus filtros:</p>
+
+      <div class="stats-grid" style="grid-template-columns: 1fr 1fr 1fr;">
+        <div class="stat-card" style="border-left: 3px solid #bca986;">
+            <span class="stat-label">ARCHIVOS</span>
+            <span class="stat-value">{{ resultados?.archivos | number }}</span>
+          </div>
+        <div class="stat-card" style="border-left: 3px solid #bca986;">
+          <span class="stat-label">TAMAÑO</span>
+            <span class="stat-value">{{ resultados?.tamanio }}</span>
+          </div>
+        <div class="stat-card" style="border-left: 3px solid #bca986;">
+          <span class="stat-label">TIEMPO ESTIMADO</span>
+          <span class="stat-value" style="color: #8B0F28;">{{ tiempoAproxResumen }}</span>
+        </div>
+      </div>
+
+      <div class="details-box-dotted">
+        <strong>Periodo seleccionado:</strong>
+        <span>
+          {{ obtenerNombreMes(mesInicio) }} - {{ obtenerNombreMes(mesFinal) }} {{ anio }}
+        </span>
+      </div>
+    </div>
+
+    <div class="modal-footer-gob">
+    
+      <button class="btn-cancel-gob" (click)="cerrarModalResultados()">
+        <mat-icon>close</mat-icon> CANCELAR
+      </button>
+
+      <button class="btn-confirm-gob" (click)="confirmarDescarga()">
+        CONFIRMAR DESCARGA <mat-icon>arrow_forward</mat-icon>
+      </button>
     </div>
   </div>
 
@@ -156,7 +173,7 @@
       </div>
 
       <div class="modal-body-gob">
-
+        
         <div class="aviso-conexion-inicial" *ngIf="cargandoMotor">
           <mat-spinner diameter="20"></mat-spinner>
           <p><strong>Conectando con el motor de descarga...</strong></p>
