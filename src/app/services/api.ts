@@ -6,6 +6,9 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class ApiService {
+  getHistorialDescargas() {
+    throw new Error('Method not implemented.');
+  }
   private http = inject(HttpClient);
   
   private apiUrl = 'http://172.20.23.41:5000'; 
