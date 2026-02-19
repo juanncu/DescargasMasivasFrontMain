@@ -98,7 +98,7 @@ export class DescargaFoliosComponent implements OnInit {
   }
 
 
-  // Función para actualizar la descripción (llámala en el (change) del select)
+  // Función para actualizar la descripción (se llama en el (change) del select)
   actualizarDescripcionEstado() {
     const estadoEncontrado = this.estados.find(e => e.id === this.estadoSeleccionadoId);
 
@@ -139,8 +139,9 @@ export class DescargaFoliosComponent implements OnInit {
     });
   }
 
-  // 3. Ajustamos la función buscar para usar los valores REALES del objeto
+  // Función buscar para usar los valores REALES del objeto
  // En descarga-folios.component.ts
+
 buscar() {
   this.cargando = true;
   const temporalId = `DESC_${Date.now()}`;
@@ -378,7 +379,7 @@ buscar() {
           this.anio = Math.max(...this.aniosDisponibles);
         }
 
-        this.cd.detectChanges(); // Forzamos el refresco visual
+        this.cd.detectChanges(); 
       }
     });
   }
@@ -416,7 +417,7 @@ buscar() {
       padron: this.padrones.find(p => p.id === this.padronSeleccionadoId)?.nombre,
       formatos: this.obtenerFormatosStr(),
 
-      // Aquí usamos los datos reales que llegaron al modal
+      // Datos que llegaro al modal de resultados
       totalArchivos: this.resultados?.archivos,
       tamanioTotal: this.resultados?.tamanio,
 

@@ -4,7 +4,7 @@ export interface HistorialDescarga {
   fechaLabel: string;
   delegacion: string;
   archivos: number;
- mesInicio: string;  // Antes era solo 'mes'
+ mesInicio: string;  
   mesFinal: string;  
   anio: number;          
   formatos: string[];    

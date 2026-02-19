@@ -309,7 +309,6 @@
   font-weight: 600;
   cursor: pointer;
   min-width: 180px;
-  /* Evita que se vean desproporcionados */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -451,7 +450,6 @@
 .card-detalle-principal.large-format {
   width: 95% !important;
   max-width: 1250px !important;
-  /* Cuadro grande como solicitaste */
   margin: 0 auto;
   border-top: 5px solid #8B0F28;
   /* Línea de color institucional superior */
@@ -499,6 +497,13 @@
 .error-icon {
   width: 5px;
   height: 5px;
+}
+
+.copy {
+  text-align: center;
+  font-size: 0.75rem;
+  color: #c3c9d3b6;
+  margin-top: 30px;
 }
 
 
