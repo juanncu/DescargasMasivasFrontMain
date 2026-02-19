@@ -62,14 +62,15 @@
       <div class="date-grid">
         <div class="input-field">
           <label>AÑO</label>
-          <select [(ngModel)]="anio" (change)="onMesInicioChange()" class="modern-select">
+          <select [(ngModel)]="anio" (change)="onMesInicioChange()" [disabled]="descargaEnCurso" class="modern-select">
             <option *ngFor="let a of aniosDisponibles" [ngValue]="a">{{ a }}</option>
           </select>
         </div>
 
         <div class="input-field">
           <label>MES INICIO</label>
-          <select [(ngModel)]="mesInicio" (change)="onMesInicioChange()" class="modern-select">
+          <select [(ngModel)]="mesInicio" (change)="onMesInicioChange()" [disabled]="descargaEnCurso"
+            class="modern-select">
             <option value="" disabled>Seleccione inicio</option>
             <option *ngFor="let m of mesesInicioDisponibles" [value]="m.id">{{ m.nombre }}</option>
           </select>
@@ -77,7 +78,7 @@
 
         <div class="input-field">
           <label>MES FINAL</label>
-          <select [(ngModel)]="mesFinal" class="modern-select" [disabled]="!mesInicio">
+          <select [(ngModel)]="mesFinal" class="modern-select" [disabled]="descargaEnCurso || !mesInicio">
             <option value="" disabled>Seleccione fin</option>
             <option *ngFor="let m of mesesFinalesDisponibles" [value]="m.id">{{ m.nombre }}</option>
           </select>
@@ -149,9 +150,11 @@
     </div>
 
     <div class="modal-footer-gob">
+    
       <button class="btn-cancel-gob" (click)="cerrarModalResultados()">
         <mat-icon>close</mat-icon> CANCELAR
       </button>
+
       <button class="btn-confirm-gob" (click)="confirmarDescarga()">
         CONFIRMAR DESCARGA <mat-icon>arrow_forward</mat-icon>
       </button>
@@ -159,40 +162,29 @@
   </div>
 
   <div class="modal-overlay" *ngIf="mostrarPopupConfirmacion">
-    <div class="modal-progreso-safin">
-      <div class="modal-header-rojo">
-        <h3 style="margin:0; color:white;">📥 PROCESO DE DESCARGA ACTIVO</h3>
+    <div class="modal-content-gob">
+      <div class="modal-header-gob">
+        <h3>PROGRESO DE DESCARGA</h3>
       </div>
 
-      <div class="modal-body-premium">
-        <div class="progress-container">
+      <div class="modal-body-gob">
+
+        <div class="aviso-conexion-inicial" *ngIf="cargandoMotor">
+          <mat-spinner diameter="20"></mat-spinner>
+          <p><strong>Conectando con el motor de descarga...</strong></p>
+          <small>Esto puede tardar unos segundos si el volumen de archivos es alto.</small>
+        </div>
+
+        <div class="progress-container" [style.opacity]="cargandoMotor ? '0.5' : '1'">
           <mat-progress-bar mode="determinate" [value]="progreso"></mat-progress-bar>
-          <span class="pct-text-premium">{{ tiempoEstimado }}</span>
+          <div class="progress-text">{{ progreso }}% - {{ tiempoEstimado }}</div>
         </div>
 
-        <div class="controles-descarga">
-          <button (click)="pausar()" class="btn-control">⏸ PAUSAR</button>
-          <button (click)="reanudar()" class="btn-control">▶ REANUDAR</button>
-          <button (click)="cancelar()" class="btn-cancelar-gob">❌ CANCELAR</button>
-        </div>
-
-        <div class="log-terminal" #scrollMe [scrollTop]="scrollMe.scrollHeight">
-          <div *ngFor="let log of logsDescarga"
-            [ngClass]="{'txt-green': log.tipo === 'OK', 'txt-red': log.tipo === 'ERROR', 'txt-blue': log.tipo === 'ESTADO'}">
-            <span *ngIf="log.tipo !== 'ESTADO'">[{{ log.tipo }}]</span> {{ log.mensaje }}
+        <div class="log-terminal">
+          <div *ngFor="let log of logsDescarga" [ngClass]="'log-' + log.tipo.toLowerCase()">
+            [{{ log.tipo }}] {{ log.mensaje }}
           </div>
-        </div>
-
-        <div class="modal-footer-gob" *ngIf="progreso === 100">
-          <button (click)="irAlHistorial()" class="btn-confirm-gob" style="width: 100%;">
-            FINALIZAR Y VER HISTORIAL
-          </button>
         </div>
       </div>
     </div>
-
-
-
-
-
   </div>

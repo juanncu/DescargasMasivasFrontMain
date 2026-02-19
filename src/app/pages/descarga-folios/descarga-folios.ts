@@ -56,7 +56,7 @@ export class DescargaFoliosComponent implements OnInit {
   tiempoAproxResumen: string = 'Calculando...';
 
   descargaEnCurso = false;
-
+  cargandoMotor = false;
   errorUI: { origen: string, mensaje: string, visible: boolean }[] = [];
 
   // Filtros
@@ -212,13 +212,42 @@ buscar() {
   private iniciarConexionSignalR() {
   this.hubConnection = new signalR.HubConnectionBuilder()
     .withUrl(this.HUB_URL, {
-      skipNegotiation: true, // Salta la negociación HTTP
-      transport: signalR.HttpTransportType.WebSockets // Forzamos WebSockets
+      skipNegotiation: true,
+      transport: signalR.HttpTransportType.WebSockets
     })
     .withAutomaticReconnect()
     .build();
 
-  // ... resto de tus manejadores .on()
+  // Escuchar el progreso real del motor
+  this.hubConnection.on("ProgresoDescarga", (data: any) => {
+    this.zone.run(() => {
+      // Mapeo flexible para nombres de propiedades (Mayúsculas/Minúsculas)
+      this.progreso = data.porcentaje ?? data.Porcentaje ?? 0;
+      const completados = data.completados ?? data.Completados ?? 0;
+      const total = data.totalArchivos ?? data.TotalArchivos ?? 0;
+
+      this.tiempoEstimado = `${this.progreso}% (${completados}/${total})`;
+      this.tiempoRestante = data.tiempoRestante ?? data.TiempoRestante ?? 'Calculando...';
+
+      // Agregar log de archivo individual
+      if (data.archivo || data.Archivo) {
+        this.logsDescarga.push({
+          tipo: (data.ok ?? data.Ok) ? 'OK' : 'ERROR',
+          mensaje: `Archivo: ${data.archivo ?? data.Archivo} ${(data.ok ?? data.Ok) ? 'descargado' : 'falló'}`
+        });
+      }
+      this.cd.detectChanges();
+    });
+  });
+
+  // Escuchar mensajes de estado general
+  this.hubConnection.on("Estado", (msg: string) => {
+    this.zone.run(() => {
+      this.logsDescarga.push({ tipo: 'ESTADO', mensaje: msg });
+      this.cd.detectChanges();
+    });
+  });
+
   this.hubConnection.start().catch(err => console.error("Error SignalR:", err));
 }
 
@@ -232,37 +261,44 @@ buscar() {
     this.descargaEnCurso = false;
     this.cd.detectChanges();
   }
- async confirmarDescarga() {
-  this.mostrarModalResultados = false;
-  this.mostrarPopupConfirmacion = true; 
-  
-  // 2. Limpiamos estados anteriores
-  this.progreso = 0;
-  this.logsDescarga = [];
-  this.descargaEnCurso = true; 
 
-  
+ async confirmarDescarga() {
+  // 1. Iniciamos el estado de carga del motor
+  this.cargandoMotor = true;
   this.cd.detectChanges();
 
-  // 3. Preparamos la URL
+  // 2. Abrimos el modal de progreso (lo que ya teníamos)
+  this.mostrarModalResultados = false;
+  this.mostrarPopupConfirmacion = true; 
+  this.progreso = 0;
+  this.descargaEnCurso = true;
+  this.logsDescarga = [{ tipo: 'ESTADO', mensaje: 'Estableciendo comunicación con el servidor...' }];
+  this.cd.detectChanges();
+
   const urlDescarga = `http://${this.IP_BACK}:5001/FiltroArchivos?` + 
-    `idDescarga=${this.idDescargaActual}&` +
-    `pdf=${!!this.formatoPdf}&` +
-    `xml=${!!this.formatoXml}&` +
-    `recibo=${!!this.formatoRecibos}`;
+    `idDescarga=${this.idDescargaActual}&pdf=${!!this.formatoPdf}&xml=${!!this.formatoXml}&recibo=${!!this.formatoRecibos}`;
   
   try {
-    console.log('Disparando motor...');
-    const resp = await fetch(urlDescarga); 
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 20000);
+
+    const resp = await fetch(urlDescarga, { signal: controller.signal });
+    clearTimeout(timeoutId);
+
+    if (!resp.ok) throw new Error(`Error: ${resp.status}`);
     
-    if (!resp.ok) throw new Error(`Status: ${resp.status}`);
-    
-    // El modal ya está visible, ahora SignalR lo llenará de datos
-  } catch (err) {
-    console.error("Error al iniciar motor:", err);
+    // Si conecta con éxito, quitamos el indicador de carga inicial
+    this.cargandoMotor = false;
+    this.logsDescarga.push({ tipo: 'OK', mensaje: 'Motor iniciado. Procesando archivos...' });
+    this.cd.detectChanges();
+
+  } catch (err: any) {
+    this.cargandoMotor = false;
     this.descargaEnCurso = false;
-    // No cerramos el modal, mostramos el error dentro de él o lanzamos el error UI
-    this.lanzarError('El motor de descarga no respondió', 'CONEXION');
+    this.logsDescarga.push({ 
+      tipo: 'ERROR', 
+      mensaje: 'El motor no responde. Verifique su conexión al puerto 5001.' 
+    });
     this.cd.detectChanges();
   }
 }
@@ -443,6 +479,32 @@ buscar() {
 
   }
 
+  /* vistaPreviaProgreso() {
+  // Datos de prueba para simular el modal
+  this.resultados = { archivos: 7333, tamanio: '284.90 MB' };
+  this.mostrarModalResultados = false;
+  this.mostrarPopupConfirmacion = true;
+  this.cargandoMotor = true; // Mostramos el mensaje de "Conectando..."
+  this.progreso = 0;
+  this.logsDescarga = [{ tipo: 'ESTADO', mensaje: 'SIMULACIÓN: Conectando al motor...' }];
+  this.cd.detectChanges();
 
-
+  // Simular que el motor responde tras 2 segundos
+  setTimeout(() => {
+    this.cargandoMotor = false;
+    this.logsDescarga.push({ tipo: 'OK', mensaje: 'Motor listo. Iniciando progreso simulación.' });
+    
+    const interval = setInterval(() => {
+      if (this.progreso < 100) {
+        this.progreso += 10;
+        this.tiempoEstimado = `${this.progreso}% (Simulado)`;
+        this.logsDescarga.push({ tipo: 'OK', mensaje: `Simulación: Archivo ${this.progreso/10} procesado.` });
+        this.cd.detectChanges();
+      } else {
+        clearInterval(interval);
+      }
+    }, 400);
+  }, 2000);
+}
+*/
 }
