@@ -25,7 +25,8 @@
             </div>
           </div>
 
-          <select [(ngModel)]="estadoSeleccionadoId" (change)="actualizarDescripcionEstado()" class="modern-select">
+          <select [(ngModel)]="estadoSeleccionadoId" [disabled]="descargaEnCurso"
+            (change)="actualizarDescripcionEstado()" class="modern-select">
             <option value="" disabled selected>Seleccione estado</option>
             <option *ngFor="let e of estados" [value]="e.id">{{ e.nombre }}</option>
           </select>
@@ -39,7 +40,7 @@
               <span class="tooltip-box">Contrato Vehicular, Obligaciones, Crédito, Infracciones, Alcohol</span>
             </div>
           </div>
-          <select [(ngModel)]="padronSeleccionadoId" class="modern-select">
+          <select [(ngModel)]="padronSeleccionadoId" [disabled]="descargaEnCurso" class="modern-select">
             <option value="" disabled selected>Seleccione padrón</option>
             <option *ngFor="let p of padrones" [ngValue]="p.id">{{ p.nombre }}</option>
           </select>
@@ -48,9 +49,12 @@
         <div class="input-field">
           <label>Formato</label>
           <div class="format-options">
-            <label class="check-item"><input type="checkbox" [(ngModel)]="formatoPdf"> PDF</label>
-            <label class="check-item"><input type="checkbox" [(ngModel)]="formatoXml"> XML</label>
-            <label class="check-item"><input type="checkbox" [(ngModel)]="formatoRecibos"> Recibos</label>
+            <label class="check-item"><input type="checkbox" [(ngModel)]="formatoPdf" [disabled]="descargaEnCurso">
+              PDF</label>
+            <label class="check-item"><input type="checkbox" [(ngModel)]="formatoXml" [disabled]="descargaEnCurso">
+              XML</label>
+            <label class="check-item"><input type="checkbox" [(ngModel)]="formatoRecibos" [disabled]="descargaEnCurso">
+              Recibos</label>
           </div>
         </div>
       </div>
@@ -82,7 +86,7 @@
 
       <div class="input-field full-width">
         <label>Delegación</label>
-        <select [(ngModel)]="delegacionSeleccionada" class="modern-select">
+        <select [(ngModel)]="delegacionSeleccionada" [disabled]="descargaEnCurso" class="modern-select">
           <option [ngValue]="null" disabled>Seleccione una delegación</option>
           <option *ngFor="let d of listaDelegaciones" [ngValue]="d.delegacionID">
             {{ d.delegacion }}
@@ -92,10 +96,10 @@
 
       <div class="action-footer">
         <button class="btn-buscar-modern" (click)="buscar()"
-          [disabled]="!delegacionSeleccionada || !mesInicio || !mesFinal || !anio || cargando">
-          <mat-icon *ngIf="!cargando">search</mat-icon>
-          <mat-spinner *ngIf="cargando" diameter="20"></mat-spinner>
-          {{ cargando ? 'BUSCANDO...' : 'BUSCAR DOCUMENTOS' }}
+          [disabled]="!delegacionSeleccionada || !mesInicio || !mesFinal || !anio || cargando || descargaEnCurso">
+          <mat-icon *ngIf="!cargando && !descargaEnCurso">search</mat-icon>
+          <mat-spinner *ngIf="cargando || descargaEnCurso" diameter="20"></mat-spinner>
+          {{ descargaEnCurso ? 'DESCARGA EN PROCESO' : (cargando ? 'BUSCANDO...' : 'BUSCAR DOCUMENTOS') }}
         </button>
       </div>
     </div>

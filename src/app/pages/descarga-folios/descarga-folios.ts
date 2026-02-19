@@ -55,6 +55,7 @@ export class DescargaFoliosComponent implements OnInit {
   tiempoRestante = 'Calculando...'; // <--- variable para el tiempo de descarga
   tiempoAproxResumen: string = 'Calculando...';
 
+  descargaEnCurso = false;
 
   errorUI: { origen: string, mensaje: string, visible: boolean }[] = [];
 
@@ -227,15 +228,23 @@ buscar() {
   cancelar() {
     this.hubConnection.invoke("Cancelar");
     this.mostrarPopupConfirmacion = false;
+    // LIBERAMOS EL BLOQUEO
+    this.descargaEnCurso = false;
+    this.cd.detectChanges();
   }
-
  async confirmarDescarga() {
   this.mostrarModalResultados = false;
-  this.mostrarPopupConfirmacion = true;
+  this.mostrarPopupConfirmacion = true; 
+  
+  // 2. Limpiamos estados anteriores
   this.progreso = 0;
   this.logsDescarga = [];
+  this.descargaEnCurso = true; 
 
-  // Construcción manual para asegurar que los booleanos no vayan como null
+  
+  this.cd.detectChanges();
+
+  // 3. Preparamos la URL
   const urlDescarga = `http://${this.IP_BACK}:5001/FiltroArchivos?` + 
     `idDescarga=${this.idDescargaActual}&` +
     `pdf=${!!this.formatoPdf}&` +
@@ -243,12 +252,18 @@ buscar() {
     `recibo=${!!this.formatoRecibos}`;
   
   try {
-    const resp = await fetch(urlDescarga); // Iniciamos el motor
-    if (!resp.ok) throw new Error(`Status motor: ${resp.status}`);
+    console.log('Disparando motor...');
+    const resp = await fetch(urlDescarga); 
     
-    // Si llegas aquí, SignalR empezará a emitir "ProgresoDescarga" automáticamente
+    if (!resp.ok) throw new Error(`Status: ${resp.status}`);
+    
+    // El modal ya está visible, ahora SignalR lo llenará de datos
   } catch (err) {
-    this.lanzarError('Error al contactar con el motor 5001', 'CONEXION');
+    console.error("Error al iniciar motor:", err);
+    this.descargaEnCurso = false;
+    // No cerramos el modal, mostramos el error dentro de él o lanzamos el error UI
+    this.lanzarError('El motor de descarga no respondió', 'CONEXION');
+    this.cd.detectChanges();
   }
 }
 
@@ -375,6 +390,7 @@ buscar() {
 
     this.descargaService.setUltimaDescarga(detalleFinal);
     this.mostrarPopupConfirmacion = false;
+    this.descargaEnCurso = false;
     this.router.navigate(['/historial-descargas']);
   }
 
