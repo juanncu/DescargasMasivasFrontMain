@@ -1,7 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
-import { FiltrosCFDI } from '../models/registro-descarga.model';
 
 @Injectable({
   providedIn: 'root',
@@ -10,45 +9,80 @@ export class ApiService {
   private http = inject(HttpClient);
   
   private apiUrl = 'http://172.20.23.41:5000'; 
+  private apiUrlFiltros = 'http://172.20.23.41:5001';
 
-  registrarNuevaDescarga(datos: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/cfdis/registrar`, datos);
-  }
+  /** * SOLUCIÓN AL ERROR TS2339: 
+   * Asegúrate de que el nombre sea EXACTAMENTE buscarFolios y que reciba 2 argumentos.
+   */
+  // En tu ApiService
+// Actualizamos para recibir los parámetros booleanos y el id de descarga
+buscarFolios(delegacion: number, filtros: any): Observable<any> {
+  let params = new HttpParams()
+    .set('delegacion', delegacion.toString())
+    // Forzamos conversión a string de los booleanos
+    .set('pdf', (!!filtros.pdf).toString())
+    .set('xml', (!!filtros.xml).toString())
+    .set('recibo', (!!filtros.recibo).toString())
+    .set('idDescarga', filtros.idDescarga || '');
 
-  getCfdis(idDelegacion: number): Observable<any> {
-    const params = new HttpParams().set('delegacion_ids', idDelegacion.toString());
-    return this.http.get(`${this.apiUrl}/cfdis/`, { params });
-  }
-
-  getCfdisConFiltros(filtros: any): Observable<any> {
-    let params = new HttpParams();
-
-    if (filtros) {
-      // Recorremos todas las llaves que traiga el objeto filtros
-      Object.keys(filtros).forEach(key => {
-        const valor = filtros[key];
-
-        // VALIDACIÓN CRÍTICA:
-        // Si el valor es 0, LO DEJA PASAR.
-        // Solo ignora si es null, undefined o texto vacío.
-        if (valor !== null && valor !== undefined && valor !== '') {
-          params = params.append(key, valor.toString());
-        }
-      });
+  // Agregamos el resto de filtros (anio, inicio, fin, padron, estado)
+  Object.keys(filtros).forEach(key => {
+    if (!['pdf', 'xml', 'recibo', 'idDescarga', 'delegacion'].includes(key)) {
+      const valor = filtros[key];
+      if (valor !== null && valor !== undefined && valor !== '') {
+        params = params.append(key, valor.toString());
+      }
     }
+  });
 
-    // Para depuración: se verá en consola exactamente qué se envía
-    console.log('📡 Enviando a API:', params.toString());
+  return this.http.get(`${this.apiUrl}/ObtenerTotalDeArchivos`, { params });
+}
+// Método para iniciar el proceso de descarga masiva
+iniciarProcesoDescarga(delegacionId: number): Observable<any> {
+  return this.http.post(`${this.apiUrl}/descargas/iniciar`, { delegacion: delegacionId });
+}
 
-    return this.http.get(`${this.apiUrl}/ObtenerTotalDeArchivos/`, { params });
+  /** * SOLUCIÓN AL ERROR TS2339 en getListaArchivosDescarga
+   */
+  getListaArchivosDescarga(idDescarga: string, pagina: number): Observable<any> {
+    const params = new HttpParams()
+      .set('idDescarga', idDescarga)
+      .set('pagina', pagina.toString());
+    
+    return this.http.get(`${this.apiUrlFiltros}/FiltroArchivos`, { params });
   }
 
+
+  // --- Implementación de Descargas Reales ---
+  descargarPdf(id: string | number): Observable<Blob> {
+    return this.http.get(`${this.apiUrl}/DescargarPDF`, {
+      params: { id: id.toString() },
+      responseType: 'blob'
+    });
+  }
+
+  descargarXml(id: string | number): Observable<Blob> {
+    return this.http.get(`${this.apiUrl}/getReciboFile`, {
+      params: { RECIBO_ID: id.toString() },
+      responseType: 'blob'
+    });
+  }
+
+  // --- Catálogos ---
   getMunicipios(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/ObtenerDelegaciones`);
   }
 
-  iniciarProcesoDescarga(delegacionId: number) {
-    return this.http.post(`${this.apiUrl}/descargas/iniciar`, { delegacion: delegacionId });
+  getAniosFiscales(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/ObtenerAniosFiscales`);
+  }
+
+  getEstadosRecibo(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/ObtenerEstadosDeRecibos`);
+  }
+
+  getPadrones(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/ObtenerPadrones`);
   }
 
   getHistorialDescargas(): Observable<any[]> {

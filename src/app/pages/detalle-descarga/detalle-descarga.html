@@ -1,69 +1,72 @@
-<div class="detalle-wrapper">
-
-  <button class="btn-volver" (click)="volver()">
-    <mat-icon style="font-size: 16px; height: 16px; width: 16px;">arrow_back</mat-icon> Volver al historial
-  </button>
-
-  <div class="titulo" *ngIf="detalle">
-    <h2>{{ detalle.delegacion }}</h2>
-    <span class="estado" [ngClass]="{'ok': detalle.estado === 'COMPLETADO', 'error': detalle.estado !== 'COMPLETADO'}">
-      {{ detalle.estado }}
-    </span>
+<div class="main-container-detalle">
+  <div class="header-actions">
+    <button (click)="volver()" class="btn-regresar-historial">
+      <mat-icon>arrow_back</mat-icon> VOLVER AL HISTORIAL
+    </button>
   </div>
 
-  <div *ngIf="detalle">
-    <p style="color: #666; margin-left: 5px;" class="detalle-mes">{{ detalle.mes }}</p>
-
-    <div class="grid grid-cols-4 gap-4 mb-8">
-      <div class="stat-card">
-        <span class="label">PDFs</span>
-        <span class="value">{{ detalle?.totalPdf || 0 }}</span>
-      </div>
-
-      <div class="stat-card">
-        <span class="label">XMLs</span>
-        <span class="value">{{ detalle?.totalXml || 0 }}</span>
-      </div>
-
-      <div class="stat-card">
-        <span class="label">Recibos</span>
-        <span class="value">{{ detalle?.totalRecibos || 0 }}</span>
-      </div>
-
-      <div class="stat-card" [ngClass]="{'has-errors': detalle.omitidos > 0}">
-        <span class="label">Omitidos</span>
-        <span class="value" [class.text-danger]="detalle.omitidos > 0">
-          {{ detalle.omitidos || 0 }}
+  <section class="card-detalle-principal large-format">
+    <div class="encabezado-info">
+      <div class="titulo-estatus">
+        <h2>{{ detalle?.delegacion }}</h2>
+        <span class="badge-estado" [ngClass]="detalle?.estado">
+          {{ detalle?.estado === 'COMPLETADO' ? '✓ PROCESADO' : '⚠ ATENCIÓN' }}
         </span>
       </div>
+      <p class="periodo-texto">PERIODO FISCAL: {{ detalle?.periodoLabel }}</p>
     </div>
 
-    <div class="info-box">
-      <div class="info-header">
-        Detalles Técnicos
+    <div class="stats-grid-historial">
+      <div class="stat-item-historial">
+        <span class="label">PDFS GENERADOS</span>
+        <span class="value">{{ detalle?.stats.pdfs }}</span>
       </div>
-      <div class="info-content">
-        <p><strong>Ruta de la descarga:</strong> {{ detalle.ruta }}</p>
-        <p><strong>Inicio de descarga:</strong> {{ detalle.inicio }}</p>
-        <p><strong>Fin de la descarga:</strong> {{ detalle.fin }}</p>
-        <p><strong>Tiempo:</strong> {{ detalle.tiempo }}</p>
+      <div class="stat-item-historial">
+        <span class="label">XMLS GENERADOS</span>
+        <span class="value">{{ detalle?.stats.xmls }}</span>
+      </div>
+      <div class="stat-item-historial">
+        <span class="label">RECIBOS</span>
+        <span class="value">{{ detalle?.stats.recibos }}</span>
+      </div>
+      <div class="stat-item-historial highlight-error">
+        <span class="label">FOLIOS OMITIDOS</span>
+        <span class="value">{{ detalle?.stats.omitidos }}</span>
       </div>
     </div>
 
-    <h3>Registro de actividad</h3>
-    <div class="log">
-      <div *ngFor="let r of detalle.registros" [class.OK]="r.estado === 'OK'" [class.ERROR]="r.estado === 'ERROR'">
-        [{{ r.estado }}] {{ r.mensaje }}
+    <div class="seccion-tecnica-gob">
+      <div class="tecnica-header-gob">
+        <mat-icon>code</mat-icon> DETALLES TÉCNICOS DE LA DESCARGA
+      </div>
+      <div class="tecnica-body-gob">
+        <p><strong>Ruta de la descarga:</strong> {{ detalle?.tecnico.ruta }}</p>
+        <div class="tecnica-time-row">
+          <span><strong>Inicio:</strong> {{ detalle?.tecnico.inicio }}</span>
+          <span><strong>Fin:</strong> {{ detalle?.tecnico.fin }}</span>
+          <span><strong>Tiempo Total:</strong> <span class="txt-guinda">{{ detalle?.tecnico.tiempo }}</span></span>
+        </div>
+
+        <div class="filtros-aplicados-box">
+          <p class="filtros-label-title">FILTROS APLICADOS EN ESTE PROCESO:</p>
+          <div class="filtros-inline-list">
+             <span><mat-icon>folder</mat-icon> <strong>PADRÓN:</strong> {{ detalle?.filtrosAplicados.padron }}</span>
+             <span><mat-icon>filter_alt</mat-icon> <strong>ESTADO:</strong> {{ detalle?.filtrosAplicados.estadoRecibo }}</span>
+             <span *ngFor="let f of detalle?.filtrosAplicados.formatos">
+                <mat-icon>description</mat-icon> <strong>{{ f }}</strong>
+             </span>
+          </div>
+        </div>
       </div>
     </div>
 
-    <div class="acciones">
-      <button class="btn retry" *ngIf="detalle.errores > 0">
-        Reintentar
+    <div class="footer-acciones-historial">
+      <button class="btn-abrir-carpeta-gob">
+        <mat-icon>folder_open</mat-icon> ABRIR CARPETA LOCAL
       </button>
-      <button class="btn open">Abrir carpeta</button>
-      <button class="btn export">Exportar log</button>
+      <button class="btn-reintentar-gob">
+        <mat-icon>refresh</mat-icon> REGENERAR DESCARGA
+      </button>
     </div>
-  </div>
-
+  </section>
 </div>

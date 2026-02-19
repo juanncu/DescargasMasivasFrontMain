@@ -1,25 +1,26 @@
-<main class="min-h-screen bg-gray-100">
-  <header class="mb-8">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link rel="stylesheet" href="app.css">
+</head>
+<body>
+ <div class="app-container">
+  <app-sidebar></app-sidebar>
+
+  <div class="main-wrapper">
     <app-header></app-header>
-  </header>
-
-  <div class="content">
-    <div class="left-side wx-full text-center">
-      <router-outlet></router-outlet>
-    </div>
-
-    <!-- <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
     
-    @for (item of datos; track $index) {
-      <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow duration-300">
-        <pre class="text-xs text-gray-700 overflow-auto">{{ item | json }}</pre>
-      </div>
-    } @empty {
-      <div class="col-span-3 text-center text-gray-500 py-10">
-      </div>
-    }
-  </div> -->
-
-    <router-outlet></router-outlet>
+    <main class="page-content">
+      <router-outlet></router-outlet>
+    </main>
   </div>
-</main>
+
+  <div *ngIf="isSidebarOpen" class="sidebar-backdrop" (click)="closeMenu()"></div>
+</div>
+</body>
+</html>
+
+

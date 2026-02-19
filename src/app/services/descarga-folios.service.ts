@@ -1,9 +1,8 @@
 import { Injectable, inject } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { WebSocketService } from './websocket';
 import { ApiService } from './api';
-// Si no tienes este modelo específico, puedes cambiarlo por 'any' abajo
 import { FiltrosCFDI } from '../models/registro-descarga.model'; 
 
 @Injectable({
@@ -18,7 +17,7 @@ export class DescargaFoliosService {
    */
   buscarFolios(delegacion: string, filtro: string, filtros: any): Observable<any> {
     // Llamada real al Backend
-    return this.apiService.getCfdisConFiltros(filtros).pipe(
+   return this.apiService.buscarFolios(filtros.delegacion, filtros).pipe(
       map((data: any) => {
         // Validación por si la data viene nula
         //const listaArchivos = Array.isArray(data) ? data : [];

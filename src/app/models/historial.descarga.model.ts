@@ -1,18 +1,18 @@
 
 export interface HistorialDescarga {
   id: number;
-  fechaReal: Date;
   fechaLabel: string;
   delegacion: string;
   archivos: number;
-  mes: string;
+ mesInicio: string;  
+  mesFinal: string;  
   anio: number;          
-  formatos: string;    
+  formatos: string[];    
   padron: string;       
   estadoFiltro: string;  
   rutaRed: string;
   tamanio: string;
-  estado: string;
+ estado: 'completado' | 'pendiente' | 'error';
   huboErrores: boolean;
   totalPdf: number;    
   totalXml: number;     

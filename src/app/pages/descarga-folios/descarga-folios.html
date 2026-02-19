@@ -1,8 +1,6 @@
 <main class="main-container">
   <div class="main-title" style="color: #ab9470">DESCARGA MASIVA DE FOLIOS</div>
 
-  <section class="card-descarga">
-    <div class="info-header">Filtros de descarga</div>
 
     <div class="info-filtros">
       <div class="filter-row">
@@ -59,13 +57,20 @@
             <option *ngFor="let m of meses" [value]="m.id">{{ m.nombre }}</option>
           </select>
         </div>
-        <div class="input-group">
-          <label>Mes Final:</label>
-          <select [(ngModel)]="mesFinal" class="custom-select">
-            <option *ngFor="let m of meses" [value]="m.id">{{ m.nombre }}</option>
+
+        <div class="input-field">
+          <div class="label-with-info">
+            <label>Padrón</label>
+            <div class="info-icon-wrapper" *ngIf="padronSeleccionadoId === '1'">
+              <mat-icon class="info-icon">info</mat-icon>
+              <span class="tooltip-box">Contrato Vehicular, Obligaciones, Crédito, Infracciones, Alcohol</span>
+            </div>
+          </div>
+          <select [(ngModel)]="padronSeleccionadoId" [disabled]="descargaEnCurso" class="modern-select">
+            <option value="" disabled selected>Seleccione padrón</option>
+            <option *ngFor="let p of padrones" [ngValue]="p.id">{{ p.nombre }}</option>
           </select>
         </div>
-      </div>
 
       <div class="input-group">
         <label>Año:</label>
@@ -143,4 +148,31 @@
       </div>
     </div>
   </div>
-</main>
+
+  <div class="modal-overlay" *ngIf="mostrarPopupConfirmacion">
+    <div class="modal-content-gob">
+      <div class="modal-header-gob">
+        <h3>PROGRESO DE DESCARGA</h3>
+      </div>
+
+      <div class="modal-body-gob">
+
+        <div class="aviso-conexion-inicial" *ngIf="cargandoMotor">
+          <mat-spinner diameter="20"></mat-spinner>
+          <p><strong>Conectando con el motor de descarga...</strong></p>
+          <small>Esto puede tardar unos segundos si el volumen de archivos es alto.</small>
+        </div>
+
+        <div class="progress-container" [style.opacity]="cargandoMotor ? '0.5' : '1'">
+          <mat-progress-bar mode="determinate" [value]="progreso"></mat-progress-bar>
+          <div class="progress-text">{{ progreso }}% - {{ tiempoEstimado }}</div>
+        </div>
+
+        <div class="log-terminal">
+          <div *ngFor="let log of logsDescarga" [ngClass]="'log-' + log.tipo.toLowerCase()">
+            [{{ log.tipo }}] {{ log.mensaje }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

@@ -1,37 +1,23 @@
-.header {
-  background-color: #9F2241;
-  border-bottom: 1px solid #9F2241;
-  font-family: var(--font-app); 
-}
-
-nav a {
-  margin-left: 16px;
-  text-decoration: none;
-  color: #BCA986;
-  font-weight: 500;
-}
-
-h1{
-    color: #ffffff;
-    text-align: left;
-}
-
-.btn-logout {
-  background-color: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  color: white;
+.header-container {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 5px 12px;
-  border-radius: 20px;
-  cursor: pointer;
-  font-size: 12px;
-  font-weight: bold;
-  transition: all 0.3s ease;
+  padding: 10px 20px;
+  background-color: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
 }
 
-.btn-logout:hover {
-  background-color: white;
-  color: #b91c1c; /* Color rojo de tu cabecera */
+/* Ocultar hamburguesa en escritorio */
+@media (min-width: 769px) {
+  .menu-btn, .header-title-mobile {
+    display: none; 
+  }
 }
+
+/* Mostrar solo en móviles */
+@media (max-width: 768px) {
+  .menu-btn {
+    display: block;
+    cursor: pointer;
+  }
+}
+

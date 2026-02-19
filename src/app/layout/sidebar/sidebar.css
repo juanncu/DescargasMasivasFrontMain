@@ -1,0 +1,149 @@
+/* --- 1. side bar izquierda --- */
+.sidebar {
+  width: 260px;
+  height: 100vh;
+  position: fixed;
+  left: 0;
+  top: 0;
+  background-color: white;
+  z-index: 2000 !important; /* Siempre sobre el backdrop */
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid #e5e7eb;
+}
+
+.sidebar-header {
+  padding: 10px 24px;
+  display: flex;
+  align-items: center;
+}
+
+.header-main-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* --- NAVEGACIÓN Y BOTONES --- */
+.sidebar-nav {
+  flex-grow: 1;
+  padding: 0 16px;
+
+}
+
+.nav-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.nav-item {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  text-decoration: none;
+  color: #5f6368;
+  font-weight: 500;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.nav-item.active {
+  background-color: #8B0F28; /* Rojo institucional */
+  color: #ffffff;
+  box-shadow: 0 4px 15px rgba(139, 15, 40, 0.3);
+}
+
+/* --- 3. EFECTO DE BRILLO (GLARE) --- */
+@keyframes glare-effect {
+  0% { left: -150%; }
+  100% { left: 150%; }
+}
+
+.nav-item.active::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -150%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 100%);
+  transform: skewX(-25deg);
+  animation: glare-effect 3s infinite;
+}
+
+/* --- 4. PIE DE PÁGINA (PERFIL/SALIR) --- */
+.sidebar-footer {
+  padding: 20px 16px;
+  border-top: 1px solid #f3f4f6;
+  margin-top: auto;
+}
+
+.footer-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  color: #6b7280;
+  text-decoration: none;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.footer-item:hover { color: #8B0F28; }
+
+/* --- RESPONSIVIDAD */
+.close-sidebar-btn {
+  display: none; 
+  border: none;
+  color: #5f6368;
+  cursor: pointer;
+  padding-bottom: 5%;
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    transform: translateX(-100%); 
+  }
+
+  .sidebar.open {
+    transform: translateX(0); 
+    box-shadow: 10px 0 30px rgba(0,0,0,0.3);
+  }
+
+  .close-sidebar-btn {
+    display: block; 
+  }
+}
+
+/* --- RELOJ --- */
+.reloj {
+  margin: 20px 16px;
+  padding: 18px;
+  background: linear-gradient(135deg, #bca986, #a59371);
+  color: white;
+  border-radius: 0px 0px 14px 14px;
+  text-align: center;
+  box-shadow: 0 6px 18px rgba(139, 15, 40, 0.25);
+  margin-top: 0%;
+}
+
+.reloj .fecha {
+  font-size: 13px;
+  text-transform: capitalize;
+  opacity: 0.9;
+}
+
+.reloj .hora {
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  margin-top: 6px;
+}

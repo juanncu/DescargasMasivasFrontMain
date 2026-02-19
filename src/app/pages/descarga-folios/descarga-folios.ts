@@ -3,60 +3,99 @@ import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 import { DescargaFoliosService } from '../../services/descarga-folios.service';
 import { SelectDescarga } from '../../services/select-descarga';
 import { ApiService } from '../../services/api';
+import * as signalR from '@microsoft/signalr';
+import { ErrorHandlerService } from '../../services/error-handler.service';
 
 @Component({
   selector: 'app-descarga-folios',
   standalone: true,
-  imports: [FormsModule, CommonModule, RouterModule, MatIconModule],
+  imports: [
+    FormsModule,
+    CommonModule,
+    RouterModule,
+    MatProgressSpinnerModule,
+    MatIconModule,
+    MatProgressBarModule
+  ],
   templateUrl: './descarga-folios.html',
   styleUrls: ['./descarga-folios.css'],
   providers: [DescargaFoliosService],
 })
 export class DescargaFoliosComponent implements OnInit {
+  // Inyecciones
   private descargaService = inject(DescargaFoliosService);
   private selectDescarga = inject(SelectDescarga);
   private router = inject(Router);
   private apiService = inject(ApiService);
   private cd = inject(ChangeDetectorRef);
-  private zone = inject(NgZone);
+  private zone = inject(NgZone); // Inyectamos NgZone para el progreso en tiempo real
 
   delegacionSeleccionada = '';
   mesInicio = '';
   mesFinal = '';
   anio: number = new Date().getFullYear();
+  
+  estadoSeleccionado = 'Ambos';
+  padronSeleccionado = 'Todas';
 
-  // Listas para Select de Katia
-  estados = [
-    { id: '1', nombre: 'ACTIVO', estadoID: '1, 3, 4' },
-    { id: '2', nombre: 'CANCELADO', estadoID: '2' },
-    { id: '3', nombre: 'AMBOS', estadoID: '1, 2, 3, 4' },
-  ];
+  // -------------------------
+// LISTAS PARA SELECT (JSON)
+// -------------------------
+estados = [
+  {
+    id: '1',
+    nombre: 'ACTIVO',
+    estadoID: '1, 3, 4'
+  },
+  {
+    id: '2',
+    nombre: 'CANCELADO',
+    estadoID: '2'
+  },
+  {
+    id: '3',
+    nombre: 'AMBOS',
+    estadoID: '1, 2, 3, 4'
+  }
+];
 
-  padrones = [
-    { id: '1', nombre: 'TODOS', padronID: '1, 3, 4, 5, 6' },
-    { id: '2', nombre: 'PREDIAL', padronID: '2' },
-  ];
+padrones = [
+  {
+    id: '1',
+    nombre: 'TODOS',
+    padronID: '1, 3, 4, 5, 6'
+  },
+  {
+    id: '2',
+    nombre: 'PREDIAL',
+    padronID: '2'
+  }
+];
 
-  // Vinculación con los nuevos Selects
-  estadoSeleccionadoId = null;
-  padronSeleccionadoId = null;
+// valores seleccionados del select
+estadoSeleccionadoId = null;
+padronSeleccionadoId = null;
 
   listaDelegaciones: any[] = [];
   resultados: any = null;
   cargando = false;
+  mostrarModalResultados = false;
   mostrarPopupConfirmacion = false;
 
-  // Filtros de formato
-  formatoPdf: boolean = true;
-  formatoXml: boolean = true;
+  formatoPdf: boolean = true;   // Marcado por defecto
+  formatoXml: boolean = true;   // Marcado por defecto
   formatoRecibos: boolean = false;
 
+  // Variables de progreso
   progreso = 0;
-  tiempoEstimado = 'Calculando...';
+  tiempoEstimado = 'Calculando...'; // Corregido el nombre
+
   aniosDisponibles: number[] = [2026, 2025];
 
   meses = [
@@ -73,8 +112,16 @@ export class DescargaFoliosComponent implements OnInit {
     { id: 11, nombre: 'Noviembre' },
     { id: 12, nombre: 'Diciembre' },
   ];
+  estados: any[] = [];
+  padrones: any[] = [];
 
+  mesesFinalesDisponibles: any[] = [];
+  idDescargaActual: string = '';
+  descripcionEstadoRecibo: string = 'Seleccione un estado para ver la descripción';
   ngOnInit() {
+
+
+
     this.cargarMunicipios();
     this.anio = 2026;
   }
@@ -82,71 +129,76 @@ export class DescargaFoliosComponent implements OnInit {
   cargarMunicipios() {
     this.apiService.getMunicipios().subscribe({
       next: (respuesta: any) => {
-        this.listaDelegaciones =
-          respuesta.delegacion || (Array.isArray(respuesta) ? respuesta : []);
+        if (respuesta && respuesta.municipios) {
+          this.listaDelegaciones = respuesta.municipios;
+        } else if (Array.isArray(respuesta)) {
+          this.listaDelegaciones = respuesta;
+        }
         this.cd.detectChanges();
       },
-      error: (err) => console.error('Error cargando municipios:', err),
+      error: (err) => console.error("Error cargando municipios:", err)
     });
   }
 
   buscar() {
-    if (
-      !this.delegacionSeleccionada ||
-      !this.mesInicio ||
-      !this.mesFinal ||
-      !this.anio ||
-      !this.estadoSeleccionadoId ||
-      !this.padronSeleccionadoId
-    ) {
+    if (!this.delegacionSeleccionada || !this.mesInicio || !this.mesFinal || !this.anio) {
       alert('Por favor complete todos los filtros antes de buscar.');
-      return;
-    }
-
-    if (!this.formatoPdf && !this.formatoXml && !this.formatoRecibos) {
-      alert('Por favor, seleccione al menos un formato (PDF, XML o Recibos)');
       return;
     }
 
     this.cargando = true;
     this.resultados = null;
 
-    // Procesamiento de fechas
+   const estado = this.estados.find(e => e.id === this.estadoSeleccionadoId);
+   const padron = this.padrones.find(p => p.id === this.padronSeleccionadoId);
+
     const mesIniStr = this.mesInicio.toString().padStart(2, '0');
+    const fechaInicio = `${this.anio}-${mesIniStr}-01`;
+
     const ultimoDia = new Date(this.anio, Number(this.mesFinal), 0).getDate();
     const mesFinStr = this.mesFinal.toString().padStart(2, '0');
+    const fechaFin = `${this.anio}-${mesFinStr}-${ultimoDia}`;
 
     const filtros = {
-      padron: Number(this.padronSeleccionadoId),
-      estado: Number(this.estadoSeleccionadoId),
       delegacion: Number(this.delegacionSeleccionada),
-      anio: this.anio,
-      inicio: this.mesInicio,
-      fin: this.mesFinal,
+      estado: Number(this.estadoSeleccionadoId),   
+      padron: Number(this.padronSeleccionadoId),   
+      ini: fechaInicio,
+      fin: fechaFin
     };
 
     this.selectDescarga.setFiltros(filtros);
 
-    this.descargaService.buscarFolios(this.delegacionSeleccionada, '', filtros).subscribe({
-      next: (resultados) => {
-        this.resultados = resultados;
-        this.cargando = false;
-        this.cd.detectChanges();
-      },
-      error: (error) => {
-        console.error('Error al buscar folios:', error);
-        this.cargando = false;
-      },
-    });
+    this.descargaService.buscarFolios(this.delegacionSeleccionada, '', filtros)
+      .subscribe({
+        next: (resultados) => {
+          this.resultados = resultados;
+          this.cargando = false;
+          this.cd.detectChanges();
+        },
+        error: (error) => {
+          console.error('Error al buscar folios:', error);
+          this.cargando = false;
+        }
+      });
+
+      const formatosSeleccionados = {
+    pdf: this.formatoPdf,
+    xml: this.formatoXml,
+    recibos: this.formatoRecibos
+  };
+
+  if (!this.formatoPdf && !this.formatoXml && !this.formatoRecibos) {
+    alert('Por favor, seleccione al menos un formato (PDF, XML o Recibos)');
+    return;
+  }
   }
 
   confirmarDescarga() {
     const delegacionEncontrada = this.listaDelegaciones.find(
-      (d) => (d.Id || d.id) == this.delegacionSeleccionada,
+      d => (d.Id || d.id) == this.delegacionSeleccionada
     );
-    const nombreDelegacion = delegacionEncontrada
-      ? delegacionEncontrada.Nombre || delegacionEncontrada.nombre
-      : 'Desconocida';
+    const nombreDelegacion = delegacionEncontrada ? (delegacionEncontrada.Nombre || delegacionEncontrada.nombre) : 'Desconocida';
 
     const nuevaDescarga = {
       delegacion: nombreDelegacion,
@@ -155,15 +207,17 @@ export class DescargaFoliosComponent implements OnInit {
       tamanio: this.resultados?.tamanio || '0 KB',
       anio: this.anio,
       estado: 'pendiente',
-      fecha_creacion: new Date(),
+      fecha_creacion: new Date()
     };
 
+    // --- REINTEGRACIÓN DE LA BARRA ---
     this.progreso = 0;
     this.mostrarPopupConfirmacion = true;
 
+    // Iniciamos la escucha del progreso vía WebSocket
     this.descargaService.iniciarDescarga(Number(this.delegacionSeleccionada)).subscribe({
       next: (evento) => {
-        this.zone.run(() => {
+        this.zone.run(() => { // NgZone asegura que la barra se mueva visualmente
           if (evento.tipo?.toUpperCase() === 'PROGRESO') {
             const valor = parseFloat(evento.progreso.toString().replace('%', ''));
             if (!isNaN(valor)) {
@@ -173,23 +227,43 @@ export class DescargaFoliosComponent implements OnInit {
           }
         });
       },
-      error: (err) => console.error('Error en WebSocket:', err),
+      error: (err) => console.error('Error en WebSocket de progreso:', err)
     });
 
+    // Registro paralelo en el historial
     this.apiService.registrarNuevaDescarga(nuevaDescarga).subscribe({
-      next: () => console.log('Registro exitoso'),
-      error: (err) => console.warn('Error en historial:', err),
+      next: (res) => console.log('Registro exitoso en historial'),
+      error: (err) => console.warn('Error en registro de historial:', err)
     });
   }
 
+  // --- FUNCIONES AUXILIARES ---
+
   calcularTiempoRestante(p: number): string {
     if (p >= 100) return 'Completado';
-    const segundos = Math.round((100 - p) * 0.6);
+    const segundos = Math.round((100 - p) * 0.6); // Estimación simple
     return `${segundos} seg. restantes aprox.`;
   }
 
   irAlHistorial() {
+    const detalleFinal = {
+      delegacion: this.obtenerNombreDelegacion(),
+      periodo: `${this.obtenerNombreMes(this.mesInicio)} - ${this.obtenerNombreMes(this.mesFinal)} ${this.anio}`,
+      estado: this.estados.find(e => e.id === this.estadoSeleccionadoId)?.nombre,
+      padron: this.padrones.find(p => p.id === this.padronSeleccionadoId)?.nombre,
+      formatos: this.obtenerFormatosStr(),
+
+      // Datos que llegaro al modal de resultados
+      totalArchivos: this.resultados?.archivos,
+      tamanioTotal: this.resultados?.tamanio,
+
+      tiempoEmpleado: this.tiempoRestante,
+      fechaEjecucion: new Date()
+    };
+
+    this.descargaService.setUltimaDescarga(detalleFinal);
     this.mostrarPopupConfirmacion = false;
+    this.descargaEnCurso = false;
     this.router.navigate(['/historial-descargas']);
   }
 
@@ -197,29 +271,33 @@ export class DescargaFoliosComponent implements OnInit {
     this.mostrarPopupConfirmacion = false;
     this.resultados = null;
     this.delegacionSeleccionada = '';
-    this.estadoSeleccionadoId = null;
-    this.padronSeleccionadoId = null;
     this.progreso = 0;
   }
 
   obtenerNombreMes(id: any): string {
-    const mes = this.meses.find((m) => m.id == id);
+    const mes = this.meses.find(m => m.id == id);
     return mes ? mes.nombre : String(id);
   }
 
-  simularProgreso() {
-    this.mostrarPopupConfirmacion = true;
-    this.progreso = 0;
-    const intervalo = setInterval(() => {
-      this.zone.run(() => {
-        if (this.progreso < 100) {
-          this.progreso += 10;
-          this.tiempoEstimado = this.calcularTiempoRestante(this.progreso);
-        } else {
-          clearInterval(intervalo);
-        }
-        this.cd.detectChanges();
-      });
-    }, 500);
-  }
+
+
+simularProgreso() {
+  this.mostrarPopupConfirmacion = true; // Abrimos el modal
+  this.progreso = 0; // Reiniciamos la barra
+  this.tiempoEstimado = 'Calculando...';
+
+  const intervalo = setInterval(() => {
+    this.zone.run(() => {
+      if (this.progreso < 100) {
+        this.progreso += 10; // Sube de 10 en 10
+        this.tiempoEstimado = this.calcularTiempoRestante(this.progreso);
+      } else {
+        clearInterval(intervalo); // Se detiene al llegar a 100
+        console.log('Simulación completada con éxito');
+      }
+      this.cd.detectChanges(); // Forzamos a que Angular pinte el cambio
+    });
+  }, 500); // Se actualiza cada 500ms
+  
+}
 }

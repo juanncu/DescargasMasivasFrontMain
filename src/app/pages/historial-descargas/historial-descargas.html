@@ -1,46 +1,47 @@
 <div class="main-container">
-  
-  <div class="acciones-superiores">
-    <button routerLink="/main" class="btn-regresar">
-      <mat-icon>home</mat-icon> Nueva búsqueda
-    </button>
-  </div>
+  <h2 class="titulo-historial">HISTORIAL DE DESCARGAS</h2>
 
-  <h2 class="titulo">Historial de descargas</h2>
-
-  <div>
-    <div *ngFor="let d of historial" class="item">
+  <div class="historial-list">
+    <div *ngFor="let d of historial" class="item-card">
       
-  <div class="info-izquierda">
-  <span class="fecha">Se descargo: {{ d.fechaLabel }}</span>
-  <strong class="delegacion"> Delegacion : {{ d.delegacion }} </strong> <br>
-  
-  <span class="periodo">Periodo: {{ d.mes }} {{ d.anio }}</span>
+      <div class="info-main">
+        <span class="fecha-label">Se descargó: <strong>Hoy</strong></span>
+        <span class="meta-data">Delegación: <strong>{{ d.delegacion }}</strong></span>
+        
+        <span class="meta-data">
+          Periodo: <strong>{{ d.mesInicio }} - {{ d.mesFinal }}</strong> 
+          Año: <strong>{{ d.anio }}</strong>
+        </span>
 
-  <div class="filtros-tags">
-    <span class="tag">📂 {{ d.formatos }}</span>
-    <span class="tag">📋 {{ d.padron }}</span>
-    <span class="tag">⚙️ {{ d.estadoFiltro }}</span>
-  </div>
-</div>
-
-      <div class="ruta">
-        {{ d.rutaRed || d.rutaRed }}
+        <div class="filtros-tags">
+          <span class="tag-formato" *ngFor="let f of d.formatos">
+            <mat-icon>insert_drive_file</mat-icon> {{ f }}
+          </span>
+          
+          <span class="tag-padron">
+            <mat-icon>folder_shared</mat-icon> {{ d.padron }}
+          </span>
+          
+          <span class="tag-estado">
+            <mat-icon>filter_alt</mat-icon> {{ d.estadoFiltro }}
+          </span>
+        </div>
       </div>
 
-<div class="info-derecha">
-        
-        <div class="estado" [ngClass]="d.estado">
+      <div class="ruta-red">
+        {{ d.rutaRed || 'C:\\Recibos\\' + d.delegacion + '\\Folios_' + d.id }}
+      </div>
+
+      <div class="info-status">
+        <div class="estado-badge" [ngClass]="d.estado.toLowerCase()">
           {{ d.estado | uppercase }}
         </div>
-
-        <span class="tamanio">{{ d.tamanio }}</span>
-
-        <button class="btn-detalle" [routerLink]="['/historial-descargas', d.id]">
+        <span class="tamanio-text">{{ d.tamanio }}</span>
+       <button class="btn-view" (click)="verDetalle(d.id)">
           <mat-icon>visibility</mat-icon>
         </button>
-        
       </div>
+
     </div>
   </div>
 </div>
