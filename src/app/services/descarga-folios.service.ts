@@ -20,10 +20,10 @@ export class DescargaFoliosService {
    return this.apiService.buscarFolios(filtros.delegacion, filtros).pipe(
       map((data: any) => {
         // Validación por si la data viene nula
-        //const listaArchivos = Array.isArray(data) ? data : [];
+        const listaArchivos = Array.isArray(data) ? data : [];
         
-        const totalArchivos = data.total;
-        const tamanioTotal = this.calcularTamanio(totalArchivos);
+        const totalArchivos = listaArchivos.length;
+        const tamanioTotal = this.calcularTamanio(listaArchivos);
 
         // Calculamos un tiempo estimado (ejemplo: 0.5 segundos por archivo)
         // Puedes ajustar esta fórmula según la velocidad real de tu servidor
@@ -65,16 +65,19 @@ export class DescargaFoliosService {
 
   // --- MÉTODOS PRIVADOS (AYUDANTES) ---
 
-  private calcularTamanio(data: number): string {
-    const tamanioKB = data * 3000;
-    const tamanioMB = tamanioKB / 1024;
+  private calcularTamanio(data: any[]): string {
+    const tamanioEnBytes = data.reduce((total, item) => {
+      // Suma el tamaño si existe, si no, asume 50KB promedio por XML
+      return total + (item.tamanio || 50000); 
+    }, 0);
 
-    if (tamanioMB < 1024) {
-      return `${tamanioMB.toFixed(2)} MB`;
+    // Conversión correcta (Base 1024)
+    if (tamanioEnBytes > 1073741824) { 
+      return (tamanioEnBytes / 1073741824).toFixed(2) + ' GB';
+    } else if (tamanioEnBytes > 1048576) { 
+      return (tamanioEnBytes / 1048576).toFixed(2) + ' MB';
     }
-
-    const tamanioGB = tamanioMB / 1024;
-    return `${tamanioGB.toFixed(2)} GB`;
+    return (tamanioEnBytes / 1024).toFixed(2) + ' KB';
   }
 
   private formatearTiempo(segundos: number): string {
@@ -82,4 +85,12 @@ export class DescargaFoliosService {
     const minutos = Math.ceil(segundos / 60);
     return `${minutos} minuto${minutos > 1 ? 's' : ''}`;
   }
+
+  // En descarga-folios.service.ts
+private ultimaDescargaInfo = new BehaviorSubject<any>(null);
+ultimaDescarga$ = this.ultimaDescargaInfo.asObservable();
+
+setUltimaDescarga(data: any) {
+  this.ultimaDescargaInfo.next(data);
+}
 }
